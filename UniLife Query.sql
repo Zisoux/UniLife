@@ -14,6 +14,7 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL
 );
+
 CREATE TABLE timetables (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -21,6 +22,7 @@ CREATE TABLE timetables (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     course_name VARCHAR(100) NOT NULL,  -- 강의명
@@ -32,6 +34,7 @@ CREATE TABLE courses (
     start_time TIME NOT NULL,  -- 강의 시작 시간
     end_time TIME NOT NULL  -- 강의 종료 시간
 );
+
 CREATE TABLE timetable_courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timetable_id INT NOT NULL,
@@ -42,6 +45,7 @@ CREATE TABLE timetable_courses (
     FOREIGN KEY (timetable_id) REFERENCES timetables(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
+
 CREATE TABLE friends (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -50,6 +54,7 @@ CREATE TABLE friends (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE semesters (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -57,6 +62,7 @@ CREATE TABLE semesters (
     term ENUM('1학기', '2학기') NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE enrolled_courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -67,6 +73,7 @@ CREATE TABLE enrolled_courses (
     FOREIGN KEY (semester_id) REFERENCES semesters(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
+
 CREATE TABLE schedule (
     id INT AUTO_INCREMENT PRIMARY KEY,
     enrolled_course_id INT NOT NULL,  -- 수강한 강의 ID (연동됨)
@@ -76,6 +83,7 @@ CREATE TABLE schedule (
     location VARCHAR(100),  -- 강의실 정보
     FOREIGN KEY (enrolled_course_id) REFERENCES enrolled_courses(id) ON DELETE CASCADE
 );
+
 CREATE TABLE gpa (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -89,6 +97,7 @@ CREATE TABLE gpa (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (semester_id) REFERENCES semesters(id) ON DELETE CASCADE
 );
+
 CREATE TABLE portfolios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,  -- 사용자 ID
@@ -100,6 +109,7 @@ CREATE TABLE portfolios (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 CREATE TABLE events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,  -- 사용자 ID
