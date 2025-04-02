@@ -1,0 +1,166 @@
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniLife - 일정 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+	    body {
+	        display: flex;
+	        justify-content: space-between; /* 캘린더와 목록을 가로로 배치 */
+	        align-items: flex-start;
+	        padding: 20px;
+	    }
+	    
+	    /* 캘린더와 일정 목록을 감싸는 컨테이너 */
+	    #container {
+	        display: flex;
+	        width: 100%;
+	    }
+	
+	    /* 캘린더 */
+	    #calendar {
+	        width: 50%;  /* 반반 차지 */
+	        height: 600px;
+	        margin-right: 10px; /* 캘린더와 목록 사이 간격 */
+	    }
+	
+	    /* 일정 목록 */
+	    #event-list-container {
+	        width: 50%;  /* 반반 차지 */
+	        height: 600px;
+	        overflow-y: auto;
+	        border: 1px solid #ccc;
+	        padding: 20px;
+	        background-color: #f9f9f9;
+	    }
+	
+	    /* 일정 항목 스타일 */
+	    .event-item {
+	        padding: 8px;
+	        border-bottom: 1px solid #ddd;
+	    }
+	
+	    .event-item:last-child {
+	        border-bottom: none;
+	    }
+	</style>
+
+</head>
+<body>
+
+    <!-- 캘린더 -->
+    <div id="calendar"></div>
+
+    <!-- 일정 패널 -->
+    <div id="event-panel">
+        <h3>📅 일정 목록</h3>
+        <ul id="event-list"></ul>
+
+        <!-- 일정 추가 버튼 -->
+        <button id="add-event-btn" style="display: none;">일정 추가</button>
+
+        <!-- 일정 추가 폼 -->
+        <div id="event-form" style="display: none;"> <!-- 기본적으로 숨김 -->
+		    <h4>일정 추가</h4>
+		    <label>제목: <input type="text" id="event-title"></label><br>
+		    <label>시간: <input type="time" id="event-time"></label><br>
+		    <label>장소: <input type="text" id="event-location"></label><br>
+		    <label><input type="checkbox" id="event-alert"> 알림 설정</label><br>
+		    <button onclick="saveEvent()">저장</button>
+		    <button onclick="closeForm()">취소</button>
+		</div>
+
+    </div>
+    <script>
+    let selectedDate = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: '/events', 
+            selectable: true,
+            editable: true,
+            dateClick: function(info) {
+                selectedDate = info.dateStr;
+                loadEvents(selectedDate); // 클릭한 날짜의 일정 불러오기
+                document.getElementById('add-event-btn').style.display = "block"; // 일정 추가 버튼 표시
+            }
+        });
+        calendar.render();
+    });
+
+	 // "일정 추가" 버튼 클릭 시 폼 열기
+	    document.getElementById('add-event-btn').addEventListener('click', function () {
+	        document.getElementById('event-form').style.display = "block";
+	    });
+	
+    // 일정 추가 폼 닫기
+	function closeForm() {
+	    document.getElementById('event-form').style.display = "none";
+	}
+    
+    // 일정 불러오기
+    function loadEvents(date) {
+        fetch(`/events?date=${date}`)
+            .then(response => response.json())
+            .then(events => {
+                const eventList = document.getElementById('event-list');
+                eventList.innerHTML = ""; // 기존 목록 삭제
+                events.forEach(event => {
+                    const li = document.createElement('li');
+                    li.textContent = `${event.title} (${event.start})`;
+                    eventList.appendChild(li);
+                });
+            });
+    }
+
+    // 일정 추가 폼 열기
+    document.getElementById('add-event-btn').addEventListener('click', function () {
+        document.getElementById('event-form').style.display = "block";
+    });
+
+    // 일정 추가 폼 닫기
+    function closeForm() {
+        document.getElementById('event-form').style.display = "none";
+    }
+
+    // 일정 저장
+    function saveEvent() {
+        const title = document.getElementById('event-title').value;
+        const time = document.getElementById('event-time').value;
+        const location = document.getElementById('event-location').value;
+        const alert = document.getElementById('event-alert').checked;
+
+        if (!title || !selectedDate) {
+            alert("일정 제목과 날짜를 선택해주세요!");
+            return;
+        }
+
+        fetch('/events/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: title,
+                start: `${selectedDate}T${time}`,
+                location: location,
+                alert: alert
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            closeForm();
+            loadEvents(selectedDate); // 일정 다시 불러오기
+        });
+    }
+    </script>
+
+</body>
+</html>
