@@ -76,13 +76,11 @@ CREATE TABLE enrolled_courses (
 
 CREATE TABLE schedule (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
     enrolled_course_id INT NOT NULL,  -- 수강한 강의 ID (연동됨)
     day ENUM('월', '화', '수', '목', '금', '토', '일') NOT NULL,  -- 요일
     start_time TIME NOT NULL,  -- 강의 시작 시간
     end_time TIME NOT NULL,  -- 강의 종료 시간
     location VARCHAR(100),  -- 강의실 정보
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     FOREIGN KEY (enrolled_course_id) REFERENCES enrolled_courses(id) ON DELETE CASCADE
 );
 
