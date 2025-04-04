@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>일정 저장 완료</title>
+    <script>
+        // 부모 창 새로고침 + 현재 창 닫기
+        window.onload = function() {
+            if (window.opener) {
+                window.opener.location.reload(); // 부모 창 새로고침
+                window.close(); // 현재 창 닫기
+            } else {
+                // 팝업이 아닌 경우 fallback
+                window.location.href = "/calendar";
+            }
+        };
+    </script>
+</head>
+<body>
+    <p>일정이 저장되었습니다. 창을 닫는 중입니다...</p>
+</body>
+</html>

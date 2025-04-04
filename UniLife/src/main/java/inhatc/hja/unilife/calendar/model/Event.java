@@ -24,11 +24,19 @@ public class Event {
     private String location;         // 위치
     private String color;            // 캘린더 색상
     private String alarm;            // 알림 설정 (nullable 처리 추천)
-
+    
+	private int user_id = 999; // 기본값으로 1L을 설정 (테스트용)
 
     // 기본 생성자
     public Event() {}
+    
+    public int getUser_id() {
+		return user_id;
+	}
 
+	public void setUser_id(int user_id) {
+		this.user_id = user_id;
+	}
 
 	public String getTitle() {
 		return title;
