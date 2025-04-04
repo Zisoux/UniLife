@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>나의 시간표</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .timetable {
+            display: flex;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .time-column {
+            width: 60px;
+            border-right: 1px solid #ddd;
+        }
+        .day-column {
+            flex: 1;
+            border-right: 1px solid #ddd;
+            position: relative;
+        }
+        .time-slot {
+            height: 60px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            line-height: 60px;
+            font-size: 12px;
+            color: #999;
+        }
+        .course-block {
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            background-color: #cce5ff;
+            border-radius: 4px;
+            color: #004085;
+            padding: 2px;
+            overflow: hidden;
+            font-size: 12px;
+            box-sizing: border-box;
+        }
+        .delete-link {
+            display: block;
+            margin-top: 2px;
+            color: red;
+            font-size: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<h1>나의 시간표</h1>
+
+<div class="timetable">
+    <!-- 시간 -->
+    <div class="time-column">
+        <div class="time-slot"></div>
+        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}"
+             th:text="${hour + ':00'}"></div>
+    </div>
+
+    <!-- 요일별 -->
+    <div class="day-column" th:each="day : ${dayList}" th:attr="data-day=${day}">
+        <div class="time-slot" th:text="${day}"></div>
+        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}"></div>
+
+        <!-- 수업 -->
+        <div th:each="course : ${timetable.timetableCourses}"
+             th:if="${course.dayOfWeek == day}"
+             class="course-block"
+             th:attr="data-start=${course.startTime}, data-end=${course.endTime}">
+            <div th:text="${course.course.courseName}">수업명</div>
+            <div th:text="${course.startTime} + ' ~ ' + ${course.endTime}">시간</div>
+            <a th:href="@{/timetable/delete/{id}(id=${course.id}, userId=${timetable.userId})}" class="delete-link">삭제</a>
+        </div>
+    </div>
+</div>
+
+<hr/>
+
+<!-- 수업 추가 폼 -->
+<h2>수업 추가</h2>
+<form action="/timetable/add" method="post">
+    <input type="hidden" name="userId" th:value="${timetable.userId}" />
+    <label>강의 선택:</label>
+    <select name="courseId" required>
+        <option value="">강의를 선택하세요</option>
+        <option th:each="course : ${courses}"
+                th:value="${course.id}"
+                th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
+    </select><br/>
+
+    요일:
+    <select name="dayOfWeek" required>
+        <option value="월">월요일</option>
+        <option value="화">화요일</option>
+        <option value="수">수요일</option>
+        <option value="목">목요일</option>
+        <option value="금">금요일</option>
+    </select><br/>
+
+    시작 시간: <input type="time" name="startTime" required><br/>
+    종료 시간: <input type="time" name="endTime" required><br/>
+
+    <button type="submit">수업 추가</button>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const hourHeight = 60; // 시간 칸 높이 (px)
+
+        document.querySelectorAll('.course-block').forEach(block => {
+            const startTime = block.getAttribute('data-start'); // "09:00:00"
+            const endTime = block.getAttribute('data-end');     // "10:30:00"
+
+            if (startTime && endTime) {
+                const [startHour, startMin] = startTime.split(':').map(Number);
+                const [endHour, endMin] = endTime.split(':').map(Number);
+
+                const start = ((startHour - 9) * hourHeight) + (startMin / 60) * hourHeight;
+                const duration = ((endHour - startHour) + (endMin - startMin) / 60) * hourHeight;
+
+                block.style.top = `${start + 60}px`; // +60 for day label height
+                block.style.height = `${duration}px`;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
