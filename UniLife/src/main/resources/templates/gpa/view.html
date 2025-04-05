@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+</head>
+<body>
+
+<h1>GPA 조회</h1>
+
+<!-- GPA 데이터를 표시하는 폼 -->
+<form action="/gpa/calculate" method="POST">
+    <label for="userId">User ID:</label><br>
+    <input type="number" id="userId" name="userId" th:value="${gpa.userId}" readonly><br><br>
+
+    <label for="semesterId">Semester ID:</label><br>
+    <input type="number" id="semesterId" name="semesterId" th:value="${gpa.semesterId}" readonly><br><br>
+
+    <label for="totalCredits">Total Credits:</label><br>
+    <input type="number" id="totalCredits" name="totalCredits" th:value="${gpa.totalCredits}" readonly><br><br>
+
+    <label for="majorCredits">Major Credits:</label><br>
+    <input type="number" id="majorCredits" name="majorCredits" th:value="${gpa.majorCredits}" readonly><br><br>
+
+    <label for="electiveCredits">Elective Credits:</label><br>
+    <input type="number" id="electiveCredits" name="electiveCredits" th:value="${gpa.electiveCredits}" readonly><br><br>
+
+    <label for="totalGPA">Total GPA:</label><br>
+    <input type="number" step="0.01" id="totalGPA" name="totalGPA" th:value="${gpa.totalGpa}" readonly><br><br>
+
+    <label for="majorGPA">Major GPA:</label><br>
+    <input type="number" step="0.01" id="majorGPA" name="majorGPA" th:value="${gpa.majorGpa}" readonly><br><br>
+
+    <label for="electiveGPA">Elective GPA:</label><br>
+    <input type="number" step="0.01" id="electiveGPA" name="electiveGPA" th:value="${gpa.electiveGpa}" readonly><br><br>
+
+    <input type="submit" value="Calculate GPA">
+</form>
+
+</body>
+</html>

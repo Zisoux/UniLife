@@ -58,4 +58,6 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
 }
 
-
+tasks.withType(JavaCompile) {
+    options.compilerArgs += "-parameters"
+}
