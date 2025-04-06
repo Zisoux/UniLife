@@ -34,12 +34,12 @@ public class GPAService {
         GPA gpa = new GPA();
         gpa.setUserId(userId);
         gpa.setSemesterId(semesterId);
-        gpa.setTotal_credits(totalCredits);
-        gpa.setMajor_credits(majorCredits);
-        gpa.setElective_credits(electiveCredits);
-        gpa.setTotal_gpa(totalGPAResult); // 최종 GPA
-        gpa.setMajor_gpa(majorGPA);
-        gpa.setElective_gpa(electiveGPA);
+        gpa.setTotalCredits(totalCredits);
+        gpa.setMajorCredits(majorCredits);
+        gpa.setElectiveCredits(electiveCredits);
+        gpa.setTotalGpa(totalGPAResult); // 최종 GPA
+        gpa.setMajorGpa(majorGPA);
+        gpa.setElectiveGpa(electiveGPA);
 
         // GPA 저장
         gpaRepository.save(gpa);
