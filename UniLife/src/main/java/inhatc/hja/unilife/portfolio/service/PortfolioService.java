@@ -2,6 +2,10 @@ package inhatc.hja.unilife.portfolio.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,13 +66,13 @@ public class PortfolioService {
     public PortfolioDTO savePortfolio(PortfolioDTO portfolioDTO, MultipartFile file, Long loggedInUserId) {
         try {
             // 파일명 및 확장자 처리
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = (originalFilename != null && originalFilename.contains("."))
-                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
+            String Filename = file.getOriginalFilename();
+            String fileExtension = (Filename != null && Filename.contains("."))
+                    ? Filename.substring(Filename.lastIndexOf("."))
                     : "";
             
-            if (fileExtension.isEmpty() || !isValidFileType(originalFilename)) {
-                throw new RuntimeException("Invalid file type for file: " + originalFilename);
+            if (fileExtension.isEmpty() || !isValidFileType(Filename)) {
+                throw new RuntimeException("Invalid file type for file: " + Filename);
             }
 
             // 고유 파일명 생성 (UUID)
@@ -90,7 +94,7 @@ public class PortfolioService {
             // 포트폴리오 엔티티 생성
             Portfolio portfolio = portfolioDTO.toEntity();
             portfolio.setFilePath(filePath);
-            portfolio.setOriginalFileName(originalFilename);
+            portfolio.setFileName(Filename);
             portfolio.setFileExtension(fileExtension);
             portfolio.setFileSize(file.getSize());
 
@@ -139,4 +143,55 @@ public class PortfolioService {
 
         return allowedExtensions.contains(extension);  // 허용된 확장자 목록에 포함되면 true 반환
     }
+    
+    // 파일 다운로드 기능
+    public ResponseEntity<Resource> downloadFile(Long portfolioId) {
+        // 포트폴리오 조회
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("Portfolio not found with id: " + portfolioId));
+
+        // 파일 경로
+        Path filePath = Paths.get(portfolio.getFilePath()).normalize().toAbsolutePath();
+        
+        // 파일이 존재하는지 확인
+        File file = filePath.toFile();
+        if (!file.exists()) {
+            throw new RuntimeException("File not found with id: " + portfolioId);
+        }
+        
+        // 파일 시스템 리소스
+        Resource resource = new FileSystemResource(file);
+
+        // 파일 이름 추출
+        String fileName = file.getName();
+
+        // HTTP 응답 설정
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
+    }
+    
+    // 포트폴리오 검색 (날짜순, 이름순, 키워드 검색)
+    public List<PortfolioDTO> searchPortfolios(String sortBy, String searchKeyword) {
+        List<Portfolio> portfolios;
+
+        // 키워드가 있는 경우, 제목 또는 설명에서 검색
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            portfolios = portfolioRepository.findByTitleContainingOrFileNameContaining(searchKeyword, searchKeyword);
+        } else {
+            // 키워드가 없으면 정렬 기준에 맞춰서 가져오기
+            if ("date".equalsIgnoreCase(sortBy)) {
+                portfolios = portfolioRepository.findAllByOrderByCreatedAtDesc();
+            } else if ("name".equalsIgnoreCase(sortBy)) {
+                portfolios = portfolioRepository.findAllByOrderByTitleAsc();
+            } else {
+                portfolios = portfolioRepository.findAll();  // 기본적으로 모든 포트폴리오 조회
+            }
+        }
+
+        return portfolios.stream()
+                .map(PortfolioDTO::new)
+                .collect(Collectors.toList());
+    }
+
 }

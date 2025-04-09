@@ -1,6 +1,7 @@
 package inhatc.hja.unilife.portfolio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,12 @@ public class PortfolioController {
 
     /** 포트폴리오 목록 조회 */
     @GetMapping
-    public String listPortfolios(Model model, @RequestParam(name = "userId", required = false) Long userId) {
+    public String listPortfolios(
+            Model model,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestParam(name = "sortBy", defaultValue = "date") String sortBy,
+            @RequestParam(name = "searchKeyword", required = false) String searchKeyword) {
+
         List<PortfolioDTO> portfolios;
 
         // userId가 없으면 고정된 userId를 사용 **테스트용입니다!!**
@@ -31,9 +37,14 @@ public class PortfolioController {
             userId = FIXED_USER_ID;
         }
 
-        portfolios = portfolioService.getPortfoliosByUserId(userId);
+        // 포트폴리오 목록을 정렬 기준에 맞게 가져오기
+        portfolios = portfolioService.searchPortfolios(sortBy, searchKeyword);  // 키워드도 추가된 메서드 호출
+
         model.addAttribute("userId", userId);
         model.addAttribute("portfolios", portfolios);
+        model.addAttribute("sortBy", sortBy);  // 선택된 정렬 기준을 전달
+        model.addAttribute("searchKeyword", searchKeyword);  // 입력된 키워드를 다시 폼에 전달
+
         return "portfolio/list";
     }
 
@@ -111,5 +122,11 @@ public class PortfolioController {
         redirectAttributes.addFlashAttribute("successMessage", "포트폴리오가 삭제되었습니다.");
 
         return "redirect:/portfolios?userId=" + userId;
+    }
+
+    // 파일 다운로드
+    @GetMapping("/download/{portfolioId}")
+    public ResponseEntity<?> downloadPortfolioFile(@PathVariable Long portfolioId) {
+        return portfolioService.downloadFile(portfolioId);
     }
 }

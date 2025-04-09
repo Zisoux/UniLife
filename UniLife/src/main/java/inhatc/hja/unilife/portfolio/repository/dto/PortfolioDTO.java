@@ -23,7 +23,7 @@ public class PortfolioDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     
-    private String originalFileName;
+    private String fileName;
     private String fileExtension;
     private Long fileSize;
     private LocalDateTime createdAt;
@@ -39,7 +39,7 @@ public class PortfolioDTO {
         this.description = portfolio.getDescription();
         this.startDate = portfolio.getStartDate();
         this.endDate = portfolio.getEndDate();
-        this.originalFileName = portfolio.getOriginalFileName();
+        this.fileName = portfolio.getFileName();
         this.fileExtension = portfolio.getFileExtension();
         this.fileSize = portfolio.getFileSize();
         this.createdAt = portfolio.getCreatedAt();

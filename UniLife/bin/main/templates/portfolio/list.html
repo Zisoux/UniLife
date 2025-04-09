@@ -9,6 +9,20 @@
     <div class="container">
         <h1>포트폴리오 목록</h1>
         
+        <!-- 검색 폼 추가 -->
+        <form action="/portfolios" method="get" class="form">
+            <select name="sortBy" id="sortBy" class="form sort">
+                <option value="date" th:selected="${sortBy == 'date'}">날짜순</option>
+                <option value="name" th:selected="${sortBy == 'name'}">이름순</option>
+            </select>
+            <button type="submit" class="btn">검색</button>
+        </form>
+		<p></p>
+		<form action="/portfolios" method="get">
+			<input type="text" name="searchKeyword" th:value="${searchKeyword}" maxlength="30" placeholder="검색어 입력" style="max-width: 20%; margin-right: 400px;">
+		</form>
+        
+        <!-- 성공 메시지 출력 -->
         <div class="alert success" th:if="${successMessage}" th:text="${successMessage}"></div>
         
         <div class="actions">
@@ -34,7 +48,7 @@
                     <tr th:each="portfolio : ${portfolios}">
                         <td th:text="${portfolio.title}"></td>
                         <td>
-                            <span th:text="${portfolio.originalFileName}"></span>
+                            <span th:text="${portfolio.fileName}"></span>
                             <span class="badge" th:text="${portfolio.fileExtension}"></span>
                         </td>
                         <td>
