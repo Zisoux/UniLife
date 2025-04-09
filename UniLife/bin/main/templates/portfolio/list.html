@@ -14,7 +14,7 @@
                 <option value="date" th:selected="${sortBy == 'date'}">날짜순</option>
                 <option value="name" th:selected="${sortBy == 'name'}">이름순</option>
             </select>
-            <input type="text" name="searchKeyword" th:value="${searchKeyword}" placeholder="검색어 입력" />
+            <input type="text" name="searchKeyword" th:value="${searchKeyword}" placeholder="검색어 입력" style="width: 30%; flex-wrap: wrap;" />
             <button type="submit" class="btn">검색</button>
         </form>
 
