@@ -2,9 +2,9 @@ package inhatc.hja.unilife.gpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import inhatc.hja.unilife.gpa.entity.GPA;
 import inhatc.hja.unilife.gpa.repository.GPARepository;
+import inhatc.hja.unilife.gpa.entity.Semester; // Semester enum 클래스 임포트
 
 import java.math.BigDecimal;
 
@@ -15,8 +15,11 @@ public class GPAService {
     private GPARepository gpaRepository;
 
     // GPA 계산 함수
-    public GPA calculateGPA(int userId, int semesterId, int totalCredits, int majorCredits, int electiveCredits, 
+    public GPA calculateGPA(Long userId, String semesterId, int totalCredits, int majorCredits, int electiveCredits, 
                             BigDecimal totalGPA, BigDecimal majorGPA, BigDecimal electiveGPA) {
+
+        // Semester enum으로 변환
+        Semester semester = Semester.fromString(semesterId);  // semesterCode는 '1-1', '2-1' 등의 형식
 
         // 각 GPA의 계산 (예시로 단순하게 합산 비율로 계산)
         BigDecimal totalGPAValue = totalGPA.multiply(BigDecimal.valueOf(totalCredits));
@@ -33,7 +36,7 @@ public class GPAService {
 
         GPA gpa = new GPA();
         gpa.setUserId(userId);
-        gpa.setSemesterId(semesterId);
+        gpa.setSemesterId(semester); // enum 타입을 설정
         gpa.setTotalCredits(totalCredits);
         gpa.setMajorCredits(majorCredits);
         gpa.setElectiveCredits(electiveCredits);
@@ -47,7 +50,8 @@ public class GPAService {
     }
 
     // 특정 사용자의 GPA 조회
-    public GPA getGPAByUserIdAndSemester(int userId, int semesterId) {
-        return gpaRepository.findByUserIdAndSemesterId(userId, semesterId);
+    public GPA getGPAByUserIdAndSemester(Long userId, String semesterId) {
+        Semester semester = Semester.fromString(semesterId); // semesterCode를 enum으로 변환
+        return gpaRepository.findByUserIdAndSemesterId(userId, semester); // 수정된 GPARepository 메서드 사용
     }
 }

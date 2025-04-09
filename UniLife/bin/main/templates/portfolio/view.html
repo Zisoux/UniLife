@@ -8,42 +8,45 @@
 <body>
     <div class="container">
         <h1 th:text="${portfolio.title}">포트폴리오 제목</h1>
-        
+
         <div class="portfolio-details">
-            <div class="metadata">
-                <p>
-                    <strong>기간:</strong> 
-                    <span th:text="${#temporals.format(portfolio.startDate, 'yyyy-MM-dd')}"></span>
-                    ~ 
-                    <span th:text="${#temporals.format(portfolio.endDate, 'yyyy-MM-dd')}"></span>
-                </p>
-                <p>
-                    <strong>등록일:</strong> 
-                    <span th:text="${#temporals.format(portfolio.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                </p>
-                <p>
-                    <strong>파일:</strong> 
-                    <span th:text="${portfolio.originalFileName}"></span>
-                    <span class="badge" th:text="${portfolio.fileExtension}"></span>
-                </p>
-                <p>
-                    <strong>파일 크기:</strong>
-                    <span th:text="${#numbers.formatDecimal(portfolio.fileSize / 1024, 0, 2)} + ' KB'"></span>
-                </p>
-            </div>
-            
-            <div class="description" th:if="${portfolio.description}">
+            <p>
+                <strong>기간:</strong>
+                <span th:text="${#temporals.format(portfolio.startDate, 'yyyy-MM-dd')}"></span>
+                ~
+                <span th:text="${#temporals.format(portfolio.endDate, 'yyyy-MM-dd')}"></span>
+            </p>
+
+            <p>
+                <strong>등록일:</strong>
+                <span th:text="${#temporals.format(portfolio.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+            </p>
+
+            <p>
+                <strong>파일:</strong>
+                <a th:href="@{'/api/files/download/' + ${portfolio.fileName}}" th:download="${portfolio.fileName}">
+                    [[${portfolio.fileName}]]
+                </a>
+                <span class="badge" th:text="${portfolio.fileExtension}"></span>
+                <span th:if="${portfolio.fileName == null}">파일 없음</span>
+            </p>
+
+            <p>
+                <strong>파일 크기:</strong>
+                <span th:text="${#numbers.formatDecimal(portfolio.fileSize / 1024, 0, 2)} + ' KB'"></span>
+            </p>
+
+            <div th:if="${portfolio.description}">
                 <h2>설명</h2>
                 <p th:text="${portfolio.description}"></p>
             </div>
-            
-            <!-- 이미지인 경우 미리보기 표시 -->
-            <div class="preview" th:if="${portfolio.fileExtension == '.png' || portfolio.fileExtension == '.jpg' || portfolio.fileExtension == '.jpeg' || portfolio.fileExtension == '.gif'}">
+
+            <div th:if="${portfolio.fileExtension == '.png' || portfolio.fileExtension == '.jpg' || portfolio.fileExtension == '.jpeg' || portfolio.fileExtension == '.gif'}">
                 <h2>미리보기</h2>
-                <img th:src="@{'/uploads/' + ${#strings.substringAfterLast(portfolio.filePath, '/')}}" alt="Image preview">
+                <img th:src="@{'/uploads/' + ${#strings.substringAfterLast(portfolio.filePath, '/')}}" alt="미리보기">
             </div>
         </div>
-        
+
         <div class="actions">
             <a th:href="@{/portfolios(userId=${portfolio.userId})}" class="btn">목록으로 돌아가기</a>
             <a th:href="@{/portfolios/{id}/delete(id=${portfolio.id}, userId=${portfolio.userId})}" class="btn danger"

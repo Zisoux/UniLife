@@ -20,8 +20,8 @@ public class GPAController {
 
     // GPA 계산 및 저장
     @PostMapping("/calculate")
-    public String calculateGPA(@RequestParam(name = "userId") int userId,
-                               @RequestParam(name = "semesterId") int semesterId,
+    public String calculateGPA(@RequestParam(name = "userId") Long userId,
+                               @RequestParam(name = "semesterId") String semesterId, // String으로 변경
                                @RequestParam(name = "totalCredits") int totalCredits,
                                @RequestParam(name = "majorCredits") int majorCredits,
                                @RequestParam(name = "electiveCredits") int electiveCredits,
@@ -30,25 +30,24 @@ public class GPAController {
                                @RequestParam(name = "electiveGPA") BigDecimal electiveGPA,
                                Model model) {
 
+        // Semester enum으로 semesterCode를 변환
         GPA gpa = gpaService.calculateGPA(userId, semesterId, totalCredits, majorCredits, electiveCredits, totalGPA, majorGPA, electiveGPA);
         model.addAttribute("gpa", gpa); // 결과를 모델에 추가
-        return "GPA calculation completed!";
+        return "gpa/calculation_completed"; // 결과 페이지로 리다이렉션
     }
 
     // GPA 조회
     @GetMapping("/view")
-    public String viewGPA(@RequestParam(name = "userId") int userId, 
-                          @RequestParam(name = "semesterId") int semesterId, 
+    public String viewGPA(@RequestParam(name = "userId") Long userId, 
+                          @RequestParam(name = "semesterId") String semesterId, // String으로 변경
                           Model model) {
         // GPA 조회
-        GPA gpa = gpaService.getGPAByUserIdAndSemester(userId, semesterId);
+        GPA gpa = gpaService.getGPAByUserIdAndSemester(userId, semesterId); // Semester enum으로 처리
         
         // GPA 데이터를 Model에 추가
         model.addAttribute("gpa", gpa);
         
         // gpa/view.html 템플릿을 반환
-        return "gpa/view"; // 뷰 이름을 반환
+        return "gpa/view"; // gpa/view 템플릿으로 반환
     }
-
-    
 }

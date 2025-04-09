@@ -1,0 +1,146 @@
+/* 전체 레이아웃 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* 왼쪽 사이드바 */
+.sidebar {
+    width: 300px;
+    background-color: #2c3e50;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-right: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #ecf0f1;
+}
+
+.sidebar p {
+    font-size: 1rem;
+    margin: 10px 0;
+}
+
+.sidebar strong {
+    font-weight: bold;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 학기별 학점 탭 */
+.semester-tabs {
+    margin-bottom: 20px;
+}
+
+.semester-tab {
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid #3498db;
+    border-radius: 5px;
+    background-color: #f4f6f9;
+}
+
+.semester-tab.active {
+    background-color: #3498db;
+    color: white;
+}
+
+/* GPA 정보 표시 */
+.gpa-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.gpa-item {
+    width: 30%;
+    font-size: 1rem;
+}
+
+.gpa-item label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.gpa-item span {
+    font-size: 1.2rem;
+}
+
+/* 학점 통계 */
+.gpa-statistics {
+    margin-top: 40px;
+}
+
+/* 학점 입력 폼 */
+.input-form {
+    margin-top: 30px;
+}
+
+.input-form h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.input-form table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input-form table td {
+    padding: 8px;
+}
+
+.input-form input[type="text"],
+.input-form input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.input-form input[type="submit"] {
+    padding: 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.input-form input[type="submit"]:hover {
+    background-color: #2980b9;
+}

@@ -8,46 +8,33 @@
 <body>
     <div class="container">
         <h1>포트폴리오 업로드</h1>
-        
-        <div class="alert error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-        
+
         <form th:action="@{/portfolios/upload}" method="post" enctype="multipart/form-data">
-            <!-- 사용자 ID는 hidden 필드로 전달 -->
             <input type="hidden" name="userId" th:value="${portfolioDTO.userId}" />
-            
-            <div class="form-group">
-                <label for="title">제목</label>
-                <input type="text" id="title" name="title" th:field="${portfolioDTO.title}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="description">설명</label>
-                <textarea id="description" name="description" th:field="${portfolioDTO.description}" rows="4"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="startDate">시작 날짜</label>
-                <input type="date" id="startDate" name="startDate" th:field="${portfolioDTO.startDate}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="endDate">종료 날짜</label>
-                <input type="date" id="endDate" name="endDate" th:field="${portfolioDTO.endDate}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="file">파일 선택</label>
-                <input type="file" id="file" name="file" required>
-                <div class="help-text">
-                    허용된 파일 형식: .hwpx, .docx, .java, .py, .cpp, .png, .jpg, .jpeg, .csv, .pdf, .sql, .uml
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button type="submit" class="btn primary">업로드</button>
-                <a th:href="@{/portfolios(userId=${portfolioDTO.userId})}" class="btn">취소</a>
-            </div>
+
+            <label>제목:</label>
+            <input type="text" name="title" th:value="${portfolioDTO.title}" required />
+
+            <label>설명:</label>
+            <textarea name="description" th:text="${portfolioDTO.description}"></textarea>
+
+            <label>시작일:</label>
+            <input type="date" name="startDate" th:value="${portfolioDTO.startDate}" required />
+
+            <label>종료일:</label>
+            <input type="date" name="endDate" th:value="${portfolioDTO.endDate}" required />
+
+            <label>파일 업로드:</label>
+            <input type="file" name="file" required />
+
+            <button type="submit" class="btn primary">업로드</button>
         </form>
+
+        <div class="actions">
+            <a th:href="@{/portfolios(userId=${portfolioDTO.userId})}" class="btn">목록으로 돌아가기</a>
+        </div>
+
+        <div class="alert error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
     </div>
 </body>
 </html>
