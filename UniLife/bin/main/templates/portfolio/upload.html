@@ -9,23 +9,23 @@
     <div class="container">
         <h1>포트폴리오 업로드</h1>
 
-        <form th:action="@{/portfolios/upload}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/portfolios/upload}" method="post" enctype="multipart/form-data" >
             <input type="hidden" name="userId" th:value="${portfolioDTO.userId}" />
 
             <label>제목:</label>
-            <input type="text" name="title" th:value="${portfolioDTO.title}" required />
+            <input type="text" name="title" th:value="${portfolioDTO.title}" required style="margin-bottom: 10px;"/>
 
             <label>설명:</label>
-            <textarea name="description" th:text="${portfolioDTO.description}"></textarea>
+            <textarea name="description" th:text="${portfolioDTO.description}" style="margin-bottom: 10px;"></textarea>
 
             <label>시작일:</label>
-            <input type="date" name="startDate" th:value="${portfolioDTO.startDate}" required />
+            <input type="date" name="startDate" th:value="${portfolioDTO.startDate}" required style="margin-bottom: 10px;"/>
 
             <label>종료일:</label>
-            <input type="date" name="endDate" th:value="${portfolioDTO.endDate}" required />
+            <input type="date" name="endDate" th:value="${portfolioDTO.endDate}" required style="margin-bottom: 10px;"/>
 
             <label>파일 업로드:</label>
-            <input type="file" name="file" required />
+            <input type="file" name="file" required style="margin-bottom: 10px;"/><p></p>
 
             <button type="submit" class="btn primary">업로드</button>
         </form>
