@@ -5,34 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPA Calculator</title>
     <link rel="stylesheet" th:href="@{/css/gpa.css}">
+	
+	<script>
+	    function goToSemester(button) {
+	        const semesterId = button.dataset.semester;
+
+	        // ✅ span 태그에서 값 읽어오기
+	        const userId = document.getElementById("sessionUserId").innerText.trim();
+
+	        const url = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
+	        window.location.href = url;
+	    }
+	</script>
+	
 </head>
 <body>
+	<!-- 안전하게 Thymeleaf 값 삽입 -->
+	<span id="sessionUserId" th:text="${session.userId}" hidden></span>
 
 <div class="container">
     <!-- 왼쪽 사용자 정보 탭 -->
     <div class="sidebar">
         <h2>사용자 정보</h2>
         <p><strong>이름:</strong> <span>이유진</span></p>
-        <p><strong>학번:</strong> <span th:text="${gpa.userId}">202345011</span></p>
+		<p><strong>학번:</strong> <span th:text="${session.userId ?: '정보 없음'}">202345011</span></p>
         <p><strong>학과:</strong> <span>컴퓨터시스템공학</span></p>
     </div>
 
     <!-- 메인 콘텐츠 -->
     <div class="main-content">
-        <h1>학점 정보</h1>
+        <h1 style="margin: 0px 10px 20px 10px;">학점 정보</h1>
+		<hr style="margin: 0px 0px 10px 0px">
+		
+		<input type="hidden" id="userId" th:value="${gpa.userId}">
 
-        <!-- 학기별 학점 정보 표시 -->
-        <div class="semester-tabs">
-            <button class="semester-tab" th:classappend="${semester == 'FIRST_YEAR_FIRST_SEMESTER' ? 'active' : ''}" th:text="'1학년 1학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'FIRST_YEAR_SECOND_SEMESTER' ? 'active' : ''}" th:text="'1학년 2학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'SECOND_YEAR_FIRST_SEMESTER' ? 'active' : ''}" th:text="'2학년 1학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'SECOND_YEAR_SECOND_SEMESTER' ? 'active' : ''}" th:text="'2학년 2학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'THIRD_YEAR_FIRST_SEMESTER' ? 'active' : ''}" th:text="'3학년 1학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'THIRD_YEAR_SECOND_SEMESTER' ? 'active' : ''}" th:text="'3학년 2학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'FOURTH_YEAR_FIRST_SEMESTER' ? 'active' : ''}" th:text="'4학년 1학기'"></button>
-            <button class="semester-tab" th:classappend="${semester == 'FOURTH_YEAR_SECOND_SEMESTER' ? 'active' : ''}" th:text="'4학년 2학기'"></button>
-            <!-- 필요한 다른 학기 추가 -->
-        </div>
+		<!-- 학기별 학점 정보 표시 -->
+		<div class="semester-tabs">
+			<button class="semester-tab" 
+				data-semester="1-1" 
+			    th:classappend="${semesterId == '1-1'} ? 'active' : ''"
+			    onclick="goToSemester(this)">1학년 1학기</button>
+			<button class="semester-tab" 
+				data-semester="1-2" 
+				th:classappend="${semesterId == '1-2'} ? 'active' : ''"
+				onclick="goToSemester(this)">1학년 2학기</button>
+			<button class="semester-tab" 
+	            data-semester="2-1" 
+	            th:classappend="${semesterId == '2-1'} ? 'active' : ''"
+	            onclick="goToSemester(this)">2학년 1학기</button>
+			<button class="semester-tab" 
+	            data-semester="2-2" 
+	            th:classappend="${semesterId == '2-2'} ? 'active' : ''"
+	            onclick="goToSemester(this)">2학년 2학기</button>
+			<button class="semester-tab" 
+            	data-semester="3-1" 
+				th:classappend="${semesterId == '3-1'} ? 'active' : ''"
+				onclick="goToSemester(this)">3학년 1학기</button>
+			<button class="semester-tab" 
+				data-semester="3-2" 
+				th:classappend="${semesterId == '3-2'} ? 'active' : ''"
+				onclick="goToSemester(this)">3학년 2학기</button>
+			<button class="semester-tab"
+				data-semester="4-1"
+				th:classappend="${semesterId == '4-1'} ? 'active' : ''"
+				onclick="goToSemester(this)">4학년 1학기</button>
+			<button class="semester-tab"
+				data-semester="4-2"
+				th:classappend="${semesterId == '4-2'} ? 'active' : ''"
+				onclick="goToSemester(this)">4학년 2학기</button>
+		</div>
 
         <div class="gpa-info">
             <div class="gpa-item">

@@ -27,9 +27,8 @@ public class GPA {
 	@Column(name = "user_id")
 	private Long userId;
 	
-	@Enumerated(EnumType.STRING)
 	@Column(name = "semester_id")
-	private Semester semesterId;
+	private String semesterId;
 	
 	@Column(name = "total_gpa", precision = 3, scale = 2)
 	private BigDecimal totalGpa;

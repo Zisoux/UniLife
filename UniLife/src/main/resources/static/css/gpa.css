@@ -16,14 +16,14 @@ body {
 
 .container {
     display: flex;
-    max-width: 1200px;
+    max-width: 1400px;
     width: 100%;
     margin-top: 30px;
 }
 
 /* 왼쪽 사이드바 */
 .sidebar {
-    width: 300px;
+    width: 260px;
     background-color: #2c3e50;
     color: white;
     padding: 20px;
@@ -50,6 +50,7 @@ body {
 /* 메인 콘텐츠 */
 .main-content {
     flex: 1;
+	min-width: 800px;
     background-color: #ffffff;
     padding: 30px;
     border-radius: 10px;
@@ -59,15 +60,28 @@ body {
 /* 학기별 학점 탭 */
 .semester-tabs {
     margin-bottom: 20px;
+	display: flex;
+	flex-wrap: wrap; /* 버튼 넘치면 줄바꿈 */
+    gap: 10px;
 }
 
 .semester-tab {
     padding: 10px 20px;
+	white-space: nowrap;  /* 한 줄 고정 */
+    flex-shrink: 0;
     margin: 5px;
     cursor: pointer;
     border: 1px solid #3498db;
     border-radius: 5px;
     background-color: #f4f6f9;
+	transition: all 0.2s ease-in-out; /* 부드러운 애니메이션 */
+}
+
+.semester-tab:hover {
+    background-color: rgb(128, 128, 255);  /* 배경 색 반전 */
+    color: white;               /* 글자색 반전 */
+    transform: scale(1.05);     /* 약간 커짐 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  /* 살짝 그림자 */
 }
 
 .semester-tab.active {
