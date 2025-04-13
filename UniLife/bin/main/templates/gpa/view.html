@@ -22,14 +22,15 @@
 <body>
 	<!-- 안전하게 Thymeleaf 값 삽입 -->
 	<span id="sessionUserId" th:text="${session.userId}" hidden></span>
+	<span id="sessionDepartment" th:text="${session.department}" hidden></span>
 
 <div class="container">
     <!-- 왼쪽 사용자 정보 탭 -->
     <div class="sidebar">
         <h2>사용자 정보</h2>
-        <p><strong>이름:</strong> <span>이유진</span></p>
+        <p><strong>이름:</strong> <span th:text="${session.username ?: '정보 없음'}">이유진</span></p>
 		<p><strong>학번:</strong> <span th:text="${session.userId ?: '정보 없음'}">202345011</span></p>
-        <p><strong>학과:</strong> <span>컴퓨터시스템공학</span></p>
+        <p><strong>학과:</strong> <span th:text="${session.department ?: '정보 없음'}">컴퓨터시스템공학</span></p>
     </div>
 
     <!-- 메인 콘텐츠 -->
@@ -90,44 +91,49 @@
             </div>
             <div class="gpa-item">
                 <label for="totalGPA">전체 평점:</label>
-                <span th:text="${gpa.totalGpa}">3.5</span>
+                <p><span th:text="${gpa.totalGpa}">3.5</span></p>
+				<p><span th:text="${gpa.totalChange}" th:style="${gpa.totalChange >= 0 ? 'color: green;' : 'color: red;'}"></span></p>
             </div>
             <div class="gpa-item">
                 <label for="majorGPA">전공 평점:</label>
-                <span th:text="${gpa.majorGpa}">3.5</span>
+                <p><span th:text="${gpa.majorGpa}">3.5</span></p>
+				<p><span th:text="${gpa.majorChange}" th:style="${gpa.majorChange >= 0 ? 'color: green;' : 'color: red;'}"></span></p>
             </div>
             <div class="gpa-item">
                 <label for="electiveGPA">교양 평점:</label>
-                <span th:text="${gpa.electiveGpa}">3.5</span>
+                <p><span th:text="${gpa.electiveGpa}">3.5</span></p>
+				<p><span th:text="${gpa.electiveChange}" th:style="${gpa.electiveChange >= 0 ? 'color: green;' : 'color: red;'}"></span></p>
             </div>
         </div>
 
         <!-- 학점 통계 (그래프나 표) -->
         <div class="gpa-statistics">
             <h2>학점 통계</h2>
-            <!-- 그래프나 표를 나중에 삽입할 영역 -->
+            <!-- 전체 학기 기준으로 학점과 성적 데이터 출력하고 enrolled_courses 테이블에서 과목명, 학점, 성적, 전공여부만 표로 출력 -->
         </div>
 
         <!-- 학점 입력 폼 -->
         <div class="input-form">
             <h2>학점 입력</h2>
             <form action="/gpa/calculate" method="POST">
+				<input type="hidden" name="userId" value="${session.userId}">
+		        <input type="hidden" name="semesterId" value="${session.semesterId}">
                 <table>
                     <tr>
                         <td><label for="courseName">과목명:</label></td>
                         <td><input type="text" id="courseName" name="courseName" required></td>
                     </tr>
                     <tr>
-                        <td><label for="credit">학점:</label></td>
-                        <td><input type="number" id="credit" name="credit" required></td>
+                        <td><label for="credits">학점:</label></td>
+                        <td><input type="number" id="credits" name="credits" required></td>
                     </tr>
                     <tr>
                         <td><label for="grade">성적:</label></td>
                         <td><input type="number" step="0.01" id="grade" name="grade" required></td>
                     </tr>
                     <tr>
-                        <td><label for="major">전공 여부:</label></td>
-                        <td><input type="checkbox" id="major" name="major"></td>
+                        <td><label for="isMajor">전공 여부:</label></td>
+                        <td><input type="checkbox" id="isMajor" name="isMajor"></td>
                     </tr>
                 </table>
                 <input type="submit" value="학점 추가">

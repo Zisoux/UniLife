@@ -47,4 +47,14 @@ public class GPA {
 	
 	@Column(name = "elective_credits")
 	private int electiveCredits;
+	
+	@Column(name = "total_change", precision = 3, scale = 2)
+	private BigDecimal totalChange;
+	
+	@Column(name = "major_change", precision = 3, scale = 2)
+	private BigDecimal majorChange;
+	
+	@Column(name = "elective_change", precision = 3, scale = 2)
+	private BigDecimal electiveChange;
+	
 }
