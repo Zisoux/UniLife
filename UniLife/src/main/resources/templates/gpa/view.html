@@ -16,6 +16,48 @@
 	        const url = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
 	        window.location.href = url;
 	    }
+		
+		// 삭제 버튼 클릭 시, 해당 과목을 폼에서 삭제하는 함수
+		window.onload = function() {
+		    console.log('JavaScript Loaded'); // 페이지가 로드될 때 출력
+
+			document.querySelectorAll('.delete-button').forEach(button => {
+			    button.addEventListener('click', function() {
+			        // 삭제할 과목의 ID 가져오기
+			        const courseId = button.getAttribute('data-id');
+
+			        // 사용자에게 삭제 확인을 요청
+			        const isConfirmed = window.confirm("정말로 삭제하시겠습니까?");
+
+			        if (isConfirmed) {
+			            // 서버에 삭제 요청 보내기 (AJAX 사용)
+			            fetch(`/gpa/delete?courseId=${courseId}`, {
+			                method: 'GET',
+			                headers: {
+			                    'Content-Type': 'application/json'
+			                }
+			            })
+			            .then(response => {
+			                if (response.ok) {
+			                    console.log('Course deleted successfully');
+			                    const row = button.closest('tr');  // 삭제된 과목의 행을 찾음
+			                    row.remove();  // 해당 행 삭제
+			                } else {
+			                    alert('삭제 실패');
+			                }
+			            })
+			            .catch(error => {
+			                console.error('Error during delete request:', error);
+			                alert('삭제 요청에 실패했습니다.');
+			            });
+			        } else {
+			            console.log('삭제가 취소되었습니다.');
+			        }
+			    });
+			});
+		};
+
+
 	</script>
 	
 </head>
@@ -108,8 +150,45 @@
 
         <!-- 학점 통계 (그래프나 표) -->
         <div class="gpa-statistics">
-            <h2>학점 통계</h2>
+            <h2>등록된 과목</h2>
             <!-- 전체 학기 기준으로 학점과 성적 데이터 출력하고 enrolled_courses 테이블에서 과목명, 학점, 성적, 전공여부만 표로 출력 -->
+			<form th:action="@{/gpa/update}" method="post">
+			    <table>
+			        <thead>
+			            <tr>
+			                <th>과목명</th>
+			                <th>학점</th>
+			                <th>성적</th>
+			                <th>전공 여부</th>
+			                <th>삭제</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <tr th:each="course : ${enrolledCourses}">
+			                <!-- 과목명 (수정 가능한 입력 필드) -->
+			                <td><input type="text" th:value="${course.courseName}" name="courses[${course.id}].courseName" required /></td>
+							<input type="hidden" th:value="${course.id}" name="courses[${course.id}].id" />
+
+			                <!-- 학점 (수정 가능한 입력 필드) -->
+			                <td><input type="number" th:value="${course.credits}" name="courses[${course.id}].credits" required /></td>
+
+			                <!-- 성적 (수정 가능한 입력 필드) -->
+			                <td><input type="text" th:value="${course.grade}" name="courses[${course.id}].grade" required /></td>
+
+			                <!-- 전공 여부 (수정 가능한 체크박스) -->
+			                <td><input type="checkbox" th:checked="${course.isMajor}" name="courses[${course.id}].isMajor" /></td>
+
+			                <!-- 삭제 버튼 (각 행마다 개별적으로 삭제) -->
+			                <td>
+			                    <button type="button" th:data-id="${course.id}" class="delete-button">삭제</button>
+			                </td>
+			            </tr>
+			        </tbody>
+			    </table>
+
+			    <!-- 전체 수정 버튼 (한 번에 수정 제출) -->
+			    <button type="submit">전체 수정</button>
+			</form>
         </div>
 
         <!-- 학점 입력 폼 -->
