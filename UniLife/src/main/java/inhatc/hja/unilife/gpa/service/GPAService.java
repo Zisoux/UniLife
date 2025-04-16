@@ -127,7 +127,7 @@ public class GPAService {
         }
     }
     
-    // 학점 추가 및 삭제 시 처리 -- 오류 해결. 이제 계산 잘 됨!
+    // 학점 추가 및 삭제 시 처리 -- 오류 해결!
     @Transactional
     public void updateCreditsAfterChanges(String changes, int credits, boolean isMajor, BigDecimal grade, String courseName, @SessionAttribute(name = "userId") Long userId, @SessionAttribute(name = "semesterId") String semesterId) {
 
