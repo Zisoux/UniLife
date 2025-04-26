@@ -1,225 +1,315 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPA Calculator</title>
-    <link rel="stylesheet" th:href="@{/css/gpa.css}">
-	
-	<script>
-	    function goToSemester(button) {
-	        const semesterId = button.dataset.semester;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniLife GPA 관리</title>
+  <link rel="stylesheet" href="/css/gpa.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Noto Sans KR (한글용) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <!-- Righteous (영문용) -->
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  
+  <script>
+	function goToSemester(button) {
+	    const semesterId = button.dataset.semester;
+	    const userId = document.getElementById("sessionUserId").innerText.trim();
 
-	        // ✅ span 태그에서 값 읽어오기
-	        const userId = document.getElementById("sessionUserId").innerText.trim();
-
-	        const url = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
-	        window.location.href = url;
+	    if (semesterId === "all") {
+	        // 전체학기면 POST로 GPA 업데이트 요청
+	        fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
+	            .then(response => {
+	                if (response.ok) {
+	                    window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
+	                } else {
+	                    alert('GPA 업데이트 실패!');
+	                }
+	            })
+	            .catch(error => {
+	                console.error('Error:', error);
+	                alert('요청 중 오류 발생');
+	            });
+	    } else {
+	        // 나머지 학기는 그냥 바로 이동
+	        window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
 	    }
-		
-		// 삭제 버튼 클릭 시, 해당 과목을 폼에서 삭제하는 함수
-		window.onload = function() {
-		    console.log('JavaScript Loaded'); // 페이지가 로드될 때 출력
-
-			document.querySelectorAll('.delete-button').forEach(button => {
-			    button.addEventListener('click', function() {
-			        // 삭제할 과목의 ID 가져오기
-			        const courseId = button.getAttribute('data-id');
-
-			        // 사용자에게 삭제 확인을 요청
-			        const isConfirmed = window.confirm("정말로 삭제하시겠습니까?");
-
-			        if (isConfirmed) {
-			            // 서버에 삭제 요청 보내기 (AJAX 사용)
-			            fetch(`/gpa/delete?courseId=${courseId}`, {
-			                method: 'GET',
-			                headers: {
-			                    'Content-Type': 'application/json'
-			                }
-			            })
-			            .then(response => {
-			                if (response.ok) {
-			                    console.log('Course deleted successfully');
-			                    const row = button.closest('tr');  // 삭제된 과목의 행을 찾음
-			                    row.remove();  // 해당 행 삭제
-			                } else {
-			                    alert('삭제 실패');
-			                }
-			            })
-			            .catch(error => {
-			                console.error('Error during delete request:', error);
-			                alert('삭제 요청에 실패했습니다.');
-			            });
-			        } else {
-			            console.log('삭제가 취소되었습니다.');
-			        }
-			    });
-			});
-		};
+	}
 
 
-	</script>
+    window.onload = function () {
+      document.querySelectorAll('.delete-button').forEach(button => {
+        button.addEventListener('click', function () {
+          const courseId = this.dataset.id;
+          if (confirm("정말 삭제하시겠습니까?")) {
+            fetch(`/gpa/delete?courseId=${courseId}`, { method: 'GET' })
+              .then(res => {
+                if (res.ok) this.closest('tr').remove();
+                else alert('삭제 실패');
+              })
+              .catch(() => alert('삭제 요청에 실패했습니다.'));
+          }
+        });
+      });
+    }
 	
+	function openModal(button) {
+	  const semesterId = "all"; // 전체학기
+	  const userId = document.getElementById("sessionUserId").innerText.trim();
+
+	  // 1. 먼저 전체학기 업데이트 POST
+	  fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
+	    .then(response => {
+	      if (!response.ok) throw new Error('전체학기 업데이트 실패');
+
+	      // 2. 그 다음 전체학기 GPA 가져오기
+	      return fetch(`/gpa/allSemester?userId=${userId}`);
+	    })
+	    .then(response => response.json())
+	    .then(data => {
+	      if (data) {
+	        document.getElementById("totalCredits").innerText = data.totalCredits ?? "-";
+	        document.getElementById("majorCredits").innerText = data.majorCredits ?? "-";
+	        document.getElementById("electiveCredits").innerText = data.electiveCredits ?? "-";
+
+	        document.getElementById("totalGpa").innerText = (data.totalGpa ?? 0).toFixed(2);
+	        document.getElementById("majorGpa").innerText = (data.majorGpa ?? 0).toFixed(2);
+	        document.getElementById("electiveGpa").innerText = (data.electiveGpa ?? 0).toFixed(2);
+	      }
+	      // 3. 마지막에 모달 열기
+	      document.getElementById("myModal").style.display = "block";
+	    })
+	    .catch(error => {
+	      console.error('Error:', error);
+	      alert('GPA 정보 가져오기 실패!');
+	    });
+	}
+
+
+
+
+	function closeModal() {
+	 	document.getElementById("myModal").style.display = "none";
+	}
+	
+  </script>
 </head>
 <body>
-	<!-- 안전하게 Thymeleaf 값 삽입 -->
-	<span id="sessionUserId" th:text="${session.userId}" hidden></span>
-	<span id="sessionDepartment" th:text="${session.department}" hidden></span>
+  <span id="sessionUserId" th:text="${session.userId}" hidden>202345011</span>
 
-<div class="container">
-    <!-- 왼쪽 사용자 정보 탭 -->
-    <div class="sidebar">
-        <h2>사용자 정보</h2>
-        <p><strong>이름:</strong> <span th:text="${session.username ?: '정보 없음'}">이유진</span></p>
-		<p><strong>학번:</strong> <span th:text="${session.userId ?: '정보 없음'}">202345011</span></p>
-        <p><strong>학과:</strong> <span th:text="${session.department ?: '정보 없음'}">컴퓨터시스템공학</span></p>
-    </div>
+  <div class="container">
+	<!-- 상단 고정 바 -->
+	<header class="topbar">
+	  <div class="topbar-left">UniLife</div>
+	  <div class="topbar-right">
+		<span class="topbar-date">
+		  <span th:text="${todayDate}">2025-04-16</span>, 
+		  <span th:text="${dayOfWeek}">수요일</span>
+		</span>
+	    <span class="topbar-user">이유진</span>
+	  </div>
+	</header>
 
-    <!-- 메인 콘텐츠 -->
+    <!--<div class="sidebar">
+      <h2>사용자 정보</h2>
+      <p><strong>이름:</strong> <span th:text="${session.username}">이유진</span></p>
+      <p><strong>학번:</strong> <span th:text="${session.userId}">202345011</span></p>
+      <p><strong>학과:</strong> <span th:text="${session.department}">컴퓨터시스템공학</span></p>
+    </div>-->
+
     <div class="main-content">
-        <h1 style="margin: 0px 10px 20px 10px;">학점 정보</h1>
-		<hr style="margin: 0px 0px 10px 0px">
-		
-		<input type="hidden" id="userId" th:value="${gpa.userId}">
+      <!--<h1 style="margin-bottom: 15px;">학점 정보</h1>-->
+      <div class="semester-tabs">
+        <button class="semester-tab" data-semester="all" th:classappend="${semesterId} == 'all' ? 'active' : ''" onclick="openModal(this)">전체학기</button>
+        <button class="semester-tab" data-semester="1-1" th:classappend="${semesterId} == '1-1' ? 'active' : ''" onclick="goToSemester(this)">1-1</button>
+        <button class="semester-tab" data-semester="1-2" th:classappend="${semesterId} == '1-2' ? 'active' : ''" onclick="goToSemester(this)">1-2</button>
+        <button class="semester-tab" data-semester="2-1" th:classappend="${semesterId} == '2-1' ? 'active' : ''" onclick="goToSemester(this)">2-1</button>
+        <button class="semester-tab" data-semester="2-2" th:classappend="${semesterId} == '2-2' ? 'active' : ''" onclick="goToSemester(this)">2-2</button>
+        <button class="semester-tab" data-semester="3-1" th:classappend="${semesterId} == '3-1' ? 'active' : ''" onclick="goToSemester(this)">3-1</button>
+        <button class="semester-tab" data-semester="3-2" th:classappend="${semesterId} == '3-2' ? 'active' : ''" onclick="goToSemester(this)">3-2</button>
+        <button class="semester-tab" data-semester="4-1" th:classappend="${semesterId} == '4-1' ? 'active' : ''" onclick="goToSemester(this)">4-1</button>
+        <button class="semester-tab" data-semester="4-2" th:classappend="${semesterId} == '4-2' ? 'active' : ''" onclick="goToSemester(this)">4-2</button>
+      </div>
+	  
+	  <!-- 모달 -->
+	  <div id="myModal" class="modal">
+	    <div class="modal-content">
+	      <span class="close" onclick="closeModal()">&times;</span>
+	      <h2>전체학기</h2>
+	      <table class="allTable" style="margin: 10px auto 10px auto;">
+	        <thead>
+	          <tr>
+	            <th>전체학점</th>
+	            <th>전공학점</th>
+	            <th>교양학점</th>					
+	          </tr>
+	        </thead>
+	        <tbody>
+	          <tr>
+	            <td id="totalCredits">-</td>
+	            <td id="majorCredits">-</td>
+	            <td id="electiveCredits">-</td>
+	          </tr>
+	        </tbody>
+	      </table>
 
-		<!-- 학기별 학점 정보 표시 -->
-		<div class="semester-tabs">
-			<button class="semester-tab" 
-				data-semester="1-1" 
-			    th:classappend="${semesterId == '1-1'} ? 'active' : ''"
-			    onclick="goToSemester(this)">1학년 1학기</button>
-			<button class="semester-tab" 
-				data-semester="1-2" 
-				th:classappend="${semesterId == '1-2'} ? 'active' : ''"
-				onclick="goToSemester(this)">1학년 2학기</button>
-			<button class="semester-tab" 
-	            data-semester="2-1" 
-	            th:classappend="${semesterId == '2-1'} ? 'active' : ''"
-	            onclick="goToSemester(this)">2학년 1학기</button>
-			<button class="semester-tab" 
-	            data-semester="2-2" 
-	            th:classappend="${semesterId == '2-2'} ? 'active' : ''"
-	            onclick="goToSemester(this)">2학년 2학기</button>
-			<button class="semester-tab" 
-            	data-semester="3-1" 
-				th:classappend="${semesterId == '3-1'} ? 'active' : ''"
-				onclick="goToSemester(this)">3학년 1학기</button>
-			<button class="semester-tab" 
-				data-semester="3-2" 
-				th:classappend="${semesterId == '3-2'} ? 'active' : ''"
-				onclick="goToSemester(this)">3학년 2학기</button>
-			<button class="semester-tab"
-				data-semester="4-1"
-				th:classappend="${semesterId == '4-1'} ? 'active' : ''"
-				onclick="goToSemester(this)">4학년 1학기</button>
-			<button class="semester-tab"
-				data-semester="4-2"
-				th:classappend="${semesterId == '4-2'} ? 'active' : ''"
-				onclick="goToSemester(this)">4학년 2학기</button>
+	      <table class="allTable" style="margin: 10px auto 10px auto;">
+	        <thead>
+	          <tr>
+	            <th>전체성적</th>
+	            <th>전공성적</th>
+	            <th>교양성적</th>					
+	          </tr>
+	        </thead>
+	        <tbody>
+	          <tr>
+	            <td id="totalGpa" style="color: #6699ff; font-family: Righteous;">-</td>
+	            <td id="majorGpa" style="color: #6699ff; font-family: Righteous;">-</td>
+	            <td id="electiveGpa" style="color: #6699ff; font-family: Righteous;">-</td>
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
+	  </div>
+
+      <div class="gpa-info">
+        <div class="credits-item">
+          <label>전체학점</label>
+          <span th:text="${gpa.totalCredits}">14</span>
+        </div>
+        <div class="credits-item">
+          <label>전공학점</label>
+          <span th:text="${gpa.majorCredits}">9</span>
+        </div>
+        <div class="credits-item">
+          <label>교양학점</label>
+          <span th:text="${gpa.electiveCredits}">5</span>
+        </div>
+		<div class="gpa-item">
+		  <label>전체성적</label>
+		  <div class="score-wrapper">
+		  	<span class="score" th:text="${gpa.totalGpa}">3.92</span>
+		  	<span class="score-change" th:text="${gpa.totalChange}" th:style="${gpa.totalChange >= 0} ? 'color: green;' : 'color: red;'">+0.12</span>
+		  </div>	
 		</div>
+		<div class="gpa-item">
+		  <label>전공성적</label>
+		  <div class="score-wrapper">
+		  	<span class="score" th:text="${gpa.majorGpa}">3.75</span>
+		  	<span class="score-change" th:text="${gpa.majorChange}" th:style="${gpa.majorChange >= 0} ? 'color: green;' : 'color: red;'">-0.05</span>
+		  </div>
+		</div>
+		<div class="gpa-item">
+		  <label>교양성적</label>
+		  <div class="score-wrapper">
+		  	<span class="score" th:text="${gpa.electiveGpa}">4.25</span>
+		  	<span class="score-change" th:text="${gpa.electiveChange}" th:style="${gpa.electiveChange >= 0} ? 'color: green;' : 'color: red;'">+0.20</span>
+		  </div>	
+		</div>
+      </div>
 
-        <div class="gpa-info">
-            <div class="gpa-item">
-                <label for="totalCredits">전체 학점:</label>
-                <span th:text="${gpa.totalCredits}">80</span>
-            </div>
-            <div class="gpa-item">
-                <label for="majorCredits">전공 학점:</label>
-                <span th:text="${gpa.majorCredits}">65</span>
-            </div>
-            <div class="gpa-item">
-                <label for="electiveCredits">교양 학점:</label>
-                <span th:text="${gpa.electiveCredits}">15</span>
-            </div>
-            <div class="gpa-item">
-                <label for="totalGPA">전체 평점:</label>
-                <p><span th:text="${gpa.totalGpa}">3.5</span></p>
-				<p><span th:text="${gpa.totalChange}" th:style="${gpa.totalChange >= 0 ? 'color: green;' : 'color: red;'}"></span></p>
-            </div>
-            <div class="gpa-item">
-                <label for="majorGPA">전공 평점:</label>
-                <p><span th:text="${gpa.majorGpa}">3.5</span></p>
-				<p><span th:text="${gpa.majorChange}" th:style="${gpa.majorChange >= 0 ? 'color: green;' : 'color: red;'}"></span></p>
-            </div>
-            <div class="gpa-item">
-                <label for="electiveGPA">교양 평점:</label>
-                <p><span th:text="${gpa.electiveGpa}">3.5</span></p>
-				<p><span th:text="${gpa.electiveChange}" th:style="${gpa.electiveChange >= 0 ? 'color: green;' : 'color: red;'}"></span></p>
-            </div>
-        </div>
+      <div class="gpa-statistics">
+        <!--<h2>등록된 과목</h2>-->
+        <form th:action="@{/gpa/update}" method="post">
+          <table>
+            <thead>
+              <tr>
+                <th>과목명</th>
+                <th>학점</th>
+                <th>성적</th>
+                <th>전공여부</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="course : ${enrolledCourses}">
+                <td><input type="text" name="courses[${course.id}].courseName" th:value="${course.courseName}" required></td>
+                <input type="hidden" name="courses[${course.id}].id" th:value="${course.id}" />
+                <td><input type="number" name="courses[${course.id}].credits" th:value="${course.credits}" required></td>
+                <td>				
+					<select name="courses[${course.id}].grade" required>
+				  		<!--<option value="">성적 선택</option>-->
+				  		<option value="A+" th:selected="${course.grade} == 4.5">A+</option>
+				  		<option value="A0" th:selected="${course.grade} == 4.0">A0</option>
+				  		<option value="B+" th:selected="${course.grade} == 3.5">B+</option>
+				  		<option value="B0" th:selected="${course.grade} == 3.0">B0</option>
+				  		<option value="C+" th:selected="${course.grade} == 2.5">C+</option>
+				  		<option value="C0" th:selected="${course.grade} == 2.0">C0</option>
+				  		<option value="D+" th:selected="${course.grade} == 1.5">D+</option>
+				  		<option value="D0" th:selected="${course.grade} == 1.0">D0</option>
+				  		<option value="F" th:selected="${course.grade} == 0">F</option>
+				  		<!--<option value="P" th:selected="${course.grade} == NULL">P</option>
+				  		<option value="NP" th:selected="${course.grade} == 'NULL'">NP</option>-->
+					</select>
+				</td>
+                <td><input type="checkbox" name="courses[${course.id}].isMajor" th:checked="${course.isMajor}" /></td>
+                <td><button type="button" class="delete-button" th:data-id="${course.id}" 
+					style="background-color: transparent;
+				    border: none;
+				    color: #ff5c5c;
+				    cursor: pointer;
+				    font-size: 1.2rem;">&#128465;</button></td>
+              </tr>
+            </tbody>
+          </table>
+		  <div style="text-align: right; margin-top: 10px; margin-right: 100px;">
+			<button type="submit">🔄 새로고침 (수정반영)</button>
+		  </div>
+        </form>
+      </div>
 
-        <!-- 학점 통계 (그래프나 표) -->
-        <div class="gpa-statistics">
-            <h2>등록된 과목</h2>
-            <!-- 전체 학기 기준으로 학점과 성적 데이터 출력하고 enrolled_courses 테이블에서 과목명, 학점, 성적, 전공여부만 표로 출력 -->
-			<form th:action="@{/gpa/update}" method="post">
-			    <table>
-			        <thead>
-			            <tr>
-			                <th>과목명</th>
-			                <th>학점</th>
-			                <th>성적</th>
-			                <th>전공 여부</th>
-			                <th>삭제</th>
-			            </tr>
-			        </thead>
-			        <tbody>
-			            <tr th:each="course : ${enrolledCourses}">
-			                <!-- 과목명 (수정 가능한 입력 필드) -->
-			                <td><input type="text" th:value="${course.courseName}" name="courses[${course.id}].courseName" required /></td>
-							<input type="hidden" th:value="${course.id}" name="courses[${course.id}].id" />
-
-			                <!-- 학점 (수정 가능한 입력 필드) -->
-			                <td><input type="number" th:value="${course.credits}" name="courses[${course.id}].credits" required /></td>
-
-			                <!-- 성적 (수정 가능한 입력 필드) -->
-			                <td><input type="text" th:value="${course.grade}" name="courses[${course.id}].grade" required /></td>
-
-			                <!-- 전공 여부 (수정 가능한 체크박스) -->
-			                <td><input type="checkbox" th:checked="${course.isMajor}" name="courses[${course.id}].isMajor" /></td>
-
-			                <!-- 삭제 버튼 (각 행마다 개별적으로 삭제) -->
-			                <td>
-			                    <button type="button" th:data-id="${course.id}" class="delete-button">삭제</button>
-			                </td>
-			            </tr>
-			        </tbody>
-			    </table>
-
-			    <!-- 전체 수정 버튼 (한 번에 수정 제출) -->
-			    <button type="submit">전체 수정</button>
-			</form>
-        </div>
-
-        <!-- 학점 입력 폼 -->
-        <div class="input-form">
-            <h2>학점 입력</h2>
-            <form action="/gpa/calculate" method="POST">
-				<input type="hidden" name="userId" value="${session.userId}">
-		        <input type="hidden" name="semesterId" value="${session.semesterId}">
-                <table>
-                    <tr>
-                        <td><label for="courseName">과목명:</label></td>
-                        <td><input type="text" id="courseName" name="courseName" required></td>
-                    </tr>
-                    <tr>
-                        <td><label for="credits">학점:</label></td>
-                        <td><input type="number" id="credits" name="credits" required></td>
-                    </tr>
-                    <tr>
-                        <td><label for="grade">성적:</label></td>
-                        <td><input type="number" step="0.01" id="grade" name="grade" required></td>
-                    </tr>
-                    <tr>
-                        <td><label for="isMajor">전공 여부:</label></td>
-                        <td><input type="checkbox" id="isMajor" name="isMajor"></td>
-                    </tr>
-                </table>
-                <input type="submit" value="학점 추가">
-            </form>
-        </div>
+      <div class="input-form">
+        <h2>과목등록</h2>
+        <form action="/gpa/calculate" method="POST">
+          <input type="hidden" name="userId" value="${session.userId}">
+          <input type="hidden" name="semesterId" value="${session.semesterId}">
+		  <table style="width: 100%; border-spacing: 10px;"> <!-- 간격 추가 -->
+		      <tr>
+		        <td style="width: 50%;">
+		          <label for="courseName">과목명</label><br>
+		          <input type="text" id="courseName" name="courseName" required 
+		            style="width: 100%; padding: 8px; border: 1px solid #e2e6ee; border-radius: 6px;">
+		        </td>
+		        <td style="width: 50%;">
+		          <label for="credits">학점</label><br>
+		          <input type="number" id="credits" name="credits" required 
+		            style="width: 100%; padding: 8px; border: 1px solid #e2e6ee; border-radius: 6px;">
+		        </td>
+		      </tr>
+		      <tr>
+		        <td style="width: 50%;">
+		          <label for="scoreLabel">성적</label><br>
+		          <select id="scoreLabel" name="scoreLabel" required 
+		            style="width: 100%; padding: 8px; border: 1px solid #e2e6ee; border-radius: 6px;">
+		            <option value="">성적 선택</option>
+		            <option value="A+">A+</option>
+		            <option value="A0">A0</option>
+		            <option value="B+">B+</option>
+		            <option value="B0">B0</option>
+		            <option value="C+">C+</option>
+		            <option value="C0">C0</option>
+		            <option value="D+">D+</option>
+		            <option value="D0">D0</option>
+		            <option value="F">F</option>
+		            <option value="P">P</option>
+		            <option value="NP">NP</option>
+		          </select>
+		        </td>
+		        <td style="width: 50%;">
+		          <label for="isMajor">전공과목</label><br>
+		          <input type="checkbox" id="isMajor" name="isMajor" 
+		            style="transform: scale(1.3); margin-top: 12px;">
+		        </td>
+		      </tr>
+		    </table>
+		  <div style="text-align: right; margin-top: 10px; margin-right: 10px;">
+          	<input type="submit" value="➕ 등록">
+		  </div>	
+        </form>
+      </div>
     </div>
-</div>
-
+  </div>
 </body>
 </html>
