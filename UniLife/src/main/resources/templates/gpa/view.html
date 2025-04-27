@@ -55,6 +55,22 @@
 				});
 			});
 		}
+		
+		window.onload = function () {
+					document.querySelectorAll('.deleteALL-button').forEach(button => {
+						button.addEventListener('click', function () {
+							const courseId = this.dataset.id;
+							if (confirm("전체 데이터를 삭제하시겠습니까?")) {
+								fetch(`/gpa/deleteAll?`, {method: 'GET'})
+									.then(res => {
+										if (res.ok) this.closest('tr').remove();
+										else alert('삭제 실패');
+									})
+									.catch(() => alert('삭제 요청에 실패했습니다.'));
+							}
+						});
+					});
+				}
 
 		function openModal(button) {
 			const semesterId = "all"; // 전체학기
@@ -87,9 +103,6 @@
 					alert('GPA 정보 가져오기 실패!');
 				});
 		}
-
-
-
 
 		function closeModal() {
 			document.getElementById("myModal").style.display = "none";
@@ -182,7 +195,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<!--<button onclick="">전체기록삭제</button>-->
+					<button class="deleteALL-button">전체기록삭제</button>
 				</div>
 			</div>
 

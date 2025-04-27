@@ -15,4 +15,5 @@ public interface EnrolledCourseRepository extends JpaRepository<EnrolledCourse, 
 	List<EnrolledCourse> findByUserId(Long userId);
 	Optional<EnrolledCourse> findByCourseName(String courseName);
     List<EnrolledCourse> findByIsMajor(boolean isMajor);
+    void deleteByUserId(Long userId);  // userId로 삭제
 }

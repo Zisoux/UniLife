@@ -235,4 +235,10 @@ public class GPAController {
 		// 삭제 후 해당 학기의 GPA 페이지로 리다이렉트
 		return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId;
 	}
+	
+	@GetMapping("/deleteAll")
+	public String deleteAllData(@SessionAttribute(name="userId") Long userId) {
+		enrolledCourseRepository.deleteByUserId(userId);
+		return "학점, 성적 데이터 전체 삭제 완료.";
+	}
 }
