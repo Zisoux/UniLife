@@ -210,55 +210,51 @@
 		</div>
       </div>
 
-      <div class="gpa-statistics">
-        <!--<h2>등록된 과목</h2>-->
-        <form th:action="@{/gpa/update}" method="post">
-          <table>
-            <thead>
-              <tr>
-                <th>과목명</th>
-                <th>학점</th>
-                <th>성적</th>
-                <th>전공여부</th>
-                <th>삭제</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="course : ${enrolledCourses}">
-                <td><input type="text" name="courses[${course.id}].courseName" th:value="${course.courseName}" required></td>
-                <input type="hidden" name="courses[${course.id}].id" th:value="${course.id}" />
-                <td><input type="number" name="courses[${course.id}].credits" th:value="${course.credits}" required></td>
-                <td>				
-					<select name="courses[${course.id}].grade" required>
-				  		<!--<option value="">성적 선택</option>-->
-				  		<option value="A+" th:selected="${course.grade} == 4.5">A+</option>
-				  		<option value="A0" th:selected="${course.grade} == 4.0">A0</option>
-				  		<option value="B+" th:selected="${course.grade} == 3.5">B+</option>
-				  		<option value="B0" th:selected="${course.grade} == 3.0">B0</option>
-				  		<option value="C+" th:selected="${course.grade} == 2.5">C+</option>
-				  		<option value="C0" th:selected="${course.grade} == 2.0">C0</option>
-				  		<option value="D+" th:selected="${course.grade} == 1.5">D+</option>
-				  		<option value="D0" th:selected="${course.grade} == 1.0">D0</option>
-				  		<option value="F" th:selected="${course.grade} == 0">F</option>
-				  		<!--<option value="P" th:selected="${course.grade} == NULL">P</option>
-				  		<option value="NP" th:selected="${course.grade} == 'NULL'">NP</option>-->
-					</select>
-				</td>
-                <td><input type="checkbox" name="courses[${course.id}].isMajor" th:checked="${course.isMajor}" /></td>
-                <td><button type="button" class="delete-button" th:data-id="${course.id}" 
-					style="background-color: transparent;
-				    border: none;
-				    color: #ff5c5c;
-				    cursor: pointer;
-				    font-size: 1.2rem;">&#128465;</button></td>
-              </tr>
-            </tbody>
-          </table>
-		  <div style="text-align: right; margin-top: 10px; margin-right: 100px;">
-			<button type="submit">🔄 새로고침 (수정반영)</button>
-		  </div>
-        </form>
-      </div>
+	  <div class="gpa-statistics">
+	      <form th:action="@{/gpa/update}" method="post">
+	          <table>
+	              <thead>
+	                  <tr>
+	                      <th>과목명</th>
+	                      <th>학점</th>
+	                      <th>성적</th>
+	                      <th>전공여부</th>
+	                      <th>삭제</th>
+	                  </tr>
+	              </thead>
+	              <tbody>
+	                  <tr th:each="course : ${enrolledCourses}">
+	                      <td>
+	                          <!-- 수정된 부분: course.id가 정상적으로 렌더링되도록 수정 -->
+	                          <input type="text" th:name="'courses[' + ${course.id} + '].courseName'" th:value="${course.courseName}" required>
+	                      </td>
+	                      <td>
+	                          <input type="number" th:name="'courses[' + ${course.id} + '].credits'" th:value="${course.credits}" required>
+	                      </td>
+	                      <td>
+	                          <select th:name="'courses[' + ${course.id} + '].grade'" required>
+	                              <option value="A+" th:selected="${course.grade} == 4.5">A+</option>
+	                              <option value="A0" th:selected="${course.grade} == 4.0">A0</option>
+	                              <option value="B+" th:selected="${course.grade} == 3.5">B+</option>
+	                              <option value="B0" th:selected="${course.grade} == 3.0">B0</option>
+	                              <option value="C+" th:selected="${course.grade} == 2.5">C+</option>
+	                              <option value="C0" th:selected="${course.grade} == 2.0">C0</option>
+	                              <option value="D+" th:selected="${course.grade} == 1.5">D+</option>
+	                              <option value="D0" th:selected="${course.grade} == 1.0">D0</option>
+	                              <option value="F" th:selected="${course.grade} == 0">F</option>
+	                          </select>
+	                      </td>
+	                      <td>
+	                          <input type="checkbox" th:name="'courses[' + ${course.id} + '].isMajor'" th:checked="${course.isMajor}" />
+	                      </td>
+	                  </tr>
+	              </tbody>
+	          </table>
+	          <div style="text-align: right; margin-top: 10px; margin-right: 100px;">
+	              <button type="submit">🔄 새로고침 (수정반영)</button>
+	          </div>
+	      </form>
+	  </div>
 
       <div class="input-form">
         <h2>과목등록</h2>
