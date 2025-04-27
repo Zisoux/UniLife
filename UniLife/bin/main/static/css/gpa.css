@@ -165,9 +165,6 @@ body {
 .deleteALL-button:hover {
 	background-color: #ff5c5c;
 }
-.deleteALL-button:action {
-	color: #ffffff;
-}
 
 .close {
 	color: #aaa;

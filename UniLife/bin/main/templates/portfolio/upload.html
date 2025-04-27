@@ -1,40 +1,73 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>포트폴리오 업로드</title>
-    <link rel="stylesheet" th:href="@{/css/portfolio.css}">
+	<meta charset="UTF-8">
+	<title>포트폴리오 업로드</title>
+	<link rel="stylesheet" th:href="@{/css/portfolio.css}">
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<!-- Noto Sans KR (한글용) -->
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+	<!-- Righteous (영문용) -->
+	<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+
 </head>
+
 <body>
-    <div class="container">
-        <h1>포트폴리오 업로드</h1>
+	<div class="container" style="width: 40%;">
+		<!-- 상단 고정 바 -->
+		<header class="topbar">
+			<div class="topbar-left">UniLife</div>
+			<div class="topbar-right">
+				<span class="topbar-date">
+					<span th:text="${todayDate}">2025-04-16</span>,
+					<span th:text="${dayOfWeek}">수요일</span>
+				</span>
+				<span class="topbar-user">이유진</span>
+			</div>
+		</header>
 
-        <form th:action="@{/portfolios/upload}" method="post" enctype="multipart/form-data" >
-            <input type="hidden" name="userId" th:value="${portfolioDTO.userId}" />
+		<h2>포트폴리오 업로드</h2>
 
-            <label>제목:</label>
-            <input type="text" name="title" th:value="${portfolioDTO.title}" required style="margin-bottom: 10px;"/>
+		<div class="upload-tab">
+			<form th:action="@{/portfolios/upload}" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="userId" th:value="${portfolioDTO.userId}" />
 
-            <label>설명:</label>
-            <textarea name="description" th:text="${portfolioDTO.description}" style="margin-bottom: 10px;"></textarea>
+				<label style="margin-top: 10px;">제목:</label>
+				<input type="text" name="title" th:value="${portfolioDTO.title}" required
+					style="margin-bottom: 10px;" />
 
-            <label>시작일:</label>
-            <input type="date" name="startDate" th:value="${portfolioDTO.startDate}" required style="margin-bottom: 10px;"/>
+				<label>설명:</label>
+				<textarea name="description" th:text="${portfolioDTO.description}"
+					style="margin-bottom: 10px;"></textarea>
 
-            <label>종료일:</label>
-            <input type="date" name="endDate" th:value="${portfolioDTO.endDate}" required style="margin-bottom: 10px;"/>
+				<label>시작일:</label>
+				<input type="date" name="startDate" th:value="${portfolioDTO.startDate}" required
+					style="margin-bottom: 10px;" />
 
-            <label>파일 업로드:</label>
-            <input type="file" name="file" required style="margin-bottom: 10px;"/><p></p>
+				<label>종료일:</label>
+				<input type="date" name="endDate" th:value="${portfolioDTO.endDate}" required
+					style="margin-bottom: 10px;" />
 
-            <button type="submit" class="btn primary">업로드</button>
-        </form>
+				<label>파일 업로드:</label>
+				<input type="file" name="file" required style="margin-bottom: 10px;" />
+				<p></p>
 
-        <div class="actions">
-            <a th:href="@{/portfolios(userId=${portfolioDTO.userId})}" class="btn">목록으로 돌아가기</a>
-        </div>
+				<div style="display: flex;">
+					<button type="submit" class="btn primary">업로드</button>
+					<div class="actions">
+						<a th:href="@{/portfolios(userId=${portfolioDTO.userId})}" class="btn">목록으로 돌아가기</a>
+					</div>
+				</div>
 
-        <div class="alert error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-    </div>
+			</form>
+
+		</div>
+
+		<div class="alert error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+	</div>
 </body>
+
 </html>
