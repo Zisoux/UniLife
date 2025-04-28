@@ -61,6 +61,10 @@ body {
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+.topbar-date {
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
 .topbar-left {
 	font-size: 1.4rem;
 	/*font-weight: bold;*/
