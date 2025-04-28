@@ -37,7 +37,7 @@ public class GPAService {
             case "D+": return BigDecimal.valueOf(1.5);
             case "D0": return BigDecimal.valueOf(1.0);
             case "F": return BigDecimal.ZERO;
-            //case "P": case "NP": return null;
+            case "P": case "NP": return null;
             default: throw new IllegalArgumentException("Invalid grade label: " + scoreLabel);
         }
     }

@@ -41,36 +41,40 @@
 
 
 		window.onload = function () {
-			document.querySelectorAll('.delete-button').forEach(button => {
-				button.addEventListener('click', function () {
-					const courseId = this.dataset.id;
-					if (confirm("정말 삭제하시겠습니까?")) {
-						fetch(`/gpa/delete?courseId=${courseId}`, {method: 'GET'})
-							.then(res => {
-								if (res.ok) this.closest('tr').remove();
-								else alert('삭제 실패');
-							})
-							.catch(() => alert('삭제 요청에 실패했습니다.'));
-					}
-				});
-			});
-		}
-		
-		window.onload = function () {
-					document.querySelectorAll('.deleteALL-button').forEach(button => {
-						button.addEventListener('click', function () {
-							const courseId = this.dataset.id;
-							if (confirm("전체 데이터를 삭제하시겠습니까?")) {
-								fetch(`/gpa/deleteAll?`, {method: 'GET'})
-									.then(res => {
-										if (res.ok) this.closest('tr').remove();
-										else alert('삭제 실패');
-									})
-									.catch(() => alert('삭제 요청에 실패했습니다.'));
-							}
-						});
-					});
-				}
+		    // 첫 번째 delete 버튼 이벤트 리스너
+		    document.querySelectorAll('.delete-button').forEach(button => {
+		        button.addEventListener('click', function () {
+		            const courseId = this.dataset.id;
+		            if (confirm("정말 삭제하시겠습니까?")) {
+		                fetch(`/gpa/delete?courseId=${courseId}`, { method: 'GET' })
+		                    .then(res => {
+		                        if (res.ok) this.closest('tr').remove();
+		                        else alert('삭제 실패');
+		                    })
+		                    .catch(() => alert('삭제 요청에 실패했습니다.'));
+		            }
+		        });
+		    });
+
+		    // 두 번째 deleteAll 버튼 이벤트 리스너
+		    document.querySelectorAll('.deleteALL-button').forEach(button => {
+		        button.addEventListener('click', function () {
+		            if (confirm("전체 데이터를 삭제하시겠습니까?")) {
+		                fetch(`/gpa/deleteAll?`, { method: 'GET' })
+		                    .then(res => {
+		                        if (res.ok) {
+		                            // 전체 삭제 후 테이블 갱신
+		                            alert('전체 데이터가 삭제되었습니다.');
+		                        } else {
+		                            alert('전체 삭제 실패');
+		                        }
+		                    })
+		                    .catch(() => alert('삭제 요청에 실패했습니다.'));
+		            }
+		        });
+		    });
+		};
+
 
 		function openModal(button) {
 			const semesterId = "all"; // 전체학기
@@ -272,6 +276,8 @@
 										<option value="D+" th:selected="${course.grade} == 1.5">D+</option>
 										<option value="D0" th:selected="${course.grade} == 1.0">D0</option>
 										<option value="F" th:selected="${course.grade} == 0">F</option>
+										<option value="P" th:selected="${course.grade} == NULL">P</option>
+										<option value="NP" th:selected="${course.grade} == NULL">NP</option>
 									</select>
 								</td>
 								<td>
