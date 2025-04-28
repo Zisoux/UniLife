@@ -63,11 +63,11 @@
 				<p th:text="${portfolio.description}"></p>
 			</div>
 
-			<div
+			<!--<div
 				th:if="${portfolio.fileExtension == '.png' || portfolio.fileExtension == '.jpg' || portfolio.fileExtension == '.jpeg' || portfolio.fileExtension == '.gif'}">
 				<h2>미리보기</h2>
 				<img th:src="@{'/uploads/' + ${#strings.substringAfterLast(portfolio.filePath, '/')}}" alt="미리보기">
-			</div>
+			</div>-->
 		</div>
 
 		<div class="actions">
