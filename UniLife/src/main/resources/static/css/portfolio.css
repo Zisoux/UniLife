@@ -216,6 +216,26 @@ h2 {
 	margin-bottom: 15px;
 }
 
+.div-date {
+	display: flex;
+	margin: auto;
+	gap: 30px;
+}
+
+.input-desc {
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
+.input-date {
+	margin-bottom: 10px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	font-size: 15px;
+	transition: border-color 0.3s;
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
 label {
 	display: block;
 	margin-top: 5px;

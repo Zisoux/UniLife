@@ -40,16 +40,21 @@
 					style="margin-bottom: 10px;" />
 
 				<label>설명:</label>
-				<textarea name="description" th:text="${portfolioDTO.description}"
+				<textarea class="input-desc" name="description" th:text="${portfolioDTO.description}"
 					style="margin-bottom: 10px;"></textarea>
 
-				<label>시작일:</label>
-				<input type="date" name="startDate" th:value="${portfolioDTO.startDate}" required
-					style="margin-bottom: 10px;" />
-
-				<label>종료일:</label>
-				<input type="date" name="endDate" th:value="${portfolioDTO.endDate}" required
-					style="margin-bottom: 10px;" />
+				<div class="div-date">
+					<div>
+						<label>시작일:</label>
+						<input type="date" class="input-date" name="startDate" th:value="${portfolioDTO.startDate}"
+							required style="margin-bottom: 10px;" />
+					</div>
+					<div>
+						<label>종료일:</label>
+						<input type="date" class="input-date" name="endDate" th:value="${portfolioDTO.endDate}" required
+							style="margin-bottom: 10px;" />
+					</div>
+				</div>
 
 				<label>파일 업로드:</label>
 				<input type="file" name="file" required style="margin-bottom: 10px;" />
