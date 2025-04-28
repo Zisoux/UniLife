@@ -90,11 +90,11 @@ public class GPAService {
     public void updateGPAAfterChanges(Long userId, String semesterId) {
         List<EnrolledCourse> enrolledCourses = enrolledCourseRepository.findByUserIdAndSemesterId(userId, semesterId);
 
-        BigDecimal totalGradePoints = BigDecimal.ZERO;
+        BigDecimal totalGradePoints = BigDecimal.ZERO; // 전체 성적 초기화 
         int totalCourses = 0;
-        BigDecimal majorGradePoints = BigDecimal.ZERO;
+        BigDecimal majorGradePoints = BigDecimal.ZERO; // 전공 성적 초기화 
         int majorCourses = 0;
-        BigDecimal electiveGradePoints = BigDecimal.ZERO;
+        BigDecimal electiveGradePoints = BigDecimal.ZERO; // 교양 성적 초기화 
         int electiveCourses = 0;
 
         for (EnrolledCourse course : enrolledCourses) {
