@@ -137,7 +137,7 @@ public class PortfolioService {
                 ? fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase()
                 : "";
 
-        Set<String> allowedExtensions = Set.of("hwpx", "docx", "java", "py", "cpp", "png", "jpg", "jpeg", "csv", "pdf", "sql", "uml");
+        Set<String> allowedExtensions = Set.of("hwpx", "docx", "java", "html", "py", "cpp", "png", "jpg", "jpeg", "csv", "pdf", "sql", "uml");
         return allowedExtensions.contains(extension);
     }
 
