@@ -26,7 +26,7 @@ public class FriendController {
  // ✅ 친구 목록 API: userId = 1 하드코딩
     @GetMapping("/api/calendar/friends/list")
     public List<SimpleUserDto> getFriendList() {
-        Long userId = 1L;  // 로그인 없이 하드코딩
+        Long userId = (long) 202345011;  // 로그인 없이 하드코딩
         return friendService.getFriendList(userId);
     }
 

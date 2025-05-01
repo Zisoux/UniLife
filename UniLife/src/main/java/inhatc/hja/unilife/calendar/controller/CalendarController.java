@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/calendar")
 public class CalendarController {
 
-    private static final Long USER_ID = 1L; // ✅ 하드코딩된 로그인 유저 ID
+    private static final Long USER_ID = (long) 202345011; // ✅ 하드코딩된 로그인 유저 ID
 
     @Autowired
     private FriendRepository friendRepository;
@@ -67,7 +67,7 @@ public class CalendarController {
         try {
             LocalDateTime startDateTime = LocalDateTime.parse(start.substring(0, 19));
             LocalDateTime endDateTime   = LocalDateTime.parse(end.substring(0, 19));
-            List<Event> events = eventRepository.findEventsOverlappingByUser(startDateTime, endDateTime, 1L); // ✅ 내 일정만
+            List<Event> events = eventRepository.findEventsOverlappingByUser(startDateTime, endDateTime, USER_ID); // ✅ 내 일정만
             return events.stream()
                     .map(e -> new EventDto(
                             String.valueOf(e.getId()),
