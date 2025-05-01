@@ -141,7 +141,7 @@ public class CalendarController {
 
     @GetMapping("/friends/{friendId}/events")
     @ResponseBody
-    public List<EventDto> getFriendCalendar(@PathVariable("friendId") Long friendId) {
+    public List<EventDto> getFriendCalendar(@PathVariable(name = "friendId") Long friendId) {
         List<Event> events = eventRepository.findByUserId(friendId);
         return events.stream()
                 .map(e -> new EventDto(
@@ -159,7 +159,7 @@ public class CalendarController {
 
     @GetMapping("/events/user/{userId}")
     @ResponseBody
-    public List<EventDto> getEventsByUser(@PathVariable Long userId) {
+    public List<EventDto> getEventsByUser(@PathVariable(name = "userId") Long userId) {
         List<Event> events = eventRepository.findByUserId(userId);
         return events.stream()
                 .map(e -> new EventDto(
