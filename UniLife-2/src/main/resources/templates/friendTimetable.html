@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>친구 시간표</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .time-line {
+            position: absolute;
+            width: 100%;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .course-block {
+            position: absolute;
+            background-color: #bbf7d0;
+            color: #166534;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.25rem;
+            word-break: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<!-- 네비게이션 -->
+<nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
+    <div class="text-lg font-bold text-gray-700">👥 친구 시간표</div>
+    <div class="space-x-4">
+        <a th:href="@{'/friends/' + ${userId} + '?semester=' + ${semester}}" class="text-blue-500 hover:underline text-sm">← 친구 목록</a>
+        <a th:href="@{'/timetable/view/' + ${userId} + '?semester=' + ${semester}}" class="text-blue-500 hover:underline text-sm">← 내 시간표</a>
+    </div>
+</nav>
+
+<!-- 본문 -->
+<main class="flex justify-center py-10">
+    <div class="w-[1000px]">
+
+        <!-- 학기 선택 -->
+        <form method="get" th:action="@{'/friends/' + ${userId} + '/timetable/' + ${friendId}}" class="flex items-center gap-2 bg-white p-4 rounded shadow mb-6">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <input type="hidden" name="friendId" th:value="${friendId}" />
+            <label class="text-sm font-medium">📚 친구 학기 선택:</label>
+            <select name="semester" required class="border rounded px-2 py-1 text-sm">
+                <option th:each="sem : ${semesters}"
+                        th:value="${sem}"
+                        th:text="${sem}"
+                        th:selected="${sem == semester}"></option>
+            </select>
+            <button type="submit" class="bg-green-500 text-white px-4 py-1 text-sm rounded">보기</button>
+        </form>
+
+        <!-- 요일 헤더 -->
+        <div class="grid grid-cols-5 text-center text-sm font-bold text-gray-700 mb-2">
+            <div>월</div>
+            <div>화</div>
+            <div>수</div>
+            <div>목</div>
+            <div>금</div>
+        </div>
+
+        <!-- 시간표 전체 틀 -->
+        <div class="relative w-full h-[900px] grid grid-cols-5 bg-white rounded shadow overflow-hidden">
+
+            <!-- 시간 라인 표시 -->
+            <div th:each="i : ${#numbers.sequence(0, 12)}"
+                 class="absolute left-0 w-full border-t text-xs text-gray-400"
+                 th:style="'top:' + (${i} * 100/12) + '%;'">
+                <span th:text="${i + 8} + ':00'"></span>
+            </div>
+
+            <!-- 수업 블록 표시 -->
+            <div th:each="block : ${courseBlocks}"
+                 class="course-block"
+                 th:style="'top:' + ${block.topPercent} + '%; height:' + ${block.heightPercent} + '%; left:' + ${block.leftPercent} + '%; width:' + ${block.widthPercent} + '%;'">
+                <div th:text="${block.courseName}"></div>
+                <div th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

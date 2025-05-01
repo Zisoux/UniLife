@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Id;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,13 +23,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "timetables")
 public class Timetable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    // ✅ userId 필드 삭제!
 
+    @Column(nullable = false)
     private String semester;
 
     @Column(name = "created_at")
@@ -36,4 +38,8 @@ public class Timetable {
 
     @OneToMany(mappedBy = "timetable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TimetableCourse> timetableCourses = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // ✅ user_id로 외래키 매핑
+    private User user;
 }

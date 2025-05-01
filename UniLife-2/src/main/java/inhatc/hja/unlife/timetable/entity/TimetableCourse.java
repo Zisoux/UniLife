@@ -39,4 +39,6 @@ public class TimetableCourse {
 
     @Column(name = "end_time")
     private LocalTime endTime;
+    
+    
 }
