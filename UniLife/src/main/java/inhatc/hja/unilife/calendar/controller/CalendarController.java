@@ -1,67 +1,91 @@
-// 일정 관리 컨트롤러
-
 package inhatc.hja.unilife.calendar.controller;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.Collections;
-import java.util.List;
+import inhatc.hja.unilife.calendar.dto.EventDto;
+import inhatc.hja.unilife.calendar.model.Event;
+import inhatc.hja.unilife.calendar.repository.EventRepository;
+import inhatc.hja.unilife.user.repository.FriendRepository;
+import inhatc.hja.unilife.user.service.FriendService;
+import inhatc.hja.unilife.user.dto.SimpleUserDto;
+import inhatc.hja.unilife.user.entity.User;
+import inhatc.hja.unilife.user.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import inhatc.hja.unilife.calendar.model.Event;
-import inhatc.hja.unilife.calendar.repository.EventRepository;
+import java.time.*;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/calendar")
 public class CalendarController {
 
+    private static final Long USER_ID = 1L; // ✅ 하드코딩된 로그인 유저 ID
+
+    @Autowired
+    private FriendRepository friendRepository;
+
     @Autowired
     private EventRepository eventRepository;
 
-    // 이벤트 등록 폼 보여주기
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FriendService friendService;
+
     @GetMapping("/events/add")
     public String showAddEventForm(Model model) {
-        model.addAttribute("event", new Event()); // 빈 이벤트 객체를 전달
-        return "calendar/event_form"; // 이벤트 등록을 위한 Thymeleaf 템플릿
+        model.addAttribute("event", new Event());
+        return "calendar/event_form";
     }
 
-    // 이벤트 저장 처리 (폼 제출 처리)
     @PostMapping("/events/add")
-    public String saveEvent(@ModelAttribute Event event) {
-        eventRepository.save(event);
-        return "calendar/close_and_refresh"; // 저장 성공 후 처리할 HTML 페이지
+    public ResponseEntity<String> saveEvent(@RequestBody Event event) {
+        try {
+            event.setUserId(USER_ID); // ✅ userId 고정
+            if (event.getEnd() != null && event.getStart() != null &&
+                    event.getEnd().isBefore(event.getStart())) {
+                return ResponseEntity.badRequest().body("⛔ 종료일이 시작일보다 빠릅니다.");
+            }
+            eventRepository.save(event);
+            return ResponseEntity.ok("✅ 저장 성공");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("❌ 저장 실패: " + e.getMessage());
+        }
     }
 
-
-    // 전체 일정 JSON 반환 (FullCalendar에서 호출)
     @GetMapping("/events")
     @ResponseBody
-    public List<Event> getEvents(@RequestParam("start") String start,
-                                 @RequestParam("end") String end) {
+    public List<EventDto> getEvents(@RequestParam("start") String start,
+                                    @RequestParam("end") String end) {
         try {
-            // "2025-03-30T00:00:00+09:00" or "2025-03-30T00:00:00" → 앞 19자리만 자르기
             LocalDateTime startDateTime = LocalDateTime.parse(start.substring(0, 19));
-            LocalDateTime endDateTime = LocalDateTime.parse(end.substring(0, 19));
-
-            return eventRepository.findEventsOverlapping(startDateTime, endDateTime);
+            LocalDateTime endDateTime   = LocalDateTime.parse(end.substring(0, 19));
+            List<Event> events = eventRepository.findEventsOverlappingByUser(startDateTime, endDateTime, 1L); // ✅ 내 일정만
+            return events.stream()
+                    .map(e -> new EventDto(
+                            String.valueOf(e.getId()),
+                            e.getTitle(),
+                            e.getStart(),
+                            e.getEnd(),
+                            e.getLocation(),
+                            e.getColor(),
+                            e.getType(),
+                            e.getRepeat()
+                    )).collect(Collectors.toList());
         } catch (DateTimeParseException e) {
-            System.err.println("날짜 파싱 실패: " + e.getMessage());
             return Collections.emptyList();
         }
     }
 
-
     @DeleteMapping("/events/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
-        System.out.println("삭제 요청 ID: " + id);
         if (eventRepository.existsById(id)) {
             eventRepository.deleteById(id);
             return ResponseEntity.ok().build();
@@ -70,34 +94,92 @@ public class CalendarController {
         }
     }
 
-
     @GetMapping("/events/day")
     @ResponseBody
-    public List<Event> getEventsByDay(@RequestParam("date") String date) {
+    public List<Event> getEventsByDay(@RequestParam("date") String date,
+                                      @RequestParam("userId") Long userId) {
         try {
             LocalDate localDate = LocalDate.parse(date);
             LocalDateTime startOfDay = localDate.atStartOfDay();
-            LocalDateTime endOfDay = localDate.atTime(23, 59, 59);
-            return eventRepository.findEventsOverlapping(startOfDay, endOfDay);
-        } catch (DateTimeParseException e) {
-            System.err.println("오른쪽 목록 날짜 파싱 실패: " + e.getMessage());
-            return Collections.emptyList();
+            LocalDateTime endOfDay   = localDate.atTime(23, 59, 59);
+            return eventRepository.findEventsOverlappingByUser(startOfDay, endOfDay, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
         }
     }
 
     @GetMapping("/events/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
         model.addAttribute("event", event);
         return "calendar/event_edit_form";
     }
 
     @PostMapping("/events/update")
-    public String updateEvent(@ModelAttribute Event event) {
-        eventRepository.save(event); // ID가 있으므로 update 동작
-        return "calendar/close_and_refresh";
+    public ResponseEntity<Void> updateEvent(@RequestBody Event updated) {
+        try {
+            Event event = eventRepository.findById(updated.getId())
+                    .orElseThrow(() -> new RuntimeException("일정 ID 없음"));
+
+            event.setTitle(updated.getTitle());
+            event.setStart(updated.getStart());
+            event.setEnd(updated.getEnd());
+            event.setLocation(updated.getLocation());
+            event.setAlarm(updated.getAlarm());
+            event.setType(updated.getType());
+            event.setRepeat(updated.getRepeat());
+
+            eventRepository.save(event);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
+    @GetMapping("/friends/{friendId}/events")
+    @ResponseBody
+    public List<EventDto> getFriendCalendar(@PathVariable("friendId") Long friendId) {
+        List<Event> events = eventRepository.findByUserId(friendId);
+        return events.stream()
+                .map(e -> new EventDto(
+                        String.valueOf(e.getId()),
+                        e.getTitle(),
+                        e.getStart(),
+                        e.getEnd(),
+                        e.getLocation(),
+                        e.getColor(),
+                        e.getType(),
+                        e.getRepeat()
+                ))
+                .collect(Collectors.toList());
+    }
 
+    @GetMapping("/events/user/{userId}")
+    @ResponseBody
+    public List<EventDto> getEventsByUser(@PathVariable Long userId) {
+        List<Event> events = eventRepository.findByUserId(userId);
+        return events.stream()
+                .map(e -> new EventDto(
+                        String.valueOf(e.getId()),
+                        e.getTitle(),
+                        e.getStart(),
+                        e.getEnd(),
+                        e.getLocation(),
+                        e.getColor(),
+                        e.getType(),
+                        e.getRepeat()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("")
+    public String calendarPage(Model model) {
+        model.addAttribute("userId", USER_ID);
+        model.addAttribute("username", "TestUser");
+        return "calendar/calendar";
+    }
 
 }

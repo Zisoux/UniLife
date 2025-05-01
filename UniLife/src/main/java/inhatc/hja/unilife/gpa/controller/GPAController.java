@@ -10,7 +10,7 @@ import inhatc.hja.unilife.gpa.entity.GPA;
 import inhatc.hja.unilife.gpa.repository.EnrolledCourseRepository;
 import inhatc.hja.unilife.gpa.repository.GPARepository;
 import inhatc.hja.unilife.gpa.service.GPAService;
-import inhatc.hja.unilife.user.repository.entity.User;
+import inhatc.hja.unilife.user.entity.User;
 import inhatc.hja.unilife.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import inhatc.hja.unilife.user.repository.UserRepository;
-import inhatc.hja.unilife.user.repository.entity.User;
+import inhatc.hja.unilife.user.entity.User;
 
 @Service
 public class UserService {
