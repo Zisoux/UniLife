@@ -2,7 +2,7 @@ package inhatc.hja.unilife.portfolio.service;
 
 import inhatc.hja.unilife.portfolio.repository.PortfolioRepository;
 import inhatc.hja.unilife.portfolio.repository.FileRepository;
-import inhatc.hja.unilife.portfolio.repository.dto.FileDTO;
+//import inhatc.hja.unilife.portfolio.repository.dto.FileDTO;
 import inhatc.hja.unilife.portfolio.repository.dto.PortfolioDTO;
 import inhatc.hja.unilife.portfolio.repository.entity.FileEntity;
 import inhatc.hja.unilife.portfolio.repository.entity.Portfolio;
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+//import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service

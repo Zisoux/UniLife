@@ -38,27 +38,27 @@ public class AppSecurityConfig {
         MvcRequestMatcher.Builder mvc = new MvcRequestMatcher.Builder(introspector).servletPath("/");
 
         http
-            .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-            .authenticationProvider(daoAuthenticationProvider()) // 꼭 여기!
+            .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+            .headers(headers -> headers.frameOptions(frame -> frame.disable())) // X-Frame-Options 헤더 비활성화
+            .authenticationProvider(daoAuthenticationProvider()) // 인증 제공자 설정
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers(mvc.pattern("/login"), mvc.pattern("/signup"), mvc.pattern("/calendar"), mvc.pattern("/api/signup")).permitAll()
-                .requestMatchers(mvc.pattern("/api/**")).permitAll()
-                .requestMatchers(mvc.pattern("/h2-console/**")).permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 리소스는 모든 사용자에게 허용
+                .requestMatchers(mvc.pattern("/login"), mvc.pattern("/signup"), mvc.pattern("/calendar"), mvc.pattern("/api/signup")).permitAll() // 특정 URL 경로에 대한 허용
+                .requestMatchers(mvc.pattern("/api/**")).permitAll() // API 관련 경로는 모두 허용
+                .requestMatchers(mvc.pattern("/h2-console/**")).permitAll() // H2 콘솔은 모두 허용
+                .anyRequest().authenticated() // 그 외의 요청은 인증된 사용자만 접근 허용
             )
             .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/calendar", true)
-                .failureUrl("/login?error")
-                .permitAll()
+                .loginPage("/login") // 로그인 페이지 경로 설정
+                .loginProcessingUrl("/login") // 로그인 처리 URL
+                .defaultSuccessUrl("/calendar", true) // 로그인 성공 후 리다이렉트할 경로
+                .failureUrl("/login?error") // 로그인 실패 시 리다이렉트할 경로
+                .permitAll() // 로그인 페이지는 모든 사용자에게 허용
             )
             .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
+                .logoutUrl("/logout") // 로그아웃 URL
+                .logoutSuccessUrl("/login?logout") // 로그아웃 성공 후 리다이렉트할 경로
+                .permitAll() // 로그아웃 URL은 모든 사용자에게 허용
             );
 
         return http.build();

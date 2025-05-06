@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import inhatc.hja.unilife.gpa.entity.EnrolledCourse;
-import inhatc.hja.unilife.gpa.entity.GPA;
+//import inhatc.hja.unilife.gpa.entity.GPA;
 
 @Repository
 public interface EnrolledCourseRepository extends JpaRepository<EnrolledCourse, Integer>{

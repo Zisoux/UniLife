@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import inhatc.hja.unilife.gpa.entity.EnrolledCourse;
 import inhatc.hja.unilife.gpa.entity.GPA;
 import inhatc.hja.unilife.gpa.repository.EnrolledCourseRepository;
-import inhatc.hja.unilife.gpa.repository.GPARepository;
+//import inhatc.hja.unilife.gpa.repository.GPARepository;
 import inhatc.hja.unilife.gpa.service.GPAService;
 import inhatc.hja.unilife.user.entity.User;
 import inhatc.hja.unilife.user.service.UserService;
@@ -30,8 +30,8 @@ public class GPAController {
 	@Autowired
 	private GPAService gpaService;
 	
-	@Autowired
-	private GPARepository gpaRepository;
+	//@Autowired
+	//private GPARepository gpaRepository;
 
 	@Autowired
 	private UserService userService;
