@@ -1,3 +1,6 @@
+.settings/
+.gradle/
+
 UniLife/.settings/org.eclipse.buildship.core.prefs
 UniLife/.gradle/8.13/fileHashes/fileHashes.lock
 UniLife/.settings/org.eclipse.jdt.core.prefs
