@@ -1,7 +1,7 @@
 package inhatc.hja.unilife.timetable.controller;
 
 //import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
-import inhatc.hja.unilife.timetable.dto.FreeTimeMatchDTO;
+//import inhatc.hja.unilife.timetable.dto.FreeTimeMatchDTO;
 import inhatc.hja.unilife.timetable.entity.Course;
 import inhatc.hja.unilife.timetable.entity.Timetable;
 //import inhatc.hja.unilife.user.repository.UserRepository;
@@ -15,7 +15,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
+//import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class TimetableController {
         List<String> predefinedSemesters = timetableService.getAvailableSemesters();
 
         String today = (dayOverride != null) ? dayOverride : getKoreanDayName(LocalDate.now().getDayOfWeek());
-        LocalTime now = (dayOverride != null) ? null : LocalTime.now();
+        //LocalTime now = (dayOverride != null) ? null : LocalTime.now();
 
         //List<FreeTimeMatchDTO> matchingFriends = timetableService.findMatchingFriendsByDay(userId, semester, today, now);
 

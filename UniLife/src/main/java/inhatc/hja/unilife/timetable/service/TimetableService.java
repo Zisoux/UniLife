@@ -3,12 +3,12 @@ package inhatc.hja.unilife.timetable.service;
 import inhatc.hja.unilife.timetable.dto.*;
 import inhatc.hja.unilife.timetable.entity.*;
 import inhatc.hja.unilife.timetable.repository.*;
-import inhatc.hja.unilife.user.entity.Friend;
+//import inhatc.hja.unilife.user.entity.Friend;
 import inhatc.hja.unilife.user.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
+//import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,7 +21,7 @@ public class TimetableService {
     private final TimetableRepository timetableRepository;
     private final TimetableCourseRepository timetableCourseRepository;
     private final CourseRepository courseRepository;
-    private final FriendRepository friendRepository;
+    //private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
     public List<String> getAvailableSemesters() {
@@ -130,7 +130,7 @@ public class TimetableService {
     }*/
 
 
-    private List<TimeRange> calculateFreeTimes(List<TimetableCourse> courses) {
+    /*private List<TimeRange> calculateFreeTimes(List<TimetableCourse> courses) {
         List<TimetableCourse> sortedCourses = new ArrayList<>(courses);
         sortedCourses.sort(Comparator.comparing(TimetableCourse::getStartTime));
 
@@ -150,24 +150,24 @@ public class TimetableService {
         }
 
         return freeTimes;
-    }
+    }*/
 
-    private Optional<TimeRange> getOverlap(TimeRange t1, TimeRange t2) {
+    /*private Optional<TimeRange> getOverlap(TimeRange t1, TimeRange t2) {
         LocalTime start = t1.start().isAfter(t2.start()) ? t1.start() : t2.start();
         LocalTime end = t1.end().isBefore(t2.end()) ? t1.end() : t2.end();
         return start.isBefore(end) ? Optional.of(new TimeRange(start, end)) : Optional.empty();
-    }
+    }*/
 
-    private boolean isCurrentTimeInRange(TimeRange range, LocalTime now) {
+    /*private boolean isCurrentTimeInRange(TimeRange range, LocalTime now) {
         return now.isAfter(range.start()) && now.isBefore(range.end());
-    }
+    }*/
 
     public List<CourseBlockDTO> convertToCourseBlocks(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
 
         int timetableStart = 8 * 60;        // 08:00 시작 (분)
-        int timetableEnd = 22 * 60;         // 22:00 종료
-        int timetableDuration = timetableEnd - timetableStart; // 840분
+        //int timetableEnd = 22 * 60;         // 22:00 종료
+        //int timetableDuration = timetableEnd - timetableStart; // 840분
         int pixelHeight = 1440;             // 전체 높이(px)
         double pxPerMinute = pixelHeight / 840.0;
         
