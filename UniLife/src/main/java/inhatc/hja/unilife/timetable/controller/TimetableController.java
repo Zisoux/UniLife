@@ -53,7 +53,7 @@ public class TimetableController {
         //model.addAttribute("matchingFriends", matchingFriends);
         model.addAttribute("courseBlocks", timetableService.convertToCourseBlocks(timetable.getTimetableCourses()));
 
-        return "timetable";
+        return "timetable/timetable";
     }
 
     @PostMapping("/create")
