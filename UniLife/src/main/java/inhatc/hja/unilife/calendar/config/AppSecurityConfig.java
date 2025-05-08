@@ -42,11 +42,11 @@ public class AppSecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.disable())) // X-Frame-Options 헤더 비활성화
             .authenticationProvider(daoAuthenticationProvider()) // 인증 제공자 설정
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // 정적 리소스는 모든 사용자에게 허용
-                .requestMatchers(mvc.pattern("/login"), mvc.pattern("/signup"), mvc.pattern("/calendar"), mvc.pattern("/api/signup")).permitAll() // 특정 URL 경로에 대한 허용
-                .requestMatchers(mvc.pattern("/api/**")).permitAll() // API 관련 경로는 모두 허용
-                .requestMatchers(mvc.pattern("/h2-console/**")).permitAll() // H2 콘솔은 모두 허용
-                .anyRequest().authenticated() // 그 외의 요청은 인증된 사용자만 접근 허용
+            	    .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+            	    .requestMatchers(mvc.pattern("/login"), mvc.pattern("/signup")).permitAll()
+            	    .requestMatchers(mvc.pattern("/api/signup")).permitAll()
+            	    .requestMatchers(mvc.pattern("/h2-console/**")).permitAll()
+            	    .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login") // 로그인 페이지 경로 설정

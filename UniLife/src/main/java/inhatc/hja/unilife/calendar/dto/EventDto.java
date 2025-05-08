@@ -2,6 +2,8 @@ package inhatc.hja.unilife.calendar.dto;
 
 import java.time.LocalDateTime;
 
+import inhatc.hja.unilife.calendar.model.Event;
+
 public class EventDto {
     private String id;
     private String title;
@@ -11,10 +13,12 @@ public class EventDto {
     private String backgroundColor;
     private String type;
     private String repeat; // 추가
+    private Long userId; // 사용자 ID 추가
 
     public EventDto() {}
 
-    public EventDto(String id, String title, LocalDateTime start, LocalDateTime end, String location, String backgroundColor, String type, String repeat) {
+    public EventDto(String id, String title, LocalDateTime start, LocalDateTime end, String location,
+                    String backgroundColor, String type, String repeat, Long userId) {
         this.id = id;
         this.title = title;
         this.start = start;
@@ -23,6 +27,21 @@ public class EventDto {
         this.backgroundColor = backgroundColor;
         this.type = type;
         this.repeat = repeat;
+        this.userId = userId;
+    }
+
+    public static EventDto fromEntity(Event event) {
+        EventDto dto = new EventDto();
+        dto.setId(String.valueOf(event.getId()));
+        dto.setTitle(event.getTitle());
+        dto.setStart(event.getStart());
+        dto.setEnd(event.getEnd());
+        dto.setLocation(event.getLocation());
+        dto.setBackgroundColor(event.getColor()); // or event.getColor()
+        dto.setType(event.getType());
+        dto.setRepeat(event.getRepeat());
+        dto.setUserId(event.getUserId());
+        return dto;
     }
 
     public String getId() {
@@ -72,6 +91,7 @@ public class EventDto {
     public void setBackgroundColor(String backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
+
     public String getType() {
         return type;
     }
@@ -80,7 +100,19 @@ public class EventDto {
         this.type = type;
     }
 
-    public String getRepeat() { return repeat; }
-    public void setRepeat(String repeat) { this.repeat = repeat; }
+    public String getRepeat() {
+        return repeat;
+    }
 
+    public void setRepeat(String repeat) {
+        this.repeat = repeat;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

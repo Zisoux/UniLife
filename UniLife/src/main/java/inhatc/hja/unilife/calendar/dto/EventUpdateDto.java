@@ -9,6 +9,7 @@ public class EventUpdateDto {
     private String alarm;
     private String type;
     private String color;
+    private Long userId; // 또는 String userId, DB 구조에 맞게
 
     public EventUpdateDto() {}
 

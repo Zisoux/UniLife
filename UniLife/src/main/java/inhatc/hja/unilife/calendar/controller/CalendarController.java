@@ -1,42 +1,37 @@
 package inhatc.hja.unilife.calendar.controller;
 
 import inhatc.hja.unilife.calendar.dto.EventDto;
+import inhatc.hja.unilife.calendar.dto.EventUpdateDto;
 import inhatc.hja.unilife.calendar.model.Event;
 import inhatc.hja.unilife.calendar.repository.EventRepository;
-import inhatc.hja.unilife.user.repository.FriendRepository;
 import inhatc.hja.unilife.user.service.FriendService;
-import inhatc.hja.unilife.user.dto.SimpleUserDto;
 import inhatc.hja.unilife.user.entity.User;
+import inhatc.hja.unilife.user.repository.FriendRepository;
 import inhatc.hja.unilife.user.repository.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/api/calendar")
 public class CalendarController {
 
-    private static final Long USER_ID = (long) 202345011; // ✅ 하드코딩된 로그인 유저 ID
-
-    @Autowired
-    private FriendRepository friendRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private FriendService friendService;
+    @Autowired private FriendRepository friendRepository;
+    @Autowired private EventRepository eventRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private FriendService friendService;
 
     @GetMapping("/events/add")
     public String showAddEventForm(Model model) {
@@ -45,11 +40,12 @@ public class CalendarController {
     }
 
     @PostMapping("/events/add")
-    public ResponseEntity<String> saveEvent(@RequestBody Event event) {
+    public ResponseEntity<String> saveEvent(@RequestBody Event event, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            event.setUserId(USER_ID); // ✅ userId 고정
-            if (event.getEnd() != null && event.getStart() != null &&
-                    event.getEnd().isBefore(event.getStart())) {
+            Long userId = Long.parseLong(userDetails.getUsername());
+            User user = userRepository.findById(userId).orElseThrow();
+            event.setUserId(user.getId());
+            if (event.getEnd() != null && event.getStart() != null && event.getEnd().isBefore(event.getStart())) {
                 return ResponseEntity.badRequest().body("⛔ 종료일이 시작일보다 빠릅니다.");
             }
             eventRepository.save(event);
@@ -63,22 +59,14 @@ public class CalendarController {
     @GetMapping("/events")
     @ResponseBody
     public List<EventDto> getEvents(@RequestParam("start") String start,
-                                    @RequestParam("end") String end) {
+                                    @RequestParam("end") String end,
+                                    @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            Long userId = Long.parseLong(userDetails.getUsername());
             LocalDateTime startDateTime = LocalDateTime.parse(start.substring(0, 19));
-            LocalDateTime endDateTime   = LocalDateTime.parse(end.substring(0, 19));
-            List<Event> events = eventRepository.findEventsOverlappingByUser(startDateTime, endDateTime, USER_ID); // ✅ 내 일정만
-            return events.stream()
-                    .map(e -> new EventDto(
-                            String.valueOf(e.getId()),
-                            e.getTitle(),
-                            e.getStart(),
-                            e.getEnd(),
-                            e.getLocation(),
-                            e.getColor(),
-                            e.getType(),
-                            e.getRepeat()
-                    )).collect(Collectors.toList());
+            LocalDateTime endDateTime = LocalDateTime.parse(end.substring(0, 19));
+            List<Event> events = eventRepository.findEventsOverlappingByUser(startDateTime, endDateTime, userId);
+            return events.stream().map(EventDto::fromEntity).collect(Collectors.toList());
         } catch (DateTimeParseException e) {
             return Collections.emptyList();
         }
@@ -97,11 +85,12 @@ public class CalendarController {
     @GetMapping("/events/day")
     @ResponseBody
     public List<Event> getEventsByDay(@RequestParam("date") String date,
-                                      @RequestParam("userId") Long userId) {
+                                      @AuthenticationPrincipal UserDetails userDetails) {
         try {
+            Long userId = Long.parseLong(userDetails.getUsername());
             LocalDate localDate = LocalDate.parse(date);
             LocalDateTime startOfDay = localDate.atStartOfDay();
-            LocalDateTime endOfDay   = localDate.atTime(23, 59, 59);
+            LocalDateTime endOfDay = localDate.atTime(23, 59, 59);
             return eventRepository.findEventsOverlappingByUser(startOfDay, endOfDay, userId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,8 +100,7 @@ public class CalendarController {
 
     @GetMapping("/events/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
+        Event event = eventRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
         model.addAttribute("event", event);
         return "calendar/event_edit_form";
     }
@@ -143,43 +131,25 @@ public class CalendarController {
     @ResponseBody
     public List<EventDto> getFriendCalendar(@PathVariable(name = "friendId") Long friendId) {
         List<Event> events = eventRepository.findByUserId(friendId);
-        return events.stream()
-                .map(e -> new EventDto(
-                        String.valueOf(e.getId()),
-                        e.getTitle(),
-                        e.getStart(),
-                        e.getEnd(),
-                        e.getLocation(),
-                        e.getColor(),
-                        e.getType(),
-                        e.getRepeat()
-                ))
-                .collect(Collectors.toList());
+        return events.stream().map(EventDto::fromEntity).collect(Collectors.toList());
     }
 
     @GetMapping("/events/user/{userId}")
     @ResponseBody
     public List<EventDto> getEventsByUser(@PathVariable(name = "userId") Long userId) {
         List<Event> events = eventRepository.findByUserId(userId);
-        return events.stream()
-                .map(e -> new EventDto(
-                        String.valueOf(e.getId()),
-                        e.getTitle(),
-                        e.getStart(),
-                        e.getEnd(),
-                        e.getLocation(),
-                        e.getColor(),
-                        e.getType(),
-                        e.getRepeat()
-                ))
-                .collect(Collectors.toList());
+        return events.stream().map(EventDto::fromEntity).collect(Collectors.toList());
     }
 
     @GetMapping("")
-    public String calendarPage(Model model) {
-        model.addAttribute("userId", USER_ID);
-        model.addAttribute("username", "TestUser");
+    public String calendarPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) return "redirect:/login";
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        User user = userRepository.findById(userId).orElseThrow();
+
+        model.addAttribute("userId", user.getId());
+        model.addAttribute("username", user.getUsername());
         return "calendar/calendar";
     }
-
 }
