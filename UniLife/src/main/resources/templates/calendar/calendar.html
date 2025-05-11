@@ -83,10 +83,27 @@
   </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col font-noto text-sm">
-  <header class="top-bar p-4 bg-[#6699ff] text-white flex justify-between items-center shadow-sm">
-    <div class="text-2xl ml-2 ml-3 font-righteous">UniLife</div>
-    <div class="flex items-center gap-2"></div>
-  </header>
+  <header class="bg-[#6699ff] text-white shadow-sm w-full">
+  <div class="px-6 py-4 flex justify-between items-center w-full">
+    
+    <!-- 왼쪽 로고 -->
+    <div class="text-2xl font-righteous font-bold tracking-wide">
+      UniLife
+    </div>
+    
+    <!-- 오른쪽 메뉴 -->
+    <nav>
+      <ul class="flex gap-6 text-sm">
+        <li><a th:href="@{/calendar}" class="hover:underline">일정</a></li>
+        <li><a th:href="@{/timetable/view}" class="hover:underline">시간표</a></li>
+        <li><a th:href="@{/portfolios/view}" class="hover:underline">포트폴리오</a></li>
+        <li><a th:href="@{/gpa/view}" class="hover:underline">학점 계산기</a></li>
+        <li><a th:href="@{/friend}" class="hover:underline">친구</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</header>
   <div class="flex flex-1 gap-6 px-6 py-4 overflow-hidden h-[calc(100vh-60px)]">
     <aside id="friend-list" class="flex flex-col w-[250px] bg-gray-50 border-r border-gray-200 rounded-md shadow-sm p-3 h-full">
       <div class="flex justify-between items-center mb-3 shrink-0">
