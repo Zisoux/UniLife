@@ -66,6 +66,30 @@ body {
 	gap: 20px;
 }
 
+.topbar-date{
+	color: #fff;
+}
+
+a {
+	text-decoration: none;
+	/* 링크에 밑줄 제거 */
+	color: #fff;
+	/* 링크 색상 */
+}
+
+a:link {
+	color: #fff;
+} /* 방문하지 않은 링크 */
+a:visited {
+	color: #fff;
+} /* 방문한 링크 */
+a:hover {
+	background: none
+} /* 마우스를 올린 링크 */
+a:active {
+	color: #fff;
+} /* 활성화한 링크 */
+
 
 h1 {
 	margin-bottom: 20px;

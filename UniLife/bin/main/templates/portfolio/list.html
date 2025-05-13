@@ -16,14 +16,19 @@
 </head>
 
 <body>
+	<!--<div class="tooltip-container">
+		<a href="#" class="tooltip-trigger">여기를 클릭하세요</a>
+		<span class="tooltip-text">링크에 대한 추가 정보</span>
+	</div>-->
+
 	<div class="container">
 		<!-- 상단 고정 바 -->
 		<header class="topbar">
 			<div class="topbar-left">UniLife</div>
 			<div class="topbar-right">
 				<span class="topbar-date">
-					<span th:text="${todayDate}">2025-04-16</span>,
-					<span th:text="${dayOfWeek}">수요일</span>
+					<a th:href="@{/calendar}" th:text="${todayDate}">2025-04-16</a>,
+					<a th:href="@{/calendar}" th:text="${dayOfWeek}">수요일</a>
 				</span>
 				<span class="topbar-user">이유진</span>
 			</div>
