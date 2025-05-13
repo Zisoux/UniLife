@@ -18,7 +18,16 @@
 <body>
 	<div class="container">
 		<!-- 상단 고정 바 -->
-		<div th:replace="common/header :: header"></div>
+		<header class="topbar">
+			<div class="topbar-left">UniLife</div>
+			<div class="topbar-right">
+				<span class="topbar-date">
+					<span th:text="${todayDate}">2025-04-16</span>,
+					<span th:text="${dayOfWeek}">수요일</span>
+				</span>
+				<span class="topbar-user">이유진</span>
+			</div>
+		</header>
 
 		<h2 th:text="${portfolio.title}">포트폴리오 제목</h2>
 

@@ -1,0 +1,23 @@
+<div th:fragment="header">
+<header class="bg-[#6699ff] text-white shadow-sm w-full">
+  <div class="px-6 py-4 flex justify-between items-center w-full">
+    
+    <!-- 왼쪽 로고 -->
+    <div class="text-2xl font-righteous tracking-wide">
+      UniLife
+    </div>
+    
+    <!-- 오른쪽 메뉴 -->
+    <nav>
+      <ul class="flex gap-6 text-sm">
+        <li><a th:href="@{/calendar}" class="hover:underline">일정</a></li>
+        <li><a th:href="@{/timetable/view}" class="hover:underline">시간표</a></li>
+        <li><a th:href="@{/portfolios/view}" class="hover:underline">포트폴리오</a></li>
+        <li><a th:href="@{/gpa/view}" class="hover:underline">학점 계산기</a></li>
+        <li><a th:href="@{/friend}" class="hover:underline">친구</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</header>
+</div>

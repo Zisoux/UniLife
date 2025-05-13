@@ -120,7 +120,17 @@
 
 	<div class="container">
 		<!-- 상단 고정 바 -->
-<div th:replace="common/header :: header"></div>
+		<header class="topbar">
+			<div class="topbar-left">UniLife</div>
+			<div class="topbar-right">
+				<span class="topbar-date">
+					<span th:text="${todayDate}">2025-04-16</span>,
+					<span th:text="${dayOfWeek}">수요일</span>
+				</span>
+				<span class="topbar-user">이유진</span>
+			</div>
+		</header>
+
 		<!--<div class="sidebar">
       <h2>사용자 정보</h2>
       <p><strong>이름:</strong> <span th:text="${session.username}">이유진</span></p>

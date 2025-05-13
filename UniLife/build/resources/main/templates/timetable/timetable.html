@@ -113,7 +113,10 @@
 </head>
 <body>
 
-<div th:replace="common/header :: header"></div>
+<nav>
+    <div class="logo">UniLife</div>
+    <a th:href="@{'/friends/' + ${userId} + '?semester=' + ${semester}}">친구 관리</a>
+</nav>
 
 <main class="container">
     <section>
