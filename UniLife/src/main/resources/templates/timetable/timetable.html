@@ -1,121 +1,40 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8" />
     <title>UniLife - 학기별 시간표</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Poetsen+One&family=Righteous&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script>
+	  tailwind.config = {
+	    theme: {
+	      extend: {
+	        fontFamily: {
+	          noto: ["'Noto Sans KR'", 'sans-serif'],
+	          righteous: ["'Righteous'", 'cursive']
+	        },
+	        colors: {
+	          primary: '#6699FF',
+	          secondary: '#FF9933',
+	          tertiary: '#6ad46a'
+	        }
+	      }
+	    }
+	  };
+	</script>
+	<script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --main-color: #6699ff;
         }
-
-        body {
-            margin: 0;
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f3f4f6;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Poetsen One', sans-serif;
-            margin-bottom: 1rem;
-        }
-
-        nav {
-            background-color: var(--main-color);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-family: 'Righteous', cursive;
-            font-size: 1.5rem;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        select, input[type="time"] {
-            padding: 0.4rem 0.6rem;
-            font-size: 0.875rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: var(--main-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #4d82e0;
-        }
-
-        .day-selector {
-            margin-bottom: 1rem;
-        }
-
-        .day-selector a {
-            margin-right: 0.3rem;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            background-color: #e5e7eb;
-            color: #333;
-        }
-
-        .day-selector .active {
-            background-color: var(--main-color);
-            color: white;
-        }
-
-        .friend-card {
-            background-color: #f9fafb;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 0.75rem;
-        }
     </style>
 </head>
-<body>
+<body class="font-['Noto_Sans_KR'] text-sm bg-gray-50 text-neutral-900">
 
-<div th:replace="common/header :: header"></div>
+<div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
 
-<main class="container">
+<main class="max-w-screen-xl mx-auto px-6 py-8 grid md:grid-cols-[2fr_1fr] gap-8">
     <section>
 
 		<!-- 학기 관리 -->

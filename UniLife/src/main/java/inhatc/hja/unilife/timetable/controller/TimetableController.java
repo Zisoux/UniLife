@@ -6,6 +6,8 @@ import inhatc.hja.unilife.timetable.entity.Course;
 import inhatc.hja.unilife.timetable.entity.Timetable;
 //import inhatc.hja.unilife.user.repository.UserRepository;
 import inhatc.hja.unilife.timetable.service.TimetableService;
+import inhatc.hja.unilife.user.entity.User;
+import inhatc.hja.unilife.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/timetable")
 public class TimetableController {
+
+	private final UserService userService;
 
     private final TimetableService timetableService;
     //private final UserRepository userRepository;
@@ -42,6 +46,9 @@ public class TimetableController {
 
         //List<FreeTimeMatchDTO> matchingFriends = timetableService.findMatchingFriendsByDay(userId, semester, today, now);
 
+        User user = userService.findById(userId);
+        
+        model.addAttribute("user", user);
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
         model.addAttribute("semesters", semesters);
@@ -53,7 +60,7 @@ public class TimetableController {
         //model.addAttribute("matchingFriends", matchingFriends);
         model.addAttribute("courseBlocks", timetableService.convertToCourseBlocks(timetable.getTimetableCourses()));
 
-        return "timetable";
+        return "timetable/timetable";
     }
 
     @PostMapping("/create")

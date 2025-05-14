@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import inhatc.hja.unilife.user.entity.User;
 import inhatc.hja.unilife.user.repository.UserRepository;
+import inhatc.hja.unilife.user.security.CustomUserDetails;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -36,11 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             e.printStackTrace();
         }
 
-        return org.springframework.security.core.userdetails.User.builder()
-            .username(user.getUserId())
-            .password(user.getPasswordHash())
-            .authorities("ROLE_USER")
-            .build();
+        return new CustomUserDetails(user);
     }
     
     @Bean

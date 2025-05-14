@@ -148,7 +148,7 @@ public class CalendarController {
         Long userId = Long.parseLong(userDetails.getUsername());
         User user = userRepository.findById(userId).orElseThrow();
 
-        model.addAttribute("userId", user.getId());
+        model.addAttribute("userId", user.getUserId());
         model.addAttribute("username", user.getUsername());
         return "calendar/calendar";
     }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
 	<meta charset="UTF-8">
@@ -12,22 +13,16 @@
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 	<!-- Righteous (영문용) -->
 	<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+	
+	<script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
 <body>
+<div th:replace="common/header :: header(${userId}, ${id})"></div>
 	<div class="container">
 		<!-- 상단 고정 바 -->
-		<header class="topbar">
-			<div class="topbar-left">UniLife</div>
-			<div class="topbar-right">
-				<span class="topbar-date">
-					<span th:text="${todayDate}">2025-04-16</span>,
-					<span th:text="${dayOfWeek}">수요일</span>
-				</span>
-				<span class="topbar-user">이유진</span>
-			</div>
-		</header>
 
 		<h2>포트폴리오 목록</h2>
 

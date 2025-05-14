@@ -1,6 +1,8 @@
 package inhatc.hja.unilife.portfolio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,7 @@ public class PortfolioController {
 
 		// 요일 가져오기
 		String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-
+		
 		model.addAttribute("todayDate", date);
 		model.addAttribute("dayOfWeek", dayOfWeek);
 
