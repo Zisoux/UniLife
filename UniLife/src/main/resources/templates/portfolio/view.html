@@ -13,19 +13,12 @@
 	<!-- Righteous (영문용) -->
 	<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
 
-	<script src="https://cdn.tailwindcss.com"></script>
-	  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet" />
-	  <style>
-	    .font-righteous {
-	      font-family: 'Righteous', cursive;
-	    }
-	  </style>
 </head>
 
 <body>
 	<div class="container">
 		<!-- 상단 고정 바 -->
-		<div th:replace="common/header :: header"></div>
+		<div th:replace="common/header-default :: header"></div>
 
 		<h2 th:text="${portfolio.title}">포트폴리오 제목</h2>
 

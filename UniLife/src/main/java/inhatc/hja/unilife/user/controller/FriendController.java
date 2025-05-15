@@ -25,7 +25,6 @@ public class FriendController {
         this.friendService  = friendService;
     }
 
- // ✅ 친구 목록 API: userId = 1 하드코딩
     @GetMapping("/api/calendar/friends/list")
     public List<SimpleUserDto> getFriendList(@AuthenticationPrincipal UserDetails userDetails) {
         // ✅ 로그인 ID(user_id)로 사용자 객체 조회
