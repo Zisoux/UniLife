@@ -83,6 +83,7 @@
   </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col font-noto text-sm">
+  <span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
   <div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
 
   <div class="flex flex-1 gap-6 px-6 py-4 overflow-hidden h-[calc(100vh-60px)]">
@@ -181,7 +182,7 @@
 </body>
 </html>
   <script>
-  const currentUserId = 202345011;            // ✅ 로그인 없이 하드코딩된 사용자 ID
+  const currentUserId = document.getElementById("loginUserId").innerText.trim();    // ✅ 하드코딩 삭제 후 로그인 사용자 정보 갱신
   let currentViewUserId = currentUserId;
   let selectedDate = null;
   let calendar;

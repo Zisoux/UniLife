@@ -8,10 +8,95 @@
 
 	<!-- Tailwind CSS CDN -->
 	<script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="/css/gpa.css">
-
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#6699FF',
+						secondary: '#FF9933',
+						tertiary: '#6ad46a'
+					},
+					borderRadius: {
+						'button': '8px'
+					},
+					fontFamily: {
+						righteous: ["'Righteous'", 'cursive'],
+						noto: ["'Noto Sans KR'", 'sans-serif']
+					}
+				}
+			}
+		};
+	</script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Righteous&display=swap"
+		rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js" defer></script>
+	<script src="https://unpkg.com/@popperjs/core@2" defer></script>
+	<script src="https://unpkg.com/tippy.js@6" defer></script>
+	<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+	<style>
+		body {
+			font-family: 'Noto Sans KR', sans-serif;
+			background-color: #F1F3F5;
+			font-size: 13px;
+		}
+
+		.fc {
+			font-family: 'Noto Sans KR', sans-serif;
+			font-size: 13px;
+		}
+
+		.fc-toolbar-title {
+			font-weight: 700;
+		}
+
+		.fc-event {
+			font-size: 0.75rem;
+			border-radius: 4px;
+			padding: 2px 6px;
+			color: #fff;
+			background-color: inherit !important;
+			border-color: inherit !important;
+		}
+
+		.fc-event-main,
+		.fc-event-title,
+		.fc-event-dot {
+			background-color: inherit !important;
+			color: inherit !important;
+			border-color: inherit !important;
+		}
+
+		.fc .fc-button {
+			border-radius: 6px;
+			padding: 5px 10px;
+			background-color: #6699FF;
+			border: none;
+			min-width: 90px;
+			height: 34px;
+			font-size: 0.825rem;
+		}
+
+		.fc .fc-button:hover {
+			background-color: #4f83e3;
+		}
+
+		.fc-toolbar-chunk button {
+			margin-right: 0.5rem;
+		}
+
+		html,
+		body {
+			height: 100%;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/gpa.css">
+
 	<!-- Noto Sans KR (한글용) -->
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 	<!-- Righteous (영문용) -->
@@ -322,7 +407,9 @@
 						</tbody>
 					</table>
 					<div style="text-align: right; margin-top: 10px; margin-right: 100px;">
-						<button type="submit">🔄 새로고침 (수정반영)</button>
+						<button type="submit"
+							class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]">🔄
+							새로고침 (수정반영)</button>
 					</div>
 				</form>
 			</div>
@@ -372,7 +459,9 @@
 						</tr>
 					</table>
 					<div style="text-align: right; margin-top: 10px; margin-right: 10px;">
-						<input type="submit" value="➕ 등록">
+						<input type="submit"
+							class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]"
+							value="➕ 등록">
 					</div>
 				</form>
 			</div>
