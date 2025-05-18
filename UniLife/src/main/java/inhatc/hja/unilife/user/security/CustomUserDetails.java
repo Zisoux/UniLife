@@ -4,6 +4,8 @@ import inhatc.hja.unilife.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,5 +44,17 @@ public class CustomUserDetails implements UserDetails {
 
     public User getUser() {
         return this.user;
+    }
+
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof CustomUserDetails) {
+                return ((CustomUserDetails) principal).getUser().getId();
+            }
+        }
+        // 인증되지 않은 경우 예외 처리 또는 null 반환
+        return null;
     }
 }
