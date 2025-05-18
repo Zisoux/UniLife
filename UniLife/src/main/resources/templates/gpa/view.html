@@ -81,7 +81,7 @@
 
 		function openModal(button) {
 			const semesterId = "all"; // 전체학기
-			const userId = document.getElementById("LoginUserId").innerText.trim();
+			const userId = document.getElementById("loginUserId").innerText.trim();
 
 			// 1. 먼저 전체학기 업데이트 POST
 			fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
@@ -118,7 +118,7 @@
 	</script>
 </head>
 
-<body class="font-noto text-sm bg-white w-full">
+<body class="font-noto text-sm bg-white w-full min-h-screen">
 
 	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
 
@@ -162,8 +162,8 @@
 			</div>
 		</header>
 	</div>
-	<div class="container">
 
+	<div class="flex w-full max-w-full min-h-[calc(100vh-64px)]">
 
 		<div class="main-content">
 			<!--<h1 style="margin-bottom: 15px;">학점 정보</h1>-->
@@ -192,7 +192,7 @@
 			<div id="myModal" class="modal">
 				<div class="modal-content">
 					<span class="close" onclick="closeModal()">&times;</span>
-					<h2>전체학기</h2>
+					<h2 class="text-lg font-bold mb-4">전체학기</h2>
 					<table class="allTable" style="margin: 10px auto 10px auto;">
 						<thead>
 							<tr>
@@ -328,7 +328,7 @@
 			</div>
 
 			<div class="input-form">
-				<h2>과목등록</h2>
+				<h2 class="text-lg font-bold mb-4">과목등록</h2>
 				<form action="/gpa/calculate" method="POST">
 					<input type="hidden" name="userId" value="${session.userId}">
 					<input type="hidden" name="semesterId" value="${session.semesterId}">
