@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-UniLifeApplication<UniLife>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "inhatc.hja.unilife.UniLifeApplication",
+            "projectName": "UniLife",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -5,19 +5,22 @@
 	box-sizing: border-box;
 }
 
-body {
+/*body {
 	background-color: #ffffff;
 	display: flex;
+	flex-direction: column; 
 	justify-content: center;
 	min-height: 100vh;
 	padding: 30px;
 	font-family: 'Righteous', 'Noto Sans KR', sans-serif !important;
-}
+	overflow: hidden; 
+	font-size: 0.875rem; 
+}*/
 
 /* 메인 컨테이너 */
 .container {
 	display: flex;
-	max-width: 1400px;
+	max-width: 100%;
 	width: 100%;
 }
 
@@ -83,7 +86,7 @@ body {
 .main-content {
 	flex: 1;
 	background-color: #f9fafe;
-	padding: 20px 30px 30px 30px;
+	/*padding: 20px 30px 30px 30px;*/
 	border-radius: 16px;
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }

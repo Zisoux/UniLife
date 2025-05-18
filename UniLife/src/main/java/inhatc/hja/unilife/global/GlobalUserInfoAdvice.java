@@ -23,6 +23,8 @@ public class GlobalUserInfoAdvice {
                 model.addAttribute("id", user.getId());
                 model.addAttribute("userId", user.getUserId());
                 model.addAttribute("username", user.getUsername());
+                // 디버깅을 위한 로그 추가
+                System.out.println("userId: " + user.getUserId());  // 콘솔에 userId 출력
             });
         }
     }
