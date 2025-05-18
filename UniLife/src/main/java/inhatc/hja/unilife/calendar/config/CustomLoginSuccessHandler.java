@@ -22,18 +22,21 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+            HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
 
         // 로그인한 사용자 정보 가져오기
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        String userId = userDetails.getUsername();  // 학번 (user_id)
+        String userId = userDetails.getUsername(); // 학번 (user_id)
 
         // DB에서 User 엔티티 조회
         User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
             // 🔥 여기서 세션에 user의 PK 저장
-            request.getSession().setAttribute("loginId", user.getId());
+            request.getSession().setAttribute("loginId", user.getId()); // Long
+            request.getSession().setAttribute("userId", user.getUserId()); // String
+            request.getSession().setAttribute("username", user.getUsername());
+
         }
 
         // 원래 가려고 했던 URL로 이동

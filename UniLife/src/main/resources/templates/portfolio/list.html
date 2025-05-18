@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
 	<meta charset="UTF-8">
@@ -14,17 +13,18 @@
 	<!-- Righteous (영문용) -->
 	<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-	
+
 	<script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
 <body>
-<div th:replace="common/header :: header(${userId}, ${id})"></div>
+	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
+	<div th:replace="common/header :: header(${userId}, ${id})"></div>
 	<div class="container">
 		<!-- 상단 고정 바 -->
 
-		<h2>포트폴리오 목록</h2>
+		<h2 class="text-xl font-bold text-gray-800">포트폴리오 목록</h2>
 
 		<div class="search-tab">
 			<form action="/portfolios" method="get" class="form">

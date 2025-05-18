@@ -4,10 +4,98 @@
 <head>
 	<meta charset="UTF-8">
 	<title th:text="${portfolio.title}">포트폴리오 상세</title>
-	<link rel="stylesheet" th:href="@{/css/portfolio.css}">
 
+	<!-- Tailwind CSS CDN -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#6699FF',
+						secondary: '#FF9933',
+						tertiary: '#6ad46a'
+					},
+					borderRadius: {
+						'button': '8px'
+					},
+					fontFamily: {
+						righteous: ["'Righteous'", 'cursive'],
+						noto: ["'Noto Sans KR'", 'sans-serif']
+					}
+				}
+			}
+		};
+	</script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Righteous&display=swap"
+		rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js" defer></script>
+	<script src="https://unpkg.com/@popperjs/core@2" defer></script>
+	<script src="https://unpkg.com/tippy.js@6" defer></script>
+	<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+	<style>
+		body {
+			font-family: 'Noto Sans KR', sans-serif;
+			background-color: #F1F3F5;
+			font-size: 13px;
+		}
+
+		.fc {
+			font-family: 'Noto Sans KR', sans-serif;
+			font-size: 13px;
+		}
+
+		.fc-toolbar-title {
+			font-weight: 700;
+		}
+
+		.fc-event {
+			font-size: 0.75rem;
+			border-radius: 4px;
+			padding: 2px 6px;
+			color: #fff;
+			background-color: inherit !important;
+			border-color: inherit !important;
+		}
+
+		.fc-event-main,
+		.fc-event-title,
+		.fc-event-dot {
+			background-color: inherit !important;
+			color: inherit !important;
+			border-color: inherit !important;
+		}
+
+		.fc .fc-button {
+			border-radius: 6px;
+			padding: 5px 10px;
+			background-color: #6699FF;
+			border: none;
+			min-width: 90px;
+			height: 34px;
+			font-size: 0.825rem;
+		}
+
+		.fc .fc-button:hover {
+			background-color: #4f83e3;
+		}
+
+		.fc-toolbar-chunk button {
+			margin-right: 0.5rem;
+		}
+
+		html,
+		body {
+			height: 100%;
+		}
+	</style>
+	<link rel="stylesheet" th:href="@{/css/portfolio.css}">
+
 	<!-- Noto Sans KR (한글용) -->
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 	<!-- Righteous (영문용) -->
@@ -15,10 +103,51 @@
 
 </head>
 
-<body>
+<body class="font-noto text-sm bg-white w-full min-h-screen">
+	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
+	<div th:fragment="header(userId, id)">
+		<header class="bg-[#6699ff] text-white shadow-sm w-full">
+			<div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
+
+				<!-- 왼쪽 로고 -->
+				<div class="text-2xl font-['Righteous'] tracking-wide">
+					UniLife
+				</div>
+
+				<!-- 오른쪽: 메뉴 + 유저이름 + 로그아웃 -->
+				<div class="flex items-center gap-6 text-sm">
+
+					<!-- 메뉴 -->
+					<nav>
+						<ul class="flex gap-6">
+							<li><a th:href="@{/calendar}" class="hover:underline">일정</a></li>
+							<li><a th:href="@{/timetable/view/{id}(id=${id}, semester='20251')}"
+									class="hover:underline">시간표</a></li>
+							<li><a th:href="@{/portfolios}" class="hover:underline">포트폴리오</a></li>
+							<li><a th:href="@{/gpa/view(userId=${userId}, semesterId='1-1')}" class="hover:underline">학점
+									계산기</a></li>
+							<li><a th:href="@{/friend}" class="hover:underline">친구</a></li>
+						</ul>
+					</nav>
+
+					<!-- 사용자 이름 -->
+					<span class="font-bold text-white">
+						<i class="ri-user-line mr-1"></i>
+						<span th:text="${username}">로그인한 사용자</span>
+					</span>
+
+					<!-- 로그아웃 버튼 -->
+					<form th:action="@{/logout}" method="post">
+						<button type="submit" class="text-xs hover:underline">로그아웃</button>
+					</form>
+
+				</div>
+			</div>
+		</header>
+	</div>
+	
 	<div class="container">
 		<!-- 상단 고정 바 -->
-		<div th:replace="common/header-default :: header"></div>
 
 		<h2 th:text="${portfolio.title}">포트폴리오 제목</h2>
 

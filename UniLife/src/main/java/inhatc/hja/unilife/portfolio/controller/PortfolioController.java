@@ -1,8 +1,6 @@
 package inhatc.hja.unilife.portfolio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +22,7 @@ public class PortfolioController {
 	@Autowired
 	private PortfolioService portfolioService;
 
-	private static final Long FIXED_USER_ID = 202345011L;
+	private static final Long FIXED_USER_ID = 202345011L; // 하드코딩 수정 필요..!!!!!
 
 	/** 포트폴리오 목록 조회 */
 	@GetMapping
@@ -38,7 +36,7 @@ public class PortfolioController {
 
 		// 요일 가져오기
 		String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-		
+
 		model.addAttribute("todayDate", date);
 		model.addAttribute("dayOfWeek", dayOfWeek);
 
