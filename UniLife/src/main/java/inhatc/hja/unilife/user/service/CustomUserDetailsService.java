@@ -37,6 +37,9 @@ public class CustomUserDetailsService implements UserDetailsService {
             e.printStackTrace();
         }
 
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        System.out.println("[DEBUG] matches(\"1234\", hash): " + encoder.matches("1234", user.getPasswordHash()));
+
         return new CustomUserDetails(user);
     }
     

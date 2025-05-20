@@ -39,7 +39,7 @@ public class EventDto {
         dto.setLocation(event.getLocation());
         dto.setBackgroundColor(event.getColor()); // or event.getColor()
         dto.setType(event.getType());
-        dto.setRepeat(event.getRepeat());
+        dto.setRepeat(event.getRepeatRule());
         dto.setUserId(event.getUserId());
         return dto;
     }

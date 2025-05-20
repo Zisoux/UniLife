@@ -42,12 +42,18 @@ public class CalendarController {
     @PostMapping("/events/add")
     public ResponseEntity<String> saveEvent(@RequestBody Event event, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            Long userId = Long.parseLong(userDetails.getUsername());
-            User user = userRepository.findById(userId).orElseThrow();
+            String loginUserId = userDetails.getUsername();  // "202345011" 같은 학번
+            System.out.println("🔍 로그인한 user_id: " + loginUserId);
+
+            User user = userRepository.findByUserId(loginUserId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
             event.setUserId(user.getId());
+
             if (event.getEnd() != null && event.getStart() != null && event.getEnd().isBefore(event.getStart())) {
                 return ResponseEntity.badRequest().body("⛔ 종료일이 시작일보다 빠릅니다.");
             }
+
             eventRepository.save(event);
             return ResponseEntity.ok("✅ 저장 성공");
         } catch (Exception e) {
@@ -117,7 +123,7 @@ public class CalendarController {
             event.setLocation(updated.getLocation());
             event.setAlarm(updated.getAlarm());
             event.setType(updated.getType());
-            event.setRepeat(updated.getRepeat());
+            event.setRepeatRule(updated.getRepeatRule());
 
             eventRepository.save(event);
             return ResponseEntity.ok().build();
