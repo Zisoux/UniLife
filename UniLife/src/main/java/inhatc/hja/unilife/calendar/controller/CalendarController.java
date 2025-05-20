@@ -4,6 +4,7 @@ import inhatc.hja.unilife.calendar.dto.EventDto;
 import inhatc.hja.unilife.calendar.dto.EventUpdateDto;
 import inhatc.hja.unilife.calendar.model.Event;
 import inhatc.hja.unilife.calendar.repository.EventRepository;
+import inhatc.hja.unilife.calendar.service.CalendarService;
 import inhatc.hja.unilife.user.service.FriendService;
 import inhatc.hja.unilife.user.entity.User;
 import inhatc.hja.unilife.user.repository.FriendRepository;
@@ -32,7 +33,8 @@ public class CalendarController {
     @Autowired private EventRepository eventRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private FriendService friendService;
-
+    @Autowired private CalendarService calendarService;
+    
     @GetMapping("/events/add")
     public String showAddEventForm(Model model) {
         model.addAttribute("event", new Event());
@@ -42,20 +44,17 @@ public class CalendarController {
     @PostMapping("/events/add")
     public ResponseEntity<String> saveEvent(@RequestBody Event event, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            String loginUserId = userDetails.getUsername();  // "202345011" 같은 학번
-            System.out.println("🔍 로그인한 user_id: " + loginUserId);
-
+            String loginUserId = userDetails.getUsername();
             User user = userRepository.findByUserId(loginUserId)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
-
-            event.setUserId(user.getId());
 
             if (event.getEnd() != null && event.getStart() != null && event.getEnd().isBefore(event.getStart())) {
                 return ResponseEntity.badRequest().body("⛔ 종료일이 시작일보다 빠릅니다.");
             }
 
-            eventRepository.save(event);
+            calendarService.addEvent(event, user);
             return ResponseEntity.ok("✅ 저장 성공");
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("❌ 저장 실패: " + e.getMessage());

@@ -36,7 +36,7 @@ public class Event {
     private String location;
     private String color;
     private String alarm;
-
+    
     @Override
     public String toString() {
         return "Event{" +
