@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>일정 수정</title>
+</head>
+<body>
+    <h1>일정 수정 폼</h1>
+
+    <form th:action="@{/api/calendar/events/update}" th:object="${event}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <label>제목: <input type="text" th:field="*{title}" /></label><br>
+    <label>시작 시간: <input type="datetime-local" th:field="*{start}" /></label><br>
+    <label>종료 시간: <input type="datetime-local" th:field="*{end}" /></label><br>
+    <label>장소: <input type="text" th:field="*{location}" /></label><br>
+    <label>일정 유형:
+        <select th:field="*{type}">
+            <option value="강의">강의</option>
+            <option value="포트폴리오">포트폴리오</option>
+            <option value="스케줄">스케줄</option>
+        </select>
+    </label><br>
+    <label>색상: <input type="color" th:field="*{color}" /></label><br>
+    <label>알림:
+        <select th:field="*{alarm}">
+            <option value="없음">없음</option>
+            <option value="10분 전">10분 전</option>
+            <option value="30분 전">30분 전</option>
+        </select>
+    </label><br>
+    <button type="submit">저장</button>
+</form>
+
+
+</body>
+</html>
