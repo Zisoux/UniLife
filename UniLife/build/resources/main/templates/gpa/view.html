@@ -1,14 +1,102 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>UniLife 학점계산기</title>
-	<link rel="stylesheet" href="/css/gpa.css">
 
+	<!-- Tailwind CSS CDN -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#6699FF',
+						secondary: '#FF9933',
+						tertiary: '#6ad46a'
+					},
+					borderRadius: {
+						'button': '8px'
+					},
+					fontFamily: {
+						righteous: ["'Righteous'", 'cursive'],
+						noto: ["'Noto Sans KR'", 'sans-serif']
+					}
+				}
+			}
+		};
+	</script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Righteous&display=swap"
+		rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js" defer></script>
+	<script src="https://unpkg.com/@popperjs/core@2" defer></script>
+	<script src="https://unpkg.com/tippy.js@6" defer></script>
+	<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+	<style>
+		body {
+			font-family: 'Noto Sans KR', sans-serif;
+			background-color: #F1F3F5;
+			font-size: 13px;
+		}
+
+		.fc {
+			font-family: 'Noto Sans KR', sans-serif;
+			font-size: 13px;
+		}
+
+		.fc-toolbar-title {
+			font-weight: 700;
+		}
+
+		.fc-event {
+			font-size: 0.75rem;
+			border-radius: 4px;
+			padding: 2px 6px;
+			color: #fff;
+			background-color: inherit !important;
+			border-color: inherit !important;
+		}
+
+		.fc-event-main,
+		.fc-event-title,
+		.fc-event-dot {
+			background-color: inherit !important;
+			color: inherit !important;
+			border-color: inherit !important;
+		}
+
+		.fc .fc-button {
+			border-radius: 6px;
+			padding: 5px 10px;
+			background-color: #6699FF;
+			border: none;
+			min-width: 90px;
+			height: 34px;
+			font-size: 0.825rem;
+		}
+
+		.fc .fc-button:hover {
+			background-color: #4f83e3;
+		}
+
+		.fc-toolbar-chunk button {
+			margin-right: 0.5rem;
+		}
+
+		html,
+		body {
+			height: 100%;
+		}
+	</style>
+	<link rel="stylesheet" href="/css/gpa.css">
+
 	<!-- Noto Sans KR (한글용) -->
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 	<!-- Righteous (영문용) -->
@@ -17,11 +105,11 @@
 	<script>
 		function goToSemester(button) {
 			const semesterId = button.dataset.semester;
-			const userId = document.getElementById("sessionUserId").innerText.trim();
+			const userId = document.getElementById("loginUserId").innerText.trim();
 
 			if (semesterId === "all") {
 				// 전체학기면 POST로 GPA 업데이트 요청
-				fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, {method: 'POST'})
+				fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
 					.then(response => {
 						if (response.ok) {
 							window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
@@ -41,47 +129,47 @@
 
 
 		window.onload = function () {
-		    // 첫 번째 delete 버튼 이벤트 리스너
-		    document.querySelectorAll('.delete-button').forEach(button => {
-		        button.addEventListener('click', function () {
-		            const courseId = this.dataset.id;
-		            if (confirm("정말 삭제하시겠습니까?")) {
-		                fetch(`/gpa/delete?courseId=${courseId}`, { method: 'GET' })
-		                    .then(res => {
-		                        if (res.ok) this.closest('tr').remove();
-		                        else alert('삭제 실패');
-		                    })
-		                    .catch(() => alert('삭제 요청에 실패했습니다.'));
-		            }
-		        });
-		    });
+			// 첫 번째 delete 버튼 이벤트 리스너
+			document.querySelectorAll('.delete-button').forEach(button => {
+				button.addEventListener('click', function () {
+					const courseId = this.dataset.id;
+					if (confirm("정말 삭제하시겠습니까?")) {
+						fetch(`/gpa/delete?courseId=${courseId}`, { method: 'GET' })
+							.then(res => {
+								if (res.ok) this.closest('tr').remove();
+								else alert('삭제 실패');
+							})
+							.catch(() => alert('삭제 요청에 실패했습니다.'));
+					}
+				});
+			});
 
-		    // 두 번째 deleteAll 버튼 이벤트 리스너
-		    document.querySelectorAll('.deleteALL-button').forEach(button => {
-		        button.addEventListener('click', function () {
-		            if (confirm("전체 데이터를 삭제하시겠습니까?")) {
-		                fetch(`/gpa/deleteAll?`, { method: 'GET' })
-		                    .then(res => {
-		                        if (res.ok) {
-		                            // 전체 삭제 후 테이블 갱신
-		                            alert('전체 데이터가 삭제되었습니다.');
-		                        } else {
-		                            alert('전체 삭제 실패');
-		                        }
-		                    })
-		                    .catch(() => alert('삭제 요청에 실패했습니다.'));
-		            }
-		        });
-		    });
+			// 두 번째 deleteAll 버튼 이벤트 리스너
+			document.querySelectorAll('.deleteALL-button').forEach(button => {
+				button.addEventListener('click', function () {
+					if (confirm("전체 데이터를 삭제하시겠습니까?")) {
+						fetch(`/gpa/deleteAll?`, { method: 'GET' })
+							.then(res => {
+								if (res.ok) {
+									// 전체 삭제 후 테이블 갱신
+									alert('전체 데이터가 삭제되었습니다.');
+								} else {
+									alert('전체 삭제 실패');
+								}
+							})
+							.catch(() => alert('삭제 요청에 실패했습니다.'));
+					}
+				});
+			});
 		};
 
 
 		function openModal(button) {
 			const semesterId = "all"; // 전체학기
-			const userId = document.getElementById("sessionUserId").innerText.trim();
+			const userId = document.getElementById("loginUserId").innerText.trim();
 
 			// 1. 먼저 전체학기 업데이트 POST
-			fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, {method: 'POST'})
+			fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
 				.then(response => {
 					if (!response.ok) throw new Error('전체학기 업데이트 실패');
 
@@ -115,28 +203,52 @@
 	</script>
 </head>
 
-<body>
-	<span id="sessionUserId" th:text="${session.userId}" hidden>202345011</span>
+<body class="font-noto text-sm bg-white w-full min-h-screen">
 
-	<div class="container">
-		<!-- 상단 고정 바 -->
-		<header class="topbar">
-			<div class="topbar-left">UniLife</div>
-			<div class="topbar-right">
-				<span class="topbar-date">
-					<span th:text="${todayDate}">2025-04-16</span>,
-					<span th:text="${dayOfWeek}">수요일</span>
-				</span>
-				<span class="topbar-user">이유진</span>
+	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
+
+	<div th:fragment="header(userId, id)">
+		<header class="bg-[#6699ff] text-white shadow-sm w-full">
+			<div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
+
+				<!-- 왼쪽 로고 -->
+				<div class="text-2xl font-['Righteous'] tracking-wide">
+					UniLife
+				</div>
+
+				<!-- 오른쪽: 메뉴 + 유저이름 + 로그아웃 -->
+				<div class="flex items-center gap-6 text-sm">
+
+					<!-- 메뉴 -->
+					<nav>
+						<ul class="flex gap-6">
+							<li><a th:href="@{/calendar}" class="hover:underline">일정</a></li>
+							<li><a th:href="@{/timetable/view/{id}(id=${id}, semester='20251')}"
+									class="hover:underline">시간표</a></li>
+							<li><a th:href="@{/portfolios}" class="hover:underline">포트폴리오</a></li>
+							<li><a th:href="@{/gpa/view(userId=${userId}, semesterId='1-1')}" class="hover:underline">학점
+									계산기</a></li>
+							<li><a th:href="@{/friend}" class="hover:underline">친구</a></li>
+						</ul>
+					</nav>
+
+					<!-- 사용자 이름 -->
+					<span class="font-bold text-white">
+						<i class="ri-user-line mr-1"></i>
+						<span th:text="${username}">로그인한 사용자</span>
+					</span>
+
+					<!-- 로그아웃 버튼 -->
+					<form th:action="@{/logout}" method="post">
+						<button type="submit" class="text-xs hover:underline">로그아웃</button>
+					</form>
+
+				</div>
 			</div>
 		</header>
+	</div>
 
-		<!--<div class="sidebar">
-      <h2>사용자 정보</h2>
-      <p><strong>이름:</strong> <span th:text="${session.username}">이유진</span></p>
-      <p><strong>학번:</strong> <span th:text="${session.userId}">202345011</span></p>
-      <p><strong>학과:</strong> <span th:text="${session.department}">컴퓨터시스템공학</span></p>
-    </div>-->
+	<div class="flex w-full max-w-full min-h-[calc(100vh-64px)]">
 
 		<div class="main-content">
 			<!--<h1 style="margin-bottom: 15px;">학점 정보</h1>-->
@@ -165,7 +277,7 @@
 			<div id="myModal" class="modal">
 				<div class="modal-content">
 					<span class="close" onclick="closeModal()">&times;</span>
-					<h2>전체학기</h2>
+					<h2 class="text-lg font-bold mb-4">전체학기</h2>
 					<table class="allTable" style="margin: 10px auto 10px auto;">
 						<thead>
 							<tr>
@@ -295,13 +407,15 @@
 						</tbody>
 					</table>
 					<div style="text-align: right; margin-top: 10px; margin-right: 100px;">
-						<button type="submit">🔄 새로고침 (수정반영)</button>
+						<button type="submit"
+							class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]">🔄
+							새로고침 (수정반영)</button>
 					</div>
 				</form>
 			</div>
 
 			<div class="input-form">
-				<h2>과목등록</h2>
+				<h2 class="text-lg font-bold mb-4">과목등록</h2>
 				<form action="/gpa/calculate" method="POST">
 					<input type="hidden" name="userId" value="${session.userId}">
 					<input type="hidden" name="semesterId" value="${session.semesterId}">
@@ -345,7 +459,9 @@
 						</tr>
 					</table>
 					<div style="text-align: right; margin-top: 10px; margin-right: 10px;">
-						<input type="submit" value="➕ 등록">
+						<input type="submit"
+							class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]"
+							value="➕ 등록">
 					</div>
 				</form>
 			</div>

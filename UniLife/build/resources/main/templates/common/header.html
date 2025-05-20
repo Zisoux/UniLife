@@ -1,0 +1,38 @@
+<div th:fragment="header(userId, id)">
+  <header class="bg-[#6699ff] text-white shadow-sm w-full">
+    <div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
+      
+      <!-- 왼쪽 로고 -->
+      <div class="text-2xl font-['Righteous'] tracking-wide">
+        UniLife
+      </div>
+      
+      <!-- 오른쪽: 메뉴 + 유저이름 + 로그아웃 -->
+      <div class="flex items-center gap-6 text-sm">
+
+        <!-- 메뉴 -->
+        <nav>
+          <ul class="flex gap-6">
+            <li><a th:href="@{/calendar}" class="hover:underline">일정</a></li>
+            <li><a th:href="@{/timetable/view/{id}(id=${id}, semester='20251')}" class="hover:underline">시간표</a></li>
+            <li><a th:href="@{/portfolios}" class="hover:underline">포트폴리오</a></li>
+            <li><a th:href="@{/gpa/view(userId=${userId}, semesterId='1-1')}" class="hover:underline">학점 계산기</a></li>
+            <li><a th:href="@{/friend}" class="hover:underline">친구</a></li>
+          </ul>
+        </nav>
+        
+        <!-- 사용자 이름 -->
+        <span class="font-bold text-white">
+          <i class="ri-user-line mr-1"></i>
+          <span th:text="${username}">로그인한 사용자</span>
+        </span>
+
+        <!-- 로그아웃 버튼 -->
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="text-xs hover:underline">로그아웃</button>
+        </form>
+
+      </div>
+    </div>
+  </header>
+</div>

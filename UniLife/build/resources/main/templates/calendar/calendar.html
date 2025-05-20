@@ -83,24 +83,9 @@
   </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col font-noto text-sm">
-  <header class="top-bar p-4 bg-[#6699ff] text-white flex justify-between items-center shadow-sm">
-    <div class="text-2xl ml-2 ml-3 font-righteous">UniLife</div>
-    <nav class="flex items-center gap-6 text-sm font-medium">
-    <a href="/calendar" class="hover:underline">일정</a>
-    <a th:href="@{|/timetable/view/${user.id}?semester=2025-1|}" class="hover:underline">시간표</a>
-    <a href="/portfolios" class="hover:underline">포트폴리오</a>
-    <a href="/calculate" class="hover:underline">학점 계산기</a>
-    <a href="/friends" class="hover:underline">친구</a>
+  <span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
+  <div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
 
-    <!-- 유저 이름 자리 (추후 마이페이지로 연결) -->
-    <div class="ml-6 flex items-center gap-2">
-      <span class="text-white font-semibold">유저</span>
-      <a href="/mypage" class="text-sm bg-white text-primary px-3 py-1 rounded-md hover:bg-gray-100 transition">
-        마이페이지
-      </a>
-    </div>
-  </nav>
-  </header>
   <div class="flex flex-1 gap-6 px-6 py-4 overflow-hidden h-[calc(100vh-60px)]">
     <aside id="friend-list" class="flex flex-col w-[250px] bg-gray-50 border-r border-gray-200 rounded-md shadow-sm p-3 h-full">
       <div class="flex justify-between items-center mb-3 shrink-0">
@@ -194,11 +179,10 @@
     </div>
     <div id="toast" class="fixed top-6 right-6 bg-black/80 text-white text-sm px-4 py-2 rounded-md shadow-md opacity-0 transition-opacity duration-300 z-50"></div>
   </div>
-
-  <script th:inline="javascript">
-  const currentUserId = [[${user.id}]];
-  const currentUsername = '[[${user.username}]]';
-  console.log("📌 로그인 유저:", currentUserId, currentUsername);
+</body>
+</html>
+  <script>
+  const currentUserId = document.getElementById("loginUserId").innerText.trim();    // ✅ 하드코딩 삭제 후 로그인 사용자 정보 갱신
   let currentViewUserId = currentUserId;
   let selectedDate = null;
   let calendar;
@@ -591,9 +575,9 @@ document.addEventListener('click', function (e) {
     document.getElementById('delete-btn').style.display = 'none';
 
     document.getElementById('slide-start-date').value = date;
-    document.getElementById('slide-start-time').value = '00:00';
+    document.getElementById('slide-start-time').value = '09:00';
     document.getElementById('slide-end-date').value = date;
-    document.getElementById('slide-end-time').value = '';
+    document.getElementById('slide-end-time').value = '18:00';
 
     const repeatSelect = document.getElementById('slide-repeat');
     if (repeatSelect) {
