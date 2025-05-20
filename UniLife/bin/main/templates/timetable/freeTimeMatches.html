@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공강 친구 매칭 결과</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+
+<h1 class="text-2xl font-bold mb-6">공강 친구 매칭 결과</h1>
+
+<div th:if="${#lists.isEmpty(matches)}" class="text-gray-600 italic">
+    공강이 겹치는 친구가 없습니다.
+</div>
+
+<div th:if="${!#lists.isEmpty(matches)}">
+    <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-6 py-3 text-left text-gray-700">친구 이름</th>
+                <th class="px-6 py-3 text-left text-gray-700">공강 시작</th>
+                <th class="px-6 py-3 text-left text-gray-700">공강 종료</th>
+                <th class="px-6 py-3 text-left text-gray-700">공강 길이 (분)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="match : ${matches}" class="border-t hover:bg-gray-50">
+                <td class="px-6 py-4" th:text="${match.friendUsername}"></td>
+                <td class="px-6 py-4" th:text="${match.freeStartTime}"></td>
+                <td class="px-6 py-4" th:text="${match.freeEndTime}"></td>
+                <td class="px-6 py-4" th:text="${match.freeMinutes}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-8">
+    <a th:href="@{'/timetable/view/' + ${userId} + '?semester=' + ${semester}}" 
+       class="inline-block bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+        시간표로 돌아가기
+    </a>
+</div>
+
+</body>
+</html>
