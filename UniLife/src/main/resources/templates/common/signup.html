@@ -1,0 +1,59 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+    <meta charset="UTF-8" />
+    <title>UniLife 회원가입</title>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .font-righteous {
+        font-family: 'Righteous', cursive;
+      }
+    </style>
+  </head>
+  <body class="flex min-h-screen items-center justify-center bg-[#f4f6f8]">
+    <div class="w-full max-w-md space-y-6 rounded-xl bg-white p-10 shadow-md">
+      <div class="text-center">
+        <h1 class="font-righteous mb-2 text-3xl text-[#6699ff]">UniLife</h1>
+        <h2 class="text-xl font-semibold text-gray-700">회원가입</h2>
+      </div>
+
+      <form th:action="@{/login}" method="post" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-900">아이디</label>
+          <input type="text" name="userId" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+          <button class="mt-1.5 rounded-2xl bg-[#e0eaff] pr-2 pl-2 text-sm text-gray-700">중복확인</button>
+          <div th:if="${param.error}" class="text-sm text-red-500">중복된 아이디입니다.</div>
+          <div th:if="${param.success}" class="text-sm text-green-500">사용 가능한 아이디입니다.</div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-900">이메일</label>
+          <input type="text" name="email" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+           <button class="mt-1.5 rounded-2xl bg-[#e0eaff] pr-2 pl-2 text-sm text-gray-700">이메일 인증</button>
+           <input type="text" name="username" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+          <div th:if="${param.error}" class="text-sm text-red-500">이메일 주소를 확인하세요.</div>
+          <div th:if="${param.success}" class="text-sm text-green-500">인증되었습니다.</div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-900">이름</label>
+          <input type="text" name="username" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-900">비밀번호</label>
+          <input type="password" name="password" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-900">비밀번호 확인</label>
+          <input type="password" name="password" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+          <div th:if="${param.error}" class="text-sm text-red-500">비밀번호를 다시 확인하세요.</div>
+          <div th:if="${param.success}" class="text-sm text-green-500">올바른 비밀번호 입니다.</div>
+        </div>
+
+        <button type="submit" class="w-full rounded-md bg-[#6699ff] py-2 text-white transition hover:bg-[#4d7fe5]">회원가입</button>
+      </form>
+    </div>
+  </body>
+</html>
