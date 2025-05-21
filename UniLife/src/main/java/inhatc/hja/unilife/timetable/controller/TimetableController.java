@@ -1,5 +1,6 @@
 package inhatc.hja.unilife.timetable.controller;
-
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
 import inhatc.hja.unilife.timetable.dto.FreeTimeMatchDTO;
 import inhatc.hja.unilife.timetable.entity.Course;
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,18 +29,26 @@ public class TimetableController {
 
     @GetMapping("/view/{userId}")
     public String viewTimetable(@PathVariable("userId") Long userId,
-                                @RequestParam("semester") String semester,
+                                @RequestParam(value = "semester", required = false) String semester,
                                 @RequestParam(value = "day", required = false) String dayOverride,
                                 Model model) {
-        Timetable timetable = timetableService.getTimetableWithCourses(userId, semester);
-        List<Course> courses = timetableService.getAllCourses();
+
         List<String> semesters = timetableService.getSemestersByUserId(userId);
         List<String> predefinedSemesters = timetableService.getAvailableSemesters();
 
+        // 요청에 semester 없으면 가장 최근 학기로 설정
+        if (semester == null || semester.isEmpty()) {
+            semester = semesters.isEmpty() ? "" : semesters.get(0);
+        }
+
+        Timetable timetable = semester.isEmpty() ? null : timetableService.getTimetableWithCourses(userId, semester);
+        List<Course> courses = timetableService.getAllCourses();
+
         String today = (dayOverride != null) ? dayOverride : getKoreanDayName(LocalDate.now().getDayOfWeek());
         LocalTime now = (dayOverride != null) ? null : LocalTime.now();
-
-        List<FreeTimeMatchDTO> matchingFriends = timetableService.findMatchingFriendsByDay(userId, semester, today, now);
+        List<FreeTimeMatchDTO> matchingFriends = (timetable != null)
+            ? timetableService.findMatchingFriendsByDay(userId, semester, today, now)
+            : new ArrayList<>();
 
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
@@ -51,7 +59,9 @@ public class TimetableController {
         model.addAttribute("dayList", List.of("월", "화", "수", "목", "금"));
         model.addAttribute("selectedDay", today);
         model.addAttribute("matchingFriends", matchingFriends);
-        model.addAttribute("courseBlocks", timetableService.convertToCourseBlocks(timetable.getTimetableCourses()));
+        model.addAttribute("courseBlocks", (timetable != null)
+            ? timetableService.convertToCourseBlocks(timetable.getTimetableCourses())
+            : new ArrayList<>());
 
         return "timetable/timetable";
     }
@@ -75,12 +85,23 @@ public class TimetableController {
         String encodedSemester = URLEncoder.encode(semester, StandardCharsets.UTF_8);
         return "redirect:/timetable/view/" + userId + "?semester=" + encodedSemester;
     }
-    //학기 삭제 요청 처리
+  
+
     @PostMapping("/delete")
     public String deleteTimetable(@RequestParam("userId") Long userId,
                                   @RequestParam("semester") String semester) {
         timetableService.deleteTimetable(userId, semester);
-        return "redirect:/timetable/view/" + userId;
+
+        // 남아있는 학기 중 첫 번째로 리디렉션
+        List<String> remainingSemesters = timetableService.getSemestersByUserId(userId);
+        if (!remainingSemesters.isEmpty()) {
+            String nextSemester = remainingSemesters.get(0);
+            String encodedNext = URLEncoder.encode(nextSemester, StandardCharsets.UTF_8);
+            return "redirect:/timetable/view/" + userId + "?semester=" + encodedNext;
+        }
+
+        // 남은 학기가 없으면 빈 시간표 화면으로 이동
+        return "redirect:/timetable/view/" + userId + "?semester=";
     }
 
 

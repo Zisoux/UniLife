@@ -61,11 +61,12 @@ public class TimetableService {
 
     @Transactional
     public void deleteTimetable(Long userId, String semester) {
-        timetableRepository.findByUserIdAndSemester(userId, semester).ifPresent(timetable -> {
-            timetableCourseRepository.deleteAll(timetable.getTimetableCourses());  // 강의들 먼저 삭제
-            timetableRepository.delete(timetable); // 시간표 자체 삭제
-        });
+        Timetable timetable = timetableRepository.findByUserIdAndSemester(userId, semester)
+            .orElseThrow(() -> new IllegalArgumentException("시간표를 찾을 수 없습니다."));
+        timetableRepository.delete(timetable);
     }
+
+    
 
 
     private Timetable createNewTimetable(Long userId, String semester) {
@@ -121,6 +122,10 @@ public class TimetableService {
         Map<Long, FreeTimeMatchDTO> matchMap = new HashMap<>();
 
         for (Friend friend : friends) {
+            // 🔒 학기 시간표가 없는 친구는 건너뜀
+            boolean hasSemester = timetableRepository.findByUserIdAndSemester(friend.getFriendId(), semester).isPresent();
+            if (!hasSemester) continue;
+
             List<TimetableCourse> friendCourses = timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(friend.getFriendId(), semester)
                     .stream().filter(c -> c.getDayOfWeek().equals(dayOfWeek)).toList();
             List<TimeRange> friendFreeTimes = calculateFreeTimes(friendCourses);
@@ -302,6 +307,10 @@ public class TimetableService {
         Map<Long, FreeTimeMatchDTO> friendMatchMap = new HashMap<>();
 
         for (Friend friend : friends) {
+            // ✅ 시간표 존재 여부 먼저 확인
+            boolean hasSemester = timetableRepository.findByUserIdAndSemester(friend.getFriendId(), semester).isPresent();
+            if (!hasSemester) continue;
+
             List<TimetableCourse> friendCourses = timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(friend.getFriendId(), semester)
                     .stream()
                     .filter(c -> c.getDayOfWeek().equals(dayOfWeek))
@@ -331,9 +340,7 @@ public class TimetableService {
                                         dto.setTimeRanges(new ArrayList<>());
                                     }
 
-                                    // 공강 시간 블럭 추가
                                     dto.getTimeRanges().add(matchedStart + " ~ " + matchedEnd);
-
                                     friendMatchMap.put(user.getId(), dto);
                                 });
                             }
