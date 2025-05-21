@@ -235,20 +235,31 @@
         openSlidePanel(info.dateStr);
       },
       eventClick: function (info) {
-    	  info.jsEvent.stopPropagation(); 
-        const e = info.event;
-        let pureTitle = e.title.includes('] ') ? e.title.split('] ')[1] : e.title;
-        openSlidePanel(e.startStr.split('T')[0], {
-          id: e.id,
-          title: pureTitle,
-          start: e.start,
-          end: e.end,
-          location: e.extendedProps.location,
-          alarm: e.extendedProps.alarm,
-          type: e.extendedProps.type,
-          repeat: e.extendedProps.repeat
-        });
-      },
+    	  info.jsEvent.stopPropagation();
+
+    	  const e = info.event;
+
+    	  // ✅ 현재 로그인한 유저와 일정 소유자 비교
+    	  const isMine = e.extendedProps.userId == currentUserId;  // ← 비교는 == 또는 ===로 적절히
+
+    	  if (!isMine) {
+    	    alert("👀 친구 일정은 수정할 수 없습니다.");
+    	    return;
+    	  }
+
+    	  let pureTitle = e.title.includes('] ') ? e.title.split('] ')[1] : e.title;
+
+    	  openSlidePanel(e.startStr.split('T')[0], {
+    	    id: e.id,
+    	    title: pureTitle,
+    	    start: e.start,
+    	    end: e.end,
+    	    location: e.extendedProps.location,
+    	    alarm: e.extendedProps.alarm,
+    	    type: e.extendedProps.type,
+    	    repeat: e.extendedProps.repeat
+    	  });
+    	},
       eventDrop: function (info) {
         const event = info.event;
         function formatLocalDateTime(date) {
