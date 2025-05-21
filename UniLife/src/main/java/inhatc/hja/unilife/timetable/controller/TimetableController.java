@@ -75,6 +75,14 @@ public class TimetableController {
         String encodedSemester = URLEncoder.encode(semester, StandardCharsets.UTF_8);
         return "redirect:/timetable/view/" + userId + "?semester=" + encodedSemester;
     }
+    //학기 삭제 요청 처리
+    @PostMapping("/delete")
+    public String deleteTimetable(@RequestParam("userId") Long userId,
+                                  @RequestParam("semester") String semester) {
+        timetableService.deleteTimetable(userId, semester);
+        return "redirect:/timetable/view/" + userId;
+    }
+
 
     @GetMapping("/delete/{id}")
     public String deleteClass(@PathVariable("id") Long id,

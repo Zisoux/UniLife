@@ -1,0 +1,88 @@
+!SESSION 2025-05-20 10:44:19.824 -----------------------------------------------
+eclipse.buildId=4.35.0.202503181406
+java.version=21.0.6
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=ko_KR
+Framework arguments:  -product org.springframework.boot.ide.branding.sts4
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.springframework.boot.ide.branding.sts4
+
+!ENTRY ch.qos.logback.classic 1 0 2025-05-20 10:44:22.723
+!MESSAGE Activated before the state location was initialized. Retry after the state location is initialized.
+
+!ENTRY org.eclipse.lemminx.uber-jar 4 0 2025-05-20 10:44:23.079
+!MESSAGE bundle org.eclipse.lemminx.uber-jar:0.29.0 (328) Component descriptor entry 'OSGI-INF/*.xml' not found
+
+!ENTRY ch.qos.logback.classic 1 0 2025-05-20 10:44:55.719
+!MESSAGE Logback config file: C:\Users\gha90\UniLife-new\UniLife\.metadata\.plugins\org.eclipse.m2e.logback\logback.2.7.0.20241001-1350.xml
+
+!ENTRY org.eclipse.ui 2 0 2025-05-20 10:44:56.830
+!MESSAGE Warnings while parsing the commands from the 'org.eclipse.ui.commands' and 'org.eclipse.ui.actionDefinitions' extension points.
+!SUBENTRY 1 org.eclipse.ui 2 0 2025-05-20 10:44:56.830
+!MESSAGE Commands should really have a category: plug-in='org.springframework.tooling.boot.ls', id='spring.initializr.addStarters', categoryId='org.eclipse.lsp4e.commandCategory'
+
+!ENTRY org.eclipse.ui 2 0 2025-05-20 10:44:57.618
+!MESSAGE Warnings while parsing the commands from the 'org.eclipse.ui.commands' and 'org.eclipse.ui.actionDefinitions' extension points.
+!SUBENTRY 1 org.eclipse.ui 2 0 2025-05-20 10:44:57.618
+!MESSAGE Commands should really have a category: plug-in='org.springframework.tooling.boot.ls', id='spring.initializr.addStarters', categoryId='org.eclipse.lsp4e.commandCategory'
+
+!ENTRY org.eclipse.mylyn.tasks.ui 2 0 2025-05-20 10:45:01.838
+!MESSAGE No search provider was registered. Tasks search is not available.
+
+!ENTRY org.eclipse.egit.ui 2 0 2025-05-20 10:45:03.257
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\gha90'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.egit.ui 4 0 2025-05-20 10:46:22.664
+!MESSAGE Invalid project description for project 'UniLife-new' at 'file:/C:/Users/gha90/UniLife-new' 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Invalid project description for project 'UniLife-new' at 'file:/C:/Users/gha90/UniLife-new' 
+	at org.eclipse.core.internal.resources.Project.checkDescription(Project.java:211)
+	at org.eclipse.core.internal.resources.Project.assertCreateRequirements(Project.java:95)
+	at org.eclipse.core.internal.resources.Project.create(Project.java:305)
+	at org.eclipse.core.internal.resources.Project.create(Project.java:291)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils.createExistingProject(ProjectUtils.java:179)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils$1.run(ProjectUtils.java:104)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2457)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2477)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils.createProjects(ProjectUtils.java:138)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils.createProjects(ProjectUtils.java:62)
+	at org.eclipse.egit.ui.internal.clone.GitImportWizard.importProjects(GitImportWizard.java:254)
+	at org.eclipse.egit.ui.internal.clone.GitImportWizard$4.run(GitImportWizard.java:206)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:124)
+Contains: OK
+Contains: C:\Users\gha90\UniLife-new overlaps the workspace location: C:\Users\gha90\UniLife-new\UniLife
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2025-05-20 10:46:22.665
+!MESSAGE Invalid project description for project 'UniLife-new' at 'file:/C:/Users/gha90/UniLife-new' 
+!SUBENTRY 2 unknown 0 0 2025-05-20 10:46:22.665
+!MESSAGE OK
+!SUBENTRY 2 org.eclipse.core.resources 4 77 2025-05-20 10:46:22.665
+!MESSAGE C:\Users\gha90\UniLife-new overlaps the workspace location: C:\Users\gha90\UniLife-new\UniLife
+
+!ENTRY org.eclipse.egit.ui 4 0 2025-05-20 10:46:33.308
+!MESSAGE Invalid project description for project 'UniLife' at 'file:/C:/Users/gha90/UniLife-new/UniLife' 
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Invalid project description for project 'UniLife' at 'file:/C:/Users/gha90/UniLife-new/UniLife' 
+	at org.eclipse.core.internal.resources.Project.checkDescription(Project.java:211)
+	at org.eclipse.core.internal.resources.Project.assertCreateRequirements(Project.java:95)
+	at org.eclipse.core.internal.resources.Project.create(Project.java:305)
+	at org.eclipse.core.internal.resources.Project.create(Project.java:291)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils.createExistingProject(ProjectUtils.java:179)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils$1.run(ProjectUtils.java:104)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2457)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2477)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils.createProjects(ProjectUtils.java:138)
+	at org.eclipse.egit.ui.internal.clone.ProjectUtils.createProjects(ProjectUtils.java:62)
+	at org.eclipse.egit.ui.internal.clone.GitImportWizard.importProjects(GitImportWizard.java:254)
+	at org.eclipse.egit.ui.internal.clone.GitImportWizard$4.run(GitImportWizard.java:206)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:124)
+Contains: OK
+Contains: C:\Users\gha90\UniLife-new\UniLife overlaps the workspace location: C:\Users\gha90\UniLife-new\UniLife
+!SUBENTRY 1 org.eclipse.core.resources 4 77 2025-05-20 10:46:33.308
+!MESSAGE Invalid project description for project 'UniLife' at 'file:/C:/Users/gha90/UniLife-new/UniLife' 
+!SUBENTRY 2 unknown 0 0 2025-05-20 10:46:33.308
+!MESSAGE OK
+!SUBENTRY 2 org.eclipse.core.resources 4 77 2025-05-20 10:46:33.308
+!MESSAGE C:\Users\gha90\UniLife-new\UniLife overlaps the workspace location: C:\Users\gha90\UniLife-new\UniLife

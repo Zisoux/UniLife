@@ -24,8 +24,8 @@ public class FriendController {
     // 친구 목록 보기
     @GetMapping("/{userId}")
     public String viewFriends(@PathVariable("userId") Long userId,
-                               @RequestParam(name = "semester", required = false) String semester,
-                               Model model) {
+                              @RequestParam(name = "semester", required = false) String semester,
+                              Model model) {
         if (semester == null || semester.isBlank()) {
             semester = "2024-1학기"; // 기본 학기 지정
         }
@@ -39,9 +39,9 @@ public class FriendController {
     // 친구 검색
     @PostMapping("/search")
     public String searchFriends(@RequestParam("userId") Long userId,
-                                 @RequestParam("semester") String semester,
-                                 @RequestParam("keyword") String keyword,
-                                 Model model) {
+                                @RequestParam("semester") String semester,
+                                @RequestParam("keyword") String keyword,
+                                Model model) {
         List<FriendWithUser> searchResults = friendService.searchFriends(userId, keyword);
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
@@ -52,7 +52,7 @@ public class FriendController {
     // 친구 추가
     @PostMapping("/add")
     public String addFriend(@RequestParam("userId") Long userId,
-                             @RequestParam("friendId") Long friendId) {
+                            @RequestParam("friendId") Long friendId) {
         friendService.addFriend(userId, friendId);
         return "redirect:/friends/" + userId;
     }
@@ -60,7 +60,7 @@ public class FriendController {
     // 친구 삭제
     @PostMapping("/delete")
     public String deleteFriend(@RequestParam("userId") Long userId,
-                                @RequestParam("friendId") Long friendId) {
+                               @RequestParam("friendId") Long friendId) {
         friendService.deleteFriend(userId, friendId);
         return "redirect:/friends/" + userId;
     }
@@ -71,15 +71,14 @@ public class FriendController {
                                       @PathVariable("friendId") Long friendId,
                                       @RequestParam("semester") String semester,
                                       Model model) {
-
         Timetable friendTimetable;
         List<CourseBlockDTO> courseBlocks;
 
         try {
-            friendTimetable = timetableService.getTimetableWithCourses(friendId, semester);
+            // ✅ 친구의 시간표는 자동 생성 없이 조회만
+            friendTimetable = timetableService.getExistingTimetableWithCourses(friendId, semester);
             courseBlocks = timetableService.convertToCourseBlocksForFriend(friendTimetable.getTimetableCourses());
         } catch (IllegalArgumentException e) {
-            // 친구가 해당 학기에 시간표가 없는 경우 예외 발생 → 빈 시간표 처리
             friendTimetable = new Timetable();
             friendTimetable.setTimetableCourses(new ArrayList<>());
             courseBlocks = new ArrayList<>();
@@ -95,6 +94,6 @@ public class FriendController {
         model.addAttribute("dayList", List.of("월", "화", "수", "목", "금"));
         model.addAttribute("courseBlocks", courseBlocks);
 
-        return "timetable/friendTimetable";  // ✅ 수정됨
+        return "timetable/friendTimetable";
     }
 }

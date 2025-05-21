@@ -4,7 +4,7 @@ import inhatc.hja.unilife.timetable.dto.*;
 import inhatc.hja.unilife.timetable.entity.*;
 import inhatc.hja.unilife.timetable.repository.*;
 import inhatc.hja.unilife.user.repository.entity.User;
-
+import jakarta.transaction.Transactional;
 import inhatc.hja.unilife.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,17 +45,27 @@ public class TimetableService {
                 .toList();
     }
 
+    //2025-05-21 수정 (내가 추가한 학기 시간표가 친구한테도 생기는 문제점)
     public Timetable getTimetableWithCourses(Long userId, String semester) {
-        Timetable timetable = timetableRepository.findByUserIdAndSemester(userId, semester)
+        return timetableRepository.findByUserIdAndSemester(userId, semester)
                 .orElseGet(() -> {
                     Timetable newTimetable = createNewTimetable(userId, semester);
                     return timetableRepository.save(newTimetable);
                 });
-        return timetable;
     }
 
+    public Timetable getExistingTimetableWithCourses(Long userId, String semester) {
+        return timetableRepository.findByUserIdAndSemester(userId, semester)
+                .orElseThrow(() -> new IllegalArgumentException("시간표를 찾을 수 없습니다."));
+    }
 
-
+    @Transactional
+    public void deleteTimetable(Long userId, String semester) {
+        timetableRepository.findByUserIdAndSemester(userId, semester).ifPresent(timetable -> {
+            timetableCourseRepository.deleteAll(timetable.getTimetableCourses());  // 강의들 먼저 삭제
+            timetableRepository.delete(timetable); // 시간표 자체 삭제
+        });
+    }
 
 
     private Timetable createNewTimetable(Long userId, String semester) {
@@ -71,10 +81,13 @@ public class TimetableService {
 
 
     public void createTimetable(Long userId, String semester) {
-        if (timetableRepository.findAllByUserIdAndSemester(userId, semester).isEmpty()) {
-            timetableRepository.save(createNewTimetable(userId, semester));
+        boolean exists = timetableRepository.findByUserIdAndSemester(userId, semester).isPresent();
+        if (!exists) {
+            Timetable timetable = createNewTimetable(userId, semester);
+            timetableRepository.save(timetable);
         }
     }
+
 
     public void addClassToTimetable(Long userId, Long courseId, String dayOfWeek, String startTime, String endTime, String semester) {
         Timetable timetable = getTimetableWithCourses(userId, semester);

@@ -65,20 +65,20 @@ public class FriendService {
         friend2.setStatus(Friend.Status.accepted);
         friendRepository.save(friend2);
     }
-
     public void deleteFriend(Long userId, Long friendId) {
-        // A -> B 삭제
-        Friend friend1 = friendRepository.findByUserIdAndFriendId(userId, friendId);
-        if (friend1 != null) {
-            friendRepository.delete(friend1);
+        // A -> B 관계 모두 삭제
+        List<Friend> directRelations = friendRepository.findByUserIdAndFriendId(userId, friendId);
+        for (Friend f : directRelations) {
+            friendRepository.delete(f);
         }
 
-        // B -> A 삭제
-        Friend friend2 = friendRepository.findByUserIdAndFriendId(friendId, userId);
-        if (friend2 != null) {
-            friendRepository.delete(friend2);
+        // B -> A 관계 모두 삭제
+        List<Friend> reverseRelations = friendRepository.findByUserIdAndFriendId(friendId, userId);
+        for (Friend f : reverseRelations) {
+            friendRepository.delete(f);
         }
     }
+
 
 
    
