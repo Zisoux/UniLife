@@ -1,11 +1,17 @@
 package inhatc.hja.unilife.timetable.repository;
 
 import inhatc.hja.unilife.timetable.entity.Timetable;
+=======
+>>>>>>> tmp-timetable
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+<<<<<<< HEAD
+=======
+import inhatc.hja.unilife.timetable.entity.Timetable;
 
 public interface TimetableRepository extends JpaRepository<Timetable, Long> {
 

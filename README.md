@@ -5,6 +5,15 @@
 - [X] 학점계산기 로그인 유저정보 연동기능 최신화 완료. (기존 하드코딩에서 로그인 유저 아이디 정보를 가지고 동작하도록 변경)
 - [X] 기타 업데이트로 인한 오류들 수정 완료.  
 
+<<<<<<< HEAD
 ### 2025.05.20 업데이트
 - 일정 등록->알림 설정 시 메일링 서비스 추가
 - 단, 이메일은 gmail만 발송 가능
+=======
+#### 깃 너무 어려워
+##### 이 영상 깃 연동방법 자세히 나와있음
+https://youtu.be/JlUo-vD55F0?feature=shared
+
+#### 테스트 유저 (User table에 insert)
+##### id=999, name='testuser', email='test@itc.ac.kr', password_hash='hashpw'
+>>>>>>> tmp-timetable

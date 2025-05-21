@@ -3,12 +3,13 @@ package inhatc.hja.unilife.timetable.service;
 import inhatc.hja.unilife.timetable.dto.*;
 import inhatc.hja.unilife.timetable.entity.*;
 import inhatc.hja.unilife.timetable.repository.*;
-//import inhatc.hja.unilife.user.entity.Friend;
-import inhatc.hja.unilife.user.repository.*;
+import inhatc.hja.unilife.user.repository.entity.User;
+import jakarta.transaction.Transactional;
+import inhatc.hja.unilife.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-//import java.time.Duration;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,7 +22,7 @@ public class TimetableService {
     private final TimetableRepository timetableRepository;
     private final TimetableCourseRepository timetableCourseRepository;
     private final CourseRepository courseRepository;
-    //private final FriendRepository friendRepository;
+    private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
     public List<String> getAvailableSemesters() {
@@ -44,9 +45,26 @@ public class TimetableService {
                 .toList();
     }
 
+    //2025-05-21 수정 (내가 추가한 학기 시간표가 친구한테도 생기는 문제점)
     public Timetable getTimetableWithCourses(Long userId, String semester) {
         return timetableRepository.findByUserIdAndSemester(userId, semester)
+                .orElseGet(() -> {
+                    Timetable newTimetable = createNewTimetable(userId, semester);
+                    return timetableRepository.save(newTimetable);
+                });
+    }
+
+    public Timetable getExistingTimetableWithCourses(Long userId, String semester) {
+        return timetableRepository.findByUserIdAndSemester(userId, semester)
                 .orElseThrow(() -> new IllegalArgumentException("시간표를 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public void deleteTimetable(Long userId, String semester) {
+        timetableRepository.findByUserIdAndSemester(userId, semester).ifPresent(timetable -> {
+            timetableCourseRepository.deleteAll(timetable.getTimetableCourses());  // 강의들 먼저 삭제
+            timetableRepository.delete(timetable); // 시간표 자체 삭제
+        });
     }
 
 
@@ -63,10 +81,13 @@ public class TimetableService {
 
 
     public void createTimetable(Long userId, String semester) {
-        if (timetableRepository.findAllByUserIdAndSemester(userId, semester).isEmpty()) {
-            timetableRepository.save(createNewTimetable(userId, semester));
+        boolean exists = timetableRepository.findByUserIdAndSemester(userId, semester).isPresent();
+        if (!exists) {
+            Timetable timetable = createNewTimetable(userId, semester);
+            timetableRepository.save(timetable);
         }
     }
+
 
     public void addClassToTimetable(Long userId, Long courseId, String dayOfWeek, String startTime, String endTime, String semester) {
         Timetable timetable = getTimetableWithCourses(userId, semester);
@@ -91,7 +112,7 @@ public class TimetableService {
         return courseRepository.findAll();
     }
 
-    /*public List<FreeTimeMatchDTO> findMatchingFriendsByDay(Long userId, String semester, String dayOfWeek, LocalTime now) {
+    public List<FreeTimeMatchDTO> findMatchingFriendsByDay(Long userId, String semester, String dayOfWeek, LocalTime now) {
         List<TimetableCourse> myCourses = timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(userId, semester)
                 .stream().filter(c -> c.getDayOfWeek().equals(dayOfWeek)).toList();
         List<TimeRange> myFreeTimes = calculateFreeTimes(myCourses);
@@ -127,10 +148,10 @@ public class TimetableService {
         }
 
         return new ArrayList<>(matchMap.values());
-    }*/
+    }
 
 
-    /*private List<TimeRange> calculateFreeTimes(List<TimetableCourse> courses) {
+    private List<TimeRange> calculateFreeTimes(List<TimetableCourse> courses) {
         List<TimetableCourse> sortedCourses = new ArrayList<>(courses);
         sortedCourses.sort(Comparator.comparing(TimetableCourse::getStartTime));
 
@@ -150,24 +171,24 @@ public class TimetableService {
         }
 
         return freeTimes;
-    }*/
+    }
 
-    /*private Optional<TimeRange> getOverlap(TimeRange t1, TimeRange t2) {
+    private Optional<TimeRange> getOverlap(TimeRange t1, TimeRange t2) {
         LocalTime start = t1.start().isAfter(t2.start()) ? t1.start() : t2.start();
         LocalTime end = t1.end().isBefore(t2.end()) ? t1.end() : t2.end();
         return start.isBefore(end) ? Optional.of(new TimeRange(start, end)) : Optional.empty();
-    }*/
+    }
 
-    /*private boolean isCurrentTimeInRange(TimeRange range, LocalTime now) {
+    private boolean isCurrentTimeInRange(TimeRange range, LocalTime now) {
         return now.isAfter(range.start()) && now.isBefore(range.end());
-    }*/
+    }
 
     public List<CourseBlockDTO> convertToCourseBlocks(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
 
         int timetableStart = 8 * 60;        // 08:00 시작 (분)
-        //int timetableEnd = 22 * 60;         // 22:00 종료
-        //int timetableDuration = timetableEnd - timetableStart; // 840분
+        int timetableEnd = 22 * 60;         // 22:00 종료
+        int timetableDuration = timetableEnd - timetableStart; // 840분
         int pixelHeight = 1440;             // 전체 높이(px)
         double pxPerMinute = pixelHeight / 840.0;
         
@@ -263,8 +284,14 @@ public class TimetableService {
         return blocks;
     }
 
-   
-    /*public List<FreeTimeMatchDTO> findMatchingFriends(Long userId, String semester, String dayOfWeek, LocalTime startTime, LocalTime endTime, int minMinutes) {
+
+
+
+
+
+
+           
+    public List<FreeTimeMatchDTO> findMatchingFriends(Long userId, String semester, String dayOfWeek, LocalTime startTime, LocalTime endTime, int minMinutes) {
         List<TimetableCourse> myCourses = timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(userId, semester)
                 .stream()
                 .filter(c -> c.getDayOfWeek().equals(dayOfWeek))
@@ -317,5 +344,6 @@ public class TimetableService {
         }
 
         return new ArrayList<>(friendMatchMap.values());
-    }*/
+    }
 }
+

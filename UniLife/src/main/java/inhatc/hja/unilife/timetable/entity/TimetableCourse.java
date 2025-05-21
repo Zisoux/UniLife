@@ -3,6 +3,10 @@ package inhatc.hja.unilife.timetable.entity;
 import java.time.LocalTime;
 import jakarta.persistence.Id;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> tmp-timetable
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+<<<<<<< HEAD
 @Entity
 @Getter
 @Setter
@@ -38,6 +43,5 @@ public class TimetableCourse {
 
     @Column(name = "end_time")
     private LocalTime endTime;
-    
     
 }

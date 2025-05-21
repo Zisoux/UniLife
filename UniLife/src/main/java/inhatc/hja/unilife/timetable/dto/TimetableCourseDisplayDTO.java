@@ -3,6 +3,11 @@ package inhatc.hja.unilife.timetable.dto;
 import inhatc.hja.unilife.timetable.entity.TimetableCourse;
 import java.time.LocalTime;
 
+=======
+import java.time.LocalTime;
+
+import inhatc.hja.unilife.timetable.entity.TimetableCourse;
+
 public class TimetableCourseDisplayDTO {
     private TimetableCourse course;
     private double topPercent;

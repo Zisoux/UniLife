@@ -1,13 +1,14 @@
 package inhatc.hja.unilife.timetable.controller;
 
-//import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
-//import inhatc.hja.unilife.timetable.dto.FreeTimeMatchDTO;
+import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
+import inhatc.hja.unilife.timetable.dto.FreeTimeMatchDTO;
 import inhatc.hja.unilife.timetable.entity.Course;
 import inhatc.hja.unilife.timetable.entity.Timetable;
-//import inhatc.hja.unilife.user.repository.UserRepository;
 import inhatc.hja.unilife.timetable.service.TimetableService;
 import inhatc.hja.unilife.user.entity.User;
+import inhatc.hja.unilife.user.repository.UserRepository;
 import inhatc.hja.unilife.user.service.UserService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-//import java.time.LocalTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +27,9 @@ import java.util.List;
 @RequestMapping("/timetable")
 public class TimetableController {
 
-	private final UserService userService;
-
+    private final UserService userService;
     private final TimetableService timetableService;
-    //private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/view/{userId}")
     public String viewTimetable(@PathVariable("userId") Long userId,
@@ -42,12 +42,11 @@ public class TimetableController {
         List<String> predefinedSemesters = timetableService.getAvailableSemesters();
 
         String today = (dayOverride != null) ? dayOverride : getKoreanDayName(LocalDate.now().getDayOfWeek());
-        //LocalTime now = (dayOverride != null) ? null : LocalTime.now();
-
-        //List<FreeTimeMatchDTO> matchingFriends = timetableService.findMatchingFriendsByDay(userId, semester, today, now);
+        LocalTime now = (dayOverride != null) ? null : LocalTime.now();
+        List<FreeTimeMatchDTO> matchingFriends = timetableService.findMatchingFriendsByDay(userId, semester, today, now);
 
         User user = userService.findById(userId);
-        
+
         model.addAttribute("user", user);
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
@@ -57,7 +56,7 @@ public class TimetableController {
         model.addAttribute("courses", courses);
         model.addAttribute("dayList", List.of("월", "화", "수", "목", "금"));
         model.addAttribute("selectedDay", today);
-        //model.addAttribute("matchingFriends", matchingFriends);
+        model.addAttribute("matchingFriends", matchingFriends);
         model.addAttribute("courseBlocks", timetableService.convertToCourseBlocks(timetable.getTimetableCourses()));
 
         return "timetable/timetable";
@@ -83,6 +82,14 @@ public class TimetableController {
         return "redirect:/timetable/view/" + userId + "?semester=" + encodedSemester;
     }
 
+    // 학기 삭제
+    @PostMapping("/delete")
+    public String deleteTimetable(@RequestParam("userId") Long userId,
+                                  @RequestParam("semester") String semester) {
+        timetableService.deleteTimetable(userId, semester);
+        return "redirect:/timetable/view/" + userId;
+    }
+
     @GetMapping("/delete/{id}")
     public String deleteClass(@PathVariable("id") Long id,
                               @RequestParam("userId") Long userId,
@@ -101,16 +108,16 @@ public class TimetableController {
                                        @RequestParam(value = "minMinutes", defaultValue = "30") int minMinutes,
                                        Model model) {
 
-        /*List<FreeTimeMatchDTO> matches = timetableService.findMatchingFriends(
-            userId, semester, dayOfWeek, LocalTime.parse(startTime), LocalTime.parse(endTime), minMinutes
-        );*/
+        List<FreeTimeMatchDTO> matches = timetableService.findMatchingFriends(
+                userId, semester, dayOfWeek, LocalTime.parse(startTime), LocalTime.parse(endTime), minMinutes
+        );
 
         List<Integer> timeLinePositions = new ArrayList<>();
         for (int hour = 9; hour <= 18; hour++) {
             timeLinePositions.add((int)((hour - 9) * (100.0 / 9)));
         }
 
-        //model.addAttribute("matches", matches);
+        model.addAttribute("matches", matches);
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
         model.addAttribute("dayOfWeek", dayOfWeek);

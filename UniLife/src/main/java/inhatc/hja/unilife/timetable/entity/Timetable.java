@@ -1,9 +1,17 @@
 package inhatc.hja.unilife.timetable.entity;
 
+import inhatc.hja.unilife.user.repository.entity.User;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+>>>>>>> tmp-timetable
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+<<<<<<< HEAD
 import inhatc.hja.unilife.user.entity.User;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -23,13 +31,12 @@ import lombok.Setter;
 @Table(name = "timetables")
 @Getter
 @Setter
+
 public class Timetable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    // ✅ userId 필드 삭제!
 
     @Column(nullable = false)
     private String semester;
@@ -43,5 +50,4 @@ public class Timetable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // ✅ user_id로 외래키 매핑
     private User user;
-    
-} 
+}

@@ -76,7 +76,5 @@ public class CourseBlockDTO {
     public void setWidthPercent(double widthPercent) {
         this.widthPercent = widthPercent;
     }
-
-
-    // (게터는 @Getter로 자동 생성됨)
 }
+
