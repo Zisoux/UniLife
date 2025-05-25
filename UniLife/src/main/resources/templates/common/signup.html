@@ -1,59 +1,182 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <title>UniLife 회원가입</title>
     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      .font-righteous {
-        font-family: 'Righteous', cursive;
-      }
+        .font-righteous {
+            font-family: 'Righteous', cursive;
+        }
     </style>
-  </head>
-  <body class="flex min-h-screen items-center justify-center bg-[#f4f6f8]">
+
+</head>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const signupBtn = document.getElementById("signupBtn");
+
+        // 1. 아이디 중복확인
+        document.getElementById("checkIdBtn").addEventListener("click", function () {
+            const userId = document.getElementById("userId").value.trim();
+            const resultDiv = document.getElementById("idCheckResult");
+
+            if (userId === "") {
+                resultDiv.innerText = "아이디를 입력하세요.";
+                resultDiv.className = "text-sm text-red-500";
+                signupBtn.disabled = true;
+                return;
+            }
+
+            fetch(`/api/check-id?userId=${userId}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("서버 응답 오류");
+                    return res.json();
+                })
+                .then(data => {
+                    const resultDiv = document.getElementById("idCheckResult");
+                    const signupBtn = document.getElementById("signupBtn");
+
+                    if (data.duplicate) {
+                        resultDiv.innerText = "이미 사용 중인 아이디입니다.";
+                        resultDiv.className = "text-sm text-red-500";
+                        signupBtn.disabled = true;
+                    } else {
+                        resultDiv.innerText = "사용 가능한 아이디입니다.";
+                        resultDiv.className = "text-sm text-green-500";
+                        signupBtn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error("ID 중복확인 오류:", err);
+                    alert("ID 중복확인 중 문제가 발생했습니다. 서버 상태 또는 로그인 여부를 확인해주세요.");
+                });
+
+        });
+
+        // 2. 이메일 인증코드 전송
+        document.getElementById("sendEmailBtn").addEventListener("click", function () {
+            const email = document.getElementById("email").value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (email === "" || !emailRegex.test(email)) {
+                alert("올바른 이메일 주소를 입력하세요.");
+                return;
+            }
+
+            fetch(`/api/send-email?email=${email}`)
+                .then(res => res.text())
+                .then(() => alert("인증코드가 이메일로 전송되었습니다."));
+        });
+
+        // 3. 이메일 인증 확인
+        document.getElementById("verifyEmailBtn").addEventListener("click", function () {
+            const email = document.getElementById("email").value.trim();
+            const code = document.getElementById("authCode").value.trim();
+            const resultDiv = document.getElementById("emailVerifyResult");
+
+            if (email === "" || code === "") {
+                resultDiv.innerText = "이메일과 인증코드를 모두 입력하세요.";
+                resultDiv.className = "text-sm text-red-500";
+                return;
+            }
+
+            fetch(`/api/verify-email`, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ email: email, code: code })
+            })
+                .then(res => {
+                    if (res.ok) {
+                        resultDiv.innerText = "인증되었습니다.";
+                        resultDiv.className = "text-sm text-green-500";
+                    } else {
+                        resultDiv.innerText = "인증 실패";
+                        resultDiv.className = "text-sm text-red-500";
+                    }
+                });
+        });
+
+        // 4. 아이디 입력값이 바뀌면 다시 중복확인하도록 강제
+        document.getElementById("userId").addEventListener("input", function () {
+            document.getElementById("idCheckResult").innerText = "";
+            signupBtn.disabled = true;
+        });
+    });
+</script>
+
+
+<body class="flex min-h-screen items-center justify-center bg-[#f4f6f8]">
     <div class="w-full max-w-md space-y-6 rounded-xl bg-white p-10 shadow-md">
-      <div class="text-center">
-        <h1 class="font-righteous mb-2 text-3xl text-[#6699ff]">UniLife</h1>
-        <h2 class="text-xl font-semibold text-gray-700">회원가입</h2>
-      </div>
-
-      <form th:action="@{/login}" method="post" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-900">아이디</label>
-          <input type="text" name="userId" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
-          <button class="mt-1.5 rounded-2xl bg-[#e0eaff] pr-2 pl-2 text-sm text-gray-700">중복확인</button>
-          <div th:if="${param.error}" class="text-sm text-red-500">중복된 아이디입니다.</div>
-          <div th:if="${param.success}" class="text-sm text-green-500">사용 가능한 아이디입니다.</div>
+        <div class="text-center">
+            <h1 class="font-righteous mb-2 text-3xl text-[#6699ff]">UniLife</h1>
+            <h2 class="text-xl font-semibold text-gray-700">회원가입</h2>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-900">이메일</label>
-          <input type="text" name="email" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
-           <button class="mt-1.5 rounded-2xl bg-[#e0eaff] pr-2 pl-2 text-sm text-gray-700">이메일 인증</button>
-           <input type="text" name="username" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
-          <div th:if="${param.error}" class="text-sm text-red-500">이메일 주소를 확인하세요.</div>
-          <div th:if="${param.success}" class="text-sm text-green-500">인증되었습니다.</div>
-        </div>
+        <form th:action="@{/signup}" method="post" class="space-y-4">
 
-        <div>
-          <label class="block text-sm font-medium text-gray-900">이름</label>
-          <input type="text" name="username" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
-        </div>
+            <!-- 아이디 입력 + 중복 확인 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-900">아이디(학번)</label>
+                <div class="flex gap-2">
+                    <input id="userId" type="text" name="userId"
+                        class="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff]" />
+                    <button type="button" id="checkIdBtn"
+                        class="rounded-2xl bg-[#e0eaff] px-3 text-sm text-gray-700">중복확인</button>
+                </div>
+                <div id="idCheckResult" class="text-sm mt-1"></div>
+            </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-900">비밀번호</label>
-          <input type="password" name="password" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-900">비밀번호 확인</label>
-          <input type="password" name="password" class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
-          <div th:if="${param.error}" class="text-sm text-red-500">비밀번호를 다시 확인하세요.</div>
-          <div th:if="${param.success}" class="text-sm text-green-500">올바른 비밀번호 입니다.</div>
-        </div>
+            <!-- 이메일 인증 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-900">이메일</label>
+                <div class="flex gap-2 mt-1">
+                    <input id="email" type="text" name="email"
+                        class="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff]" />
+                    <button type="button" id="sendEmailBtn"
+                        class="rounded-2xl bg-[#e0eaff] px-3 text-sm text-gray-700">인증코드 전송</button>
+                </div>
+                <div class="flex gap-2 mt-2">
+                    <input id="authCode" type="text"
+                        class="w-1/2 rounded-md border px-4 py-2 text-sm focus:ring-2 focus:ring-[#6699ff]"
+                        placeholder="인증번호 입력" />
+                    <button type="button" id="verifyEmailBtn"
+                        class="rounded-2xl bg-cyan-100 px-3 text-sm text-gray-600">확인</button>
+                </div>
+                <div id="emailVerifyResult" class="text-sm mt-1"></div>
+            </div>
 
-        <button type="submit" class="w-full rounded-md bg-[#6699ff] py-2 text-white transition hover:bg-[#4d7fe5]">회원가입</button>
-      </form>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-900">이름</label>
+                <input type="text" name="username"
+                    class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-900">비밀번호</label>
+                <input type="password" name="password"
+                    class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-900">비밀번호 확인</label>
+                <input type="password" name="passwordck"
+                    class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+                <div th:if="${param.pwError}" class="text-sm text-red-500">비밀번호를 다시 확인하세요.</div>
+                <div th:if="${param.pwSuccess}" class="text-sm text-green-500">올바른 비밀번호 입니다.</div>
+            </div>
+
+            <button type="submit" id="signupBtn"
+                class="w-full rounded-md bg-[#6699ff] py-2 text-white transition hover:bg-[#4d7fe5] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                disabled>
+                회원가입
+            </button>
+
+        </form>
     </div>
-  </body>
+
+</body>
+
 </html>

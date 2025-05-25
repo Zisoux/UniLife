@@ -1,36 +1,79 @@
 package inhatc.hja.unilife.calendar.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import inhatc.hja.unilife.user.service.CustomUserDetailsService;
+
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-
-import inhatc.hja.unilife.user.service.CustomUserDetailsService;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
+@Order(0)
 public class AppSecurityConfig {
 
-	@Autowired
-	private CustomLoginSuccessHandler customLoginSuccessHandler;
-
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
-    public AppSecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public AppSecurityConfig(CustomUserDetailsService customUserDetailsService,
+                             CustomLoginSuccessHandler customLoginSuccessHandler) {
         this.customUserDetailsService = customUserDetailsService;
+        this.customLoginSuccessHandler = customLoginSuccessHandler;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+            .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .authenticationProvider(daoAuthenticationProvider())
+            .authorizeHttpRequests(auth -> auth
+                // 정적 리소스 허용
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
+
+                // 로그인 & 회원가입 허용 (GET & POST 모두)
+                .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/login", "POST")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/signup")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/signup", "POST")).permitAll()
+
+                // API 허용
+                .requestMatchers(new AntPathRequestMatcher("/api/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/**", "POST")).permitAll()
+
+                // H2 콘솔 허용
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+
+                // 나머지 요청은 인증 필요
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .successHandler(customLoginSuccessHandler)
+                .defaultSuccessUrl("/calendar", true)
+                .failureUrl("/login?error")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            );
+
+        return http.build();
     }
 
     @Bean
@@ -39,44 +82,10 @@ public class AppSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-        MvcRequestMatcher.Builder mvc = new MvcRequestMatcher.Builder(introspector).servletPath("/");
-
-        http
-            .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
-            .headers(headers -> headers.frameOptions(frame -> frame.disable())) // X-Frame-Options 헤더 비활성화
-            .authenticationProvider(daoAuthenticationProvider()) // 인증 제공자 설정
-            .authorizeHttpRequests(auth -> auth
-            	    .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-            	    .requestMatchers(mvc.pattern("/login"), mvc.pattern("/signup")).permitAll()
-            	    .requestMatchers(mvc.pattern("/api/signup")).permitAll()
-            	    .requestMatchers(mvc.pattern("/h2-console/**")).permitAll()
-            	    .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login") // 로그인 페이지 경로 설정
-                .loginProcessingUrl("/login") // 로그인 처리 URL
-                .successHandler(customLoginSuccessHandler)
-                .defaultSuccessUrl("/calendar", true) // 로그인 성공 후 리다이렉트할 경로
-                .failureUrl("/login?error") // 로그인 실패 시 리다이렉트할 경로
-                .permitAll() // 로그인 페이지는 모든 사용자에게 허용
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout") // 로그아웃 URL
-                .logoutSuccessUrl("/login?logout") // 로그아웃 성공 후 리다이렉트할 경로
-                .permitAll() // 로그아웃 URL은 모든 사용자에게 허용
-            );
-
-        return http.build();
-    }
-
-    @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(customUserDetailsService);
-        provider.setPasswordEncoder(passwordEncoder()); // ⚠️ 반드시 있어야 함
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-    
- 
 }

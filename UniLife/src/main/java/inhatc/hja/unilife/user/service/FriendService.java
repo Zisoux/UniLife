@@ -35,7 +35,9 @@ public class FriendService {
         return friends.stream()
                 .map(friend -> {
                     User friendUser = friend.getFriend();  // Friend 엔티티에 friend(User) 연관관계
-                    return new SimpleUserDto(friendUser.getId(), friendUser.getUsername());
+                    return new SimpleUserDto(friendUser.getId(), friendUser.getUsername(), 
+                                              friendUser.getUserId(), friendUser.getEmail(), 
+                                              friendUser.getPasswordHash());
                 })
                 .collect(Collectors.toList());
     }
