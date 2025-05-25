@@ -16,6 +16,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const signupForm = document.getElementById("signupForm");
         const signupBtn = document.getElementById("signupBtn");
 
         // 1. 아이디 중복확인
@@ -36,9 +37,6 @@
                     return res.json();
                 })
                 .then(data => {
-                    const resultDiv = document.getElementById("idCheckResult");
-                    const signupBtn = document.getElementById("signupBtn");
-
                     if (data.duplicate) {
                         resultDiv.innerText = "이미 사용 중인 아이디입니다.";
                         resultDiv.className = "text-sm text-red-500";
@@ -53,7 +51,6 @@
                     console.error("ID 중복확인 오류:", err);
                     alert("ID 중복확인 중 문제가 발생했습니다. 서버 상태 또는 로그인 여부를 확인해주세요.");
                 });
-
         });
 
         // 2. 이메일 인증코드 전송
@@ -92,6 +89,7 @@
                     if (res.ok) {
                         resultDiv.innerText = "인증되었습니다.";
                         resultDiv.className = "text-sm text-green-500";
+                        document.getElementById("emailVerified").value = "true";
                     } else {
                         resultDiv.innerText = "인증 실패";
                         resultDiv.className = "text-sm text-red-500";
@@ -99,13 +97,39 @@
                 });
         });
 
-        // 4. 아이디 입력값이 바뀌면 다시 중복확인하도록 강제
+        // 4. 아이디 입력값이 바뀌면 다시 중복확인 하도록
         document.getElementById("userId").addEventListener("input", function () {
             document.getElementById("idCheckResult").innerText = "";
             signupBtn.disabled = true;
         });
-    });
+
+        // 5. 폼 제출 시 이메일 인증 확인
+        signupForm.addEventListener("submit", function (event) {
+            const emailVerified = document.getElementById("emailVerified").value;
+            if (emailVerified !== "true") {
+                alert("이메일 인증을 완료해주세요.");
+                event.preventDefault(); // 🚫 제출 막기
+            }
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('signupSuccess')) {
+            alert("회원가입이 완료되었습니다. 로그인 해주세요.");
+        } else if (urlParams.has('signupFail')) {
+            alert("회원가입에 실패했습니다.");
+        } else if (urlParams.has('pwError')) {
+            alert("비밀번호가 일치하지 않습니다.");
+        } else if (urlParams.has('pwSuccess')) {
+            alert("비밀번호가 일치합니다.");
+        } else if (urlParams.has('idError')) {
+            alert("아이디가 중복되었습니다.");
+        } else if (urlParams.has('emailError')) {
+            alert("이메일 인증에 실패했습니다.");
+        }
+
+    });    
 </script>
+
 
 
 <body class="flex min-h-screen items-center justify-center bg-[#f4f6f8]">
@@ -115,14 +139,14 @@
             <h2 class="text-xl font-semibold text-gray-700">회원가입</h2>
         </div>
 
-        <form th:action="@{/signup}" method="post" class="space-y-4">
+        <form id="signupForm" th:action="@{/signup}" method="post" class="space-y-4">
 
             <!-- 아이디 입력 + 중복 확인 -->
             <div>
                 <label class="block text-sm font-medium text-gray-900">아이디(학번)</label>
                 <div class="flex gap-2">
                     <input id="userId" type="text" name="userId"
-                        class="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff]" />
+                        class="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff]" placeholder="숫자만 입력" />
                     <button type="button" id="checkIdBtn"
                         class="rounded-2xl bg-[#e0eaff] px-3 text-sm text-gray-700">중복확인</button>
                 </div>
@@ -156,6 +180,12 @@
             </div>
 
             <div>
+                <label class="block text-sm font-medium text-gray-900">학과</label>
+                <input type="text" name="department"
+                    class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-900">비밀번호</label>
                 <input type="password" name="password"
                     class="mt-1 w-full rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff] focus:outline-none" />
@@ -173,6 +203,8 @@
                 disabled>
                 회원가입
             </button>
+            <!-- 폼 내부에 추가 -->
+            <input type="hidden" id="emailVerified" name="emailVerified" value="false" />
 
         </form>
     </div>

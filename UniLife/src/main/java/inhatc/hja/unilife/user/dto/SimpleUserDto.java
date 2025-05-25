@@ -53,7 +53,6 @@ public class SimpleUserDto {
 
 	public void setPassword(String passwordHash) {
 		this.passwordHash = passwordHash; // 비밀번호는 암호화 처리 필요
-		// BCrypt 암호화는 UserService에서 처리
 	}
 
     // getter 생략 가능

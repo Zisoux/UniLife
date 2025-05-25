@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import inhatc.hja.unilife.user.dto.SimpleUserDto;
+import inhatc.hja.unilife.user.dto.UserDto;
 import inhatc.hja.unilife.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 
@@ -29,12 +29,19 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public String signup(@ModelAttribute SimpleUserDto userDto, Model model, HttpSession session) {
+    public String signup(@ModelAttribute UserDto userDto, Model model, HttpSession session) {
         String verifiedEmail = (String) session.getAttribute("emailVerified");
 
+        // 이메일 인증 체크
         if (verifiedEmail == null || !verifiedEmail.equals(userDto.getEmail())) {
-            model.addAttribute("error", "이메일 인증을 완료해주세요.");
+            model.addAttribute("emailError", "이메일 인증을 완료해주세요.");
             return "common/signup";
+        }
+
+        // 비밀번호 일치 여부 확인
+        if (!userDto.getPassword().equals(userDto.getPasswordck())) {
+            model.addAttribute("pwError", "비밀번호를 확인하세요.");
+            return "redirect:/signup?pwError";
         }
 
         boolean success = userService.register(userDto);
@@ -42,7 +49,7 @@ public class AuthController {
             session.removeAttribute("emailVerified"); // 인증 정보 삭제
             return "redirect:/login?signupSuccess";
         } else {
-            model.addAttribute("error", "이미 존재하는 아이디입니다.");
+            model.addAttribute("idError", "이미 존재하는 아이디입니다.");
             return "common/signup";
         }
     }
