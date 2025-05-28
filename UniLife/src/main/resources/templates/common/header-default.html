@@ -5,7 +5,7 @@
 	<a th:href="@{/timetable/view/{id}(id=${id}, semester='20251')}">시간표</a> 
 	<a th:href="@{/portfolios}">포트폴리오</a> 
 	<a th:href="@{'/gpa/view'(userId=${user.userId}, semesterId='1-1')}">학점계산기</a> 
-	<a th:href="@{/friend}">친구</a>
+	<a th:href="@{/friends/{userId}(userId=${userId})}">친구</a>
     <a th:if="${username}" th:href="@{/mypage}" style="float: right;" class="text-sm text-gray-700 hover:underline">
 	  <span th:text="${username + '님'}">로그인한 사용자</span>
 	</a>
