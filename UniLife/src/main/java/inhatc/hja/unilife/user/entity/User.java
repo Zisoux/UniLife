@@ -30,6 +30,9 @@ public class User {
     @Column(name = "department")
     private String department;
 
+    @Column(name = "notification_enabled")
+    private Boolean notificationEnabled;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Friend> friendsSent = new ArrayList<>();
 
