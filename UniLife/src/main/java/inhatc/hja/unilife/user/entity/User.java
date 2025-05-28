@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
     
     @Column(name = "user_id", unique = true, nullable = false)

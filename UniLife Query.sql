@@ -13,7 +13,7 @@ CREATE TABLE `courses` (
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=202345012 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.enrolled_courses definition
@@ -38,8 +38,8 @@ CREATE TABLE `enrolled_courses` (
 -- unilife.users definition
 
 CREATE TABLE `users` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint NOT NULL,
+  `user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `users_unique` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=202345026 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.events definition
@@ -55,7 +55,7 @@ CREATE TABLE `users` (
 CREATE TABLE `events` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
-  `repeat_rule` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `repeat_rule` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `start` datetime DEFAULT NULL,
   `end` datetime DEFAULT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE `events` (
   PRIMARY KEY (`id`),
   KEY `events_users_FK` (`user_id`),
   CONSTRAINT `events_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.friends definition
@@ -103,7 +103,7 @@ CREATE TABLE `gpa` (
   KEY `semester_id` (`semester_id`),
   KEY `gpa_users_FK` (`user_id`),
   CONSTRAINT `gpa_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.portfolios definition
@@ -123,7 +123,7 @@ CREATE TABLE `portfolios` (
   PRIMARY KEY (`id`),
   KEY `portfolios_users_FK` (`user_id`),
   CONSTRAINT `portfolios_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.schedule definition
@@ -147,7 +147,7 @@ CREATE TABLE `semesters` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
   `year` int NOT NULL,
-  `semester_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `term` enum('1학기','2학기') COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `semesters_users_FK` (`user_id`),
   CONSTRAINT `semesters_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
@@ -159,13 +159,28 @@ CREATE TABLE `semesters` (
 CREATE TABLE `timetables` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
-  `semester` int NOT NULL,
+  `semester` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `timetables_users_FK` (`user_id`),
   KEY `timetables_semesters_FK` (`semester`),
-  CONSTRAINT `timetables_semesters_FK` FOREIGN KEY (`semester`) REFERENCES `semesters` (`id`),
   CONSTRAINT `timetables_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- unilife.event_notifications definition
+
+CREATE TABLE `event_notifications` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `event_id` int NOT NULL,
+  `notify_at` datetime NOT NULL,
+  `is_sent` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `event_id` (`event_id`),
+  KEY `event_notifications_users_FK` (`user_id`),
+  CONSTRAINT `event_notifications_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`),
+  CONSTRAINT `event_notifications_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -183,7 +198,7 @@ CREATE TABLE `files` (
   PRIMARY KEY (`id`),
   KEY `files_portfolios_FK` (`portfolio_id`),
   CONSTRAINT `files_portfolios_FK` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolios` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.timetable_courses definition
@@ -201,16 +216,3 @@ CREATE TABLE `timetable_courses` (
   CONSTRAINT `timetable_courses_ibfk_1` FOREIGN KEY (`timetable_id`) REFERENCES `timetables` (`id`) ON DELETE CASCADE,
   CONSTRAINT `timetable_courses_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- unilife.event_notifications definition
-
-CREATE TABLE event_notifications (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    event_id INT NOT NULL,
-    notify_at DATETIME NOT NULL,
-    is_sent BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (event_id) REFERENCES events(id)
-);
