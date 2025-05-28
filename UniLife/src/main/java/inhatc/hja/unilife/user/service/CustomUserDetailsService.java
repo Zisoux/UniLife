@@ -47,9 +47,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     CommandLineRunner runner() {
         return args -> {
             PasswordEncoder encoder = new BCryptPasswordEncoder();
+            String hash_admin = encoder.encode("admin");
             String hash_LYJ = encoder.encode("1234");
             String hash_GHA = encoder.encode("abcd");
             String hash_HJS = encoder.encode("0000");
+            System.out.println("[TEST] Bcrypt hash of admin: " + hash_admin);
             System.out.println("[TEST] Bcrypt hash of 1234: " + hash_LYJ);
             System.out.println("[TEST] Bcrypt hash of abcd: " + hash_GHA);
             System.out.println("[TEST] Bcrypt hash of 0000: " + hash_HJS);            
