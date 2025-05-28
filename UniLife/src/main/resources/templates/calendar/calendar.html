@@ -242,6 +242,9 @@
     	  // ✅ 현재 로그인한 유저와 일정 소유자 비교
     	  const isMine = e.extendedProps.userId == currentUserId;  // ← 비교는 == 또는 ===로 적절히
 
+    	  console.log("[DEBUG] 일정 userId:", e.extendedProps.userId);
+    	  console.log("[DEBUG] 현재 로그인 유저 ID:", currentUserId);
+    	  
     	  if (!isMine) {
     	    alert("👀 친구 일정은 수정할 수 없습니다.");
     	    return;
@@ -473,6 +476,7 @@ document.addEventListener('click', function (e) {
 	              return endDate.toISOString().split('T')[0];
 	            })(),
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
@@ -497,6 +501,7 @@ document.addEventListener('click', function (e) {
 	              return endDate.toISOString().split('T')[0];
 	            })(),
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
@@ -515,6 +520,7 @@ document.addEventListener('click', function (e) {
 	            borderColor: color,
 	            textColor: '#fff',
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,

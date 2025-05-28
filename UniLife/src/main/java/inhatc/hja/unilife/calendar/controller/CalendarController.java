@@ -70,11 +70,20 @@ public class CalendarController {
     public List<EventDto> getEvents(@RequestParam("start") String start,
                                     @RequestParam("end") String end,
                                     @AuthenticationPrincipal UserDetails userDetails) {
+    	
+    	System.out.println("✅ getEvents() 호출됨");
+
         try {
             Long userId = Long.parseLong(userDetails.getUsername());
             LocalDateTime startDateTime = LocalDateTime.parse(start.substring(0, 19));
             LocalDateTime endDateTime = LocalDateTime.parse(end.substring(0, 19));
             List<Event> events = eventRepository.findEventsOverlappingByUser(startDateTime, endDateTime, userId);
+            
+         // 🔍 디버그 로그 추가
+            for (Event e : events) {
+                System.out.println("[DEBUG] Event ID: " + e.getId() + ", userId: " + e.getUserId());
+            }
+            
             return events.stream().map(EventDto::fromEntity).collect(Collectors.toList());
         } catch (DateTimeParseException e) {
             return Collections.emptyList();
@@ -120,6 +129,9 @@ public class CalendarController {
     public String showEditForm(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         Event event = eventRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
+
+        System.out.println("[DEBUG] 로그인한 유저 ID: " + userDetails.getUser().getId());
+        System.out.println("[DEBUG] 이벤트 작성자 ID: " + event.getUserId());
 
         // 🔒 권한 체크
         if (!event.getUserId().equals(userDetails.getUser().getId())) {

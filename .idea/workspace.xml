@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8a4f9e54-dd0f-417d-8ba5-728513a2daf9" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/.project" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.lock_info" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.mylyn/repositories.xml.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.mylyn/tasks.xml.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.buildship.core/gradle/versions.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.resources/.projects/.org.eclipse.egit.core.cmp/.location" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/history.version" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/properties.index" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/properties.version" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.resources/.root/1.tree" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.resources/.safetable/org.eclipse.core.resources" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/Docker.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.egit.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.egit.ui.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jdt.ui.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.jsch.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.m2e.apt.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.m2e.discovery.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.mylyn.context.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.mylyn.monitor.ui.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.mylyn.tasks.ui.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.ide.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.views.log.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.eclipse.ui.workbench.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.springframework.ide.eclipse.boot.dash.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.springframework.ide.eclipse.imports.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.core.runtime/.settings/org.springsource.ide.eclipse.commons.ui.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.egit.core/.org.eclipse.egit.core.cmp/.project" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.egit.core/.org.eclipse.egit.core.cmp/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.egit.ui/dialog_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.core/assumedExternalFilesCache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.core/externalFilesCache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.core/javaLikeNames.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.core/nonChainingJarsCache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.core/variablesAndContainers.dat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.ui/OpenTypeHistory.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.ui/QualifiedTypeNameHistory.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.jdt.ui/dialog_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.m2e.core/workspaceState.ser" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.m2e.logback/0.log" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.m2e.logback/logback.2.7.0.20241001-1350.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.pde.core/.cache/clean-cache.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.tips.ide/dialog_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.ui.views.log/dialog_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.ui.workbench/dialog_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/.plugins/org.eclipse.ui.workbench/workingsets.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.metadata/version.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.settings/org.eclipse.buildship.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.settings/org.eclipse.core.resources.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.settings/org.eclipse.jdt.core.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/.settings/org.springframework.ide.eclipse.prefs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/controller/FriendController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/controller/HomeController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/controller/TimetableController.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/dto/CourseBlockDTO.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/dto/FreeTimeMatchDTO.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/dto/FriendWithUser.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/dto/TimeRange.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/dto/TimetableCourseDisplayDTO.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/entity/Course.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/entity/Friend$Status.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/entity/Friend.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/entity/Timetable.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/entity/TimetableCourse.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/repository/CourseRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/repository/FriendRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/repository/TimetableCourseRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/repository/TimetableRepository.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/service/FriendService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/inhatc/hja/unilife/timetable/service/TimetableService.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/calendar/calendar.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/calendar/close_and_refresh.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/calendar/event_edit_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/calendar/event_form.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/portfolio/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/portfolio/list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/portfolio/upload.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/portfolio/view.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/timetable/freeTimeMatches.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/timetable/friendTimetable.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/timetable/friends.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/bin/main/templates/timetable/timetable.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/controller/FriendController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/dto/FriendWithUser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/entity/Friend.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/repository/FriendRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/service/FriendService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/user/repository/entity/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UniLife/src/main/resources/templates/portfolio/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/.gradle/8.13/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/.gradle/8.13/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/.gradle/8.13/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/.gradle/8.13/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/controller/TimetableController.java" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/controller/TimetableController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/dto/TimetableCourseDisplayDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/dto/TimetableCourseDisplayDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/entity/Timetable.java" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/entity/Timetable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/repository/TimetableCourseRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/src/main/java/inhatc/hja/unilife/timetable/repository/TimetableCourseRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UniLife/src/main/resources/templates/timetable/timetable.html" beforeDir="false" afterPath="$PROJECT_DIR$/UniLife/src/main/resources/templates/timetable/timetable.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/Timetable" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="2xi2LoztjSxmqdnuaxYi37Y1C5X" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Final 병합 중",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/LEE/UniLife/UniLife"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="8a4f9e54-dd0f-417d-8ba5-728513a2daf9" name="변경" comment="" />
+      <created>1748406519782</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748406519782</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
+  </component>
+</project>
