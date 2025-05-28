@@ -18,6 +18,11 @@
     document.addEventListener("DOMContentLoaded", function () {
         const signupForm = document.getElementById("signupForm");
         const signupBtn = document.getElementById("signupBtn");
+        const goToLogin = document.getElementById("goToLogin");
+
+        goToLogin.addEventListener("click", function () {
+            window.location.href = "/login";
+        });
 
         // 1. 아이디 중복확인
         document.getElementById("checkIdBtn").addEventListener("click", function () {
@@ -133,6 +138,13 @@
 
 
 <body class="flex min-h-screen items-center justify-center bg-[#f4f6f8]">
+    <button type="button" id="goToLogin" class="p-4 bg-blue-200 rounded-sm">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 12h14M5 12l4-4m-4 4 4 4" />
+        </svg>
+    </button>
     <div class="w-full max-w-md space-y-6 rounded-xl bg-white p-10 shadow-md">
         <div class="text-center">
             <h1 class="font-righteous mb-2 text-3xl text-[#6699ff]">UniLife</h1>
@@ -146,7 +158,8 @@
                 <label class="block text-sm font-medium text-gray-900">아이디(학번)</label>
                 <div class="flex gap-2">
                     <input id="userId" type="text" name="userId"
-                        class="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff]" placeholder="숫자만 입력" />
+                        class="flex-1 rounded-md border px-4 py-2 focus:ring-2 focus:ring-[#6699ff]"
+                        placeholder="숫자만 입력" />
                     <button type="button" id="checkIdBtn"
                         class="rounded-2xl bg-[#e0eaff] px-3 text-sm text-gray-700">중복확인</button>
                 </div>
