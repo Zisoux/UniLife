@@ -35,6 +35,8 @@ public class User {
 
     @OneToMany(mappedBy = "friend", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Friend> friendsReceived = new ArrayList<>();
+    
+    private boolean notificationEnabled;
 
     public User() {}
     public User(String username, String email, String passwordHash) {
@@ -45,4 +47,5 @@ public class User {
 
     public List<Friend> getFriendsSent() { return friendsSent; }
     public List<Friend> getFriendsReceived() { return friendsReceived; }
+
 }

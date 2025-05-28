@@ -6,6 +6,8 @@
 	<a th:href="@{/portfolios}">포트폴리오</a> 
 	<a th:href="@{'/gpa/view'(userId=${user.userId}, semesterId='1-1')}">학점계산기</a> 
 	<a th:href="@{/friend}">친구</a>
-    <span th:if="${username}" style="float: right;">[[${username}]]님</span>
+    <a th:if="${username}" th:href="@{/mypage}" style="float: right;" class="text-sm text-gray-700 hover:underline">
+	  <span th:text="${username + '님'}">로그인한 사용자</span>
+	</a>
   </div>
 </div>
