@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.4'
+    id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -28,6 +28,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'mysql:mysql-connector-java:8.0.33'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
@@ -40,6 +43,10 @@ dependencies {
 
     // Hibernate 최신 버전
     implementation 'org.hibernate:hibernate-core:6.3.1.Final'
+    
+    // mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+   
 }
 
 tasks.named('test') {
@@ -56,6 +63,14 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += "-parameters"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ["-parameters"]
 }
 
 

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>친구 목록</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+    <!-- 상단 네비게이션 -->
+    <nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <div class="text-lg font-bold text-gray-700">친구 관리</div>
+        <a th:href="@{'/timetable/view/' + ${userId} + '?semester=' + ${semester}}"
+            class="text-blue-500 hover:underline">시간표로 돌아가기</a>
+    </nav>
+
+    <main class="max-w-4xl mx-auto py-8 px-4 space-y-6">
+
+        <!-- 친구 검색 -->
+        <form action="/friends/search" method="post" class="flex gap-2">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <input type="hidden" name="semester" th:value="${semester}" />
+            <input type="text" name="keyword" placeholder="친구 이름 검색" class="border rounded px-3 py-2 flex-1" required />
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">검색</button>
+        </form>
+
+        <!-- 친구 추가 -->
+        <form action="/friends/add" method="post" class="flex gap-2">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <input type="hidden" name="semester" th:value="${semester}" />
+            <input type="number" name="friendId" placeholder="추가할 친구 ID" class="border rounded px-3 py-2 flex-1"
+                required />
+            <button class="bg-green-500 text-white px-4 py-2 rounded">추가</button>
+        </form>
+        <div th:if="${param.error != null and param.error[0] == 'invalidFriend'}" class="text-red-500 text-sm mb-3">
+            존재하지 않는 사용자입니다. 친구 추가에 실패했습니다.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'alreadyFriend'}" class="text-red-500 text-sm mb-3">
+            이미 친구로 등록된 사용자입니다.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'selfAdd'}" class="text-red-500 text-sm mb-3">
+            자신을 친구로 추가할 수 없습니다.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'emptyFriendId'}" class="text-red-500 text-sm mb-3">
+            친구 ID를 입력해주세요.
+        </div>
+
+
+        <!-- 친구 목록 -->
+        <section class="bg-white shadow rounded p-6">
+            <h2 class="text-lg font-bold mb-4">내 친구 목록</h2>
+            <div th:if="${#lists.isEmpty(friends)}" class="text-gray-500 italic">친구가 없습니다.</div>
+
+            <ul class="divide-y divide-gray-200" th:each="friend : ${friends}">
+                <li class="py-3 flex justify-between items-center">
+                    <div>
+                        <span class="font-medium" th:text="${friend.username}"></span>
+                        <span class="text-xs text-gray-500 ml-1" th:text="'(' + ${friend.friendId} + ')'"></span>
+                    </div>
+                    <div class="flex gap-2">
+                        <form action="/friends/delete" method="post">
+                            <input type="hidden" name="userId" th:value="${userId}" />
+                            <input type="hidden" name="friendId" th:value="${friend.friendId}" />
+                            <input type="hidden" name="semester" th:value="${semester}" />
+                            <button class="text-red-500 hover:underline text-sm">삭제</button>
+                        </form>
+                        <a th:href="@{'/friends/' + ${userId} + '/timetable/' + ${friend.friendId} + '?semester=' + ${semester}}"
+                            class="text-sm text-blue-500 hover:underline">시간표 보기</a>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+.settings/
+.gradle/
+
+UniLife/.settings/org.eclipse.buildship.core.prefs
+UniLife/.gradle/8.13/fileHashes/fileHashes.lock
+UniLife/.gradle/8.13/checksums/checksums.lock
+UniLife/.gradle/8.13/checksums/md5-checksums.bin
+UniLife/.gradle/8.13/checksums/sha1-checksums.bin
+UniLife/.settings/org.eclipse.buildship.core.prefs

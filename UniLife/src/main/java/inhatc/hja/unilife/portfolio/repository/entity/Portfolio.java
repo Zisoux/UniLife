@@ -44,9 +44,9 @@ public class Portfolio {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
-    // 원래 파일명과 확장자 저장을 위한 추가 필드
-    @Column(name = "original_file_name")
-    private String originalFileName;
+    // 파일명과 확장자 저장을 위한 추가 필드
+    @Column(name = "file_name")
+    private String fileName;
     
     @Column(name = "file_extension")
     private String fileExtension;
