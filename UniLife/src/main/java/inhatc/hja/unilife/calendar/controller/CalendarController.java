@@ -9,6 +9,8 @@ import inhatc.hja.unilife.user.service.FriendService;
 import inhatc.hja.unilife.user.entity.User;
 import inhatc.hja.unilife.user.repository.FriendRepository;
 import inhatc.hja.unilife.user.repository.UserRepository;
+import inhatc.hja.unilife.user.security.CustomUserDetails;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +19,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -78,13 +82,22 @@ public class CalendarController {
     }
 
     @DeleteMapping("/events/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
-        if (eventRepository.existsById(id)) {
-            eventRepository.deleteById(id);
-            return ResponseEntity.ok().build();
-        } else {
+    public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+
+        if (eventOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
+        Event event = eventOpt.get();
+
+        // 🔒 삭제 권한 체크: 로그인 유저와 이벤트 소유자 일치
+        if (!event.getUserId().equals(userDetails.getUser().getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
+        }
+
+        eventRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/events/day")
@@ -104,18 +117,31 @@ public class CalendarController {
     }
 
     @GetMapping("/events/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Event event = eventRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
+    public String showEditForm(@PathVariable("id") Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Event event = eventRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당 일정이 없습니다."));
+
+        // 🔒 권한 체크
+        if (!event.getUserId().equals(userDetails.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "수정 권한이 없습니다.");
+        }
+
         model.addAttribute("event", event);
         return "calendar/event_edit_form";
     }
 
     @PostMapping("/events/update")
-    public ResponseEntity<Void> updateEvent(@RequestBody Event updated) {
+    public ResponseEntity<Void> updateEvent(@RequestBody Event updated, @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
             Event event = eventRepository.findById(updated.getId())
                     .orElseThrow(() -> new RuntimeException("일정 ID 없음"));
 
+            // 🔒 로그인한 사용자와 이벤트 소유자가 일치하는지 확인
+            if (!event.getUserId().equals(userDetails.getUser().getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403
+            }
+
+            // ✅ 본인 일정일 경우만 수정
             event.setTitle(updated.getTitle());
             event.setStart(updated.getStart());
             event.setEnd(updated.getEnd());
