@@ -245,8 +245,10 @@
 
 					<!-- 사용자 이름 -->
 					<span class="font-bold text-white">
-						<i class="ri-user-line mr-1"></i>
-						<span th:text="${username}">로그인한 사용자</span>
+						<a th:href="@{/mypage}" class="font-bold text-white hover:underline flex items-center">
+							<i class="ri-user-line mr-1"></i>
+							<span th:text="${username}">로그인한 사용자</span>
+						</a>
 					</span>
 
 					<!-- 로그아웃 버튼 -->
