@@ -46,32 +46,40 @@ public class GPAController {
 	public String calculateGPA(@SessionAttribute(name = "userId") Long userId,
 			@SessionAttribute(name = "semesterId") String semesterId,
 			@RequestParam(name = "scoreLabel") String scoreLabel,
-			@RequestParam(name = "credits") int credits, @RequestParam(name = "courseName") String courseName,
-			@RequestParam(name = "isMajor", defaultValue = "false") boolean isMajor, Model model) {
+			@RequestParam(name = "credits") int credits,
+			@RequestParam(name = "courseName") String courseName,
+			@RequestParam(name = "isMajor", defaultValue = "false") boolean isMajor,
+			Model model) {
 
-		// GPA 계산
-		EnrolledCourse enrolledCourse = gpaService.newCalculateGPA(userId, semesterId, scoreLabel, credits, courseName,
-				isMajor);
+		EnrolledCourse enrolledCourse = new EnrolledCourse();
+		enrolledCourse.setUserId(userId);
+		enrolledCourse.setSemesterId(semesterId);
+		enrolledCourse.setCourseName(courseName);
+		enrolledCourse.setCredits(credits);
+		enrolledCourse.setIsMajor(isMajor);
 
-		BigDecimal grade = gpaService.convertGrade(scoreLabel);
+		if ("P".equals(scoreLabel)) {
+			enrolledCourse.setGradeType("P");
+			enrolledCourse.setGrade(null);
+		} else if ("NP".equals(scoreLabel)) {
+			enrolledCourse.setGradeType("NP");
+			enrolledCourse.setGrade(null);
+		} else {
+			enrolledCourse.setGradeType("NORMAL");
+			enrolledCourse.setGrade(gpaService.convertGrade(scoreLabel));
+		}
 
+		// 저장은 여기서 한 번만!
+		enrolledCourseRepository.save(enrolledCourse);
+
+		// GPA 계산 및 학점 업데이트
 		String changes = "new";
-		// GPA 계산 후 학점 업데이트
-		gpaService.updateCreditsAfterChanges(changes, credits, isMajor, grade, courseName, userId, semesterId); // 과목 추가
-																												// 시
-																												// creditsChange
-																												// =
-																												// credits
+		gpaService.updateCreditsAfterChanges(
+				changes, credits, isMajor, enrolledCourse.getGrade(), courseName, userId, semesterId);
 
-		// 계산된 GPA 값을 모델에 추가
-		GPA gpa = gpaService.getGPAByUserIdAndSemester(userId, semesterId);
+		gpaService.updateGPAAfterChanges(userId, semesterId);
 
-		// 모델에 추가하여 결과를 화면에 표시
-		model.addAttribute("gpa", gpa);
-		model.addAttribute("enrolledCourse", enrolledCourse);
-
-		// `redirect`를 사용하여 결과 페이지로 이동 (다시 GET 방식으로 이동)
-		return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId; // GET 방식으로 리다이렉트
+		return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId;
 	}
 
 	@GetMapping("/view")
@@ -171,8 +179,17 @@ public class GPAController {
 						course.setCredits(Integer.parseInt(entry.getValue()));
 						break;
 					case "grade":
-						BigDecimal grade = gpaService.convertGrade(entry.getValue());
-						course.setGrade(grade);
+						String gradeStr = entry.getValue();
+						if ("P".equals(gradeStr)) {
+							course.setGradeType("P");
+							course.setGrade(null);
+						} else if ("NP".equals(gradeStr)) {
+							course.setGradeType("NP");
+							course.setGrade(null);
+						} else {
+							course.setGradeType("NORMAL");
+							course.setGrade(gpaService.convertGrade(gradeStr));
+						}
 						break;
 					case "isMajor":
 						// 체크박스: "on"이면 true, "off" 또는 null이면 false

@@ -97,8 +97,9 @@
 		}
 
 		.main-content {
-			height: calc(100vh - 64px); /* header 높이만큼 빼기 */
-            overflow-y: auto; 
+			height: calc(100vh - 64px);
+			/* header 높이만큼 빼기 */
+			overflow-y: auto;
 		}
 
 		.no-scrollbar::-webkit-scrollbar {
@@ -216,6 +217,40 @@
 		function closeModal() {
 			document.getElementById("myModal").style.display = "none";
 		}
+
+		function toggleMajorCheckbox(courseId) {
+			const grade = document.getElementById('grade-' + courseId).value;
+			const majorCheckbox = document.getElementById('isMajor-' + courseId);
+			if (grade === 'P' || grade === 'NP') {
+				majorCheckbox.checked = false;
+				majorCheckbox.disabled = true;
+			} else {
+				majorCheckbox.disabled = false;
+			}
+		}
+
+		// 페이지 로드시 P/NP인 경우 체크박스 비활성화
+		window.addEventListener('DOMContentLoaded', function () {
+			document.querySelectorAll('select[id^="grade-"]').forEach(function (select) {
+				const courseId = select.id.replace('grade-', '');
+				toggleMajorCheckbox(courseId);
+			});
+		});
+
+		function toggleMajorCheckboxForRegister() {
+			const grade = document.getElementById('scoreLabel').value;
+			const majorCheckbox = document.getElementById('isMajor');
+			if (grade === 'P' || grade === 'NP') {
+				majorCheckbox.checked = false;
+				majorCheckbox.disabled = true;
+			} else {
+				majorCheckbox.disabled = false;
+			}
+		}
+		// 페이지 로드시에도 반영
+		window.addEventListener('DOMContentLoaded', function () {
+			toggleMajorCheckboxForRegister();
+		});
 
 	</script>
 </head>
@@ -405,24 +440,45 @@
 											th:value="${course.credits}" required>
 									</td>
 									<td>
-										<select th:name="'courses[' + ${course.id} + '].grade'" required>
-											<option value="A+" th:selected="${course.grade} == 4.5">A+</option>
-											<option value="A0" th:selected="${course.grade} == 4.0">A0</option>
-											<option value="B+" th:selected="${course.grade} == 3.5">B+</option>
-											<option value="B0" th:selected="${course.grade} == 3.0">B0</option>
-											<option value="C+" th:selected="${course.grade} == 2.5">C+</option>
-											<option value="C0" th:selected="${course.grade} == 2.0">C0</option>
-											<option value="D+" th:selected="${course.grade} == 1.5">D+</option>
-											<option value="D0" th:selected="${course.grade} == 1.0">D0</option>
-											<option value="F" th:selected="${course.grade} == 0">F</option>
-											<option value="P" th:selected="${course.grade} == NULL">P</option>
-											<!--<option value="NP" th:selected="${course.grade} == NULL">NP</option>-->
+										<select th:name="'courses[' + ${course.id} + '].grade'" required
+											th:id="'grade-' + ${course.id}"
+											th:onchange="'toggleMajorCheckbox(' + ${course.id} + ')'">
+											<option value="A+"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 4.5">
+												A+</option>
+											<option value="A0"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 4.0">
+												A0</option>
+											<option value="B+"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 3.5">
+												B+</option>
+											<option value="B0"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 3.0">
+												B0</option>
+											<option value="C+"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 2.5">
+												C+</option>
+											<option value="C0"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 2.0">
+												C0</option>
+											<option value="D+"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 1.5">
+												D+</option>
+											<option value="D0"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 1.0">
+												D0</option>
+											<option value="F"
+												th:selected="${course.gradeType} == 'NORMAL' and ${course.grade} == 0">F
+											</option>
+											<option value="P" th:selected="${course.gradeType} == 'P'">P</option>
+											<option value="NP" th:selected="${course.gradeType} == 'NP'">NP</option>
 										</select>
 									</td>
 									<td>
 										<input type="checkbox" th:name="'courses[' + ${course.id} + '].isMajor'"
-										th:checked="${course.isMajor}" />
-										<input type="hidden" th:name="'courses[' + ${course.id} + '].isMajor'" value="off" />
+											th:checked="${course.isMajor}" th:id="'isMajor-' + ${course.id}" />
+										<input type="hidden" th:name="'courses[' + ${course.id} + '].isMajor'"
+											value="off" />
 									</td>
 									<td>
 										<button type="button" class="delete-button" th:data-id="${course.id}" style="background-color: transparent;
@@ -464,7 +520,8 @@
 								<td style="width: 50%;">
 									<label for="scoreLabel">성적</label><br>
 									<select id="scoreLabel" name="scoreLabel" required
-										style="width: 100%; padding: 8px; border: 1px solid #e2e6ee; border-radius: 6px;">
+										style="width: 100%; padding: 8px; border: 1px solid #e2e6ee; border-radius: 6px;"
+										onchange="toggleMajorCheckboxForRegister()">
 										<option value="">성적 선택</option>
 										<option value="A+">A+</option>
 										<option value="A0">A0</option>

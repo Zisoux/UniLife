@@ -43,4 +43,7 @@ public class EnrolledCourse {
 	
 	@Column(name = "is_major")
 	private Boolean isMajor;
+
+	@Column(name = "grade_type")
+	private String gradeType; // 패논패 확인용 "NORMAL", "P", "NP"
 }
