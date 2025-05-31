@@ -421,7 +421,8 @@
 									</td>
 									<td>
 										<input type="checkbox" th:name="'courses[' + ${course.id} + '].isMajor'"
-											th:checked="${course.isMajor}" />
+										th:checked="${course.isMajor}" />
+										<input type="hidden" th:name="'courses[' + ${course.id} + '].isMajor'" value="off" />
 									</td>
 									<td>
 										<button type="button" class="delete-button" th:data-id="${course.id}" style="background-color: transparent;

@@ -19,9 +19,11 @@ import org.springframework.ui.Model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/gpa")
@@ -29,9 +31,9 @@ public class GPAController {
 
 	@Autowired
 	private GPAService gpaService;
-	
-	//@Autowired
-	//private GPARepository gpaRepository;
+
+	// @Autowired
+	// private GPARepository gpaRepository;
 
 	@Autowired
 	private UserService userService;
@@ -42,20 +44,21 @@ public class GPAController {
 	// GPA 계산 후 결과 표시
 	@PostMapping("/calculate")
 	public String calculateGPA(@SessionAttribute(name = "userId") Long userId,
-			@SessionAttribute(name = "semesterId") String semesterId, @RequestParam(name = "scoreLabel") String scoreLabel,
+			@SessionAttribute(name = "semesterId") String semesterId,
+			@RequestParam(name = "scoreLabel") String scoreLabel,
 			@RequestParam(name = "credits") int credits, @RequestParam(name = "courseName") String courseName,
 			@RequestParam(name = "isMajor", defaultValue = "false") boolean isMajor, Model model) {
-		
 
 		// GPA 계산
 		EnrolledCourse enrolledCourse = gpaService.newCalculateGPA(userId, semesterId, scoreLabel, credits, courseName,
 				isMajor);
-		
+
 		BigDecimal grade = gpaService.convertGrade(scoreLabel);
 
 		String changes = "new";
 		// GPA 계산 후 학점 업데이트
-		gpaService.updateCreditsAfterChanges(changes, credits, isMajor, grade, courseName, userId, semesterId); // 과목 추가 시
+		gpaService.updateCreditsAfterChanges(changes, credits, isMajor, grade, courseName, userId, semesterId); // 과목 추가
+																												// 시
 																												// creditsChange
 																												// =
 																												// credits
@@ -118,85 +121,95 @@ public class GPAController {
 		// gpa/view.html 템플릿을 반환
 		return "gpa/view";
 	}
-	
+
 	@GetMapping("/allSemester")
 	@ResponseBody
 	public GPA getAllSemesterGpa(@RequestParam("userId") String userIdStr) {
-	    Long userId = Long.parseLong(userIdStr);
-	    return gpaService.allSemesterUpdate(userId);
+		Long userId = Long.parseLong(userIdStr);
+		return gpaService.allSemesterUpdate(userId);
 	}
 
 	// 과목 수정 시 처리 (전체 수정)
 	@Transactional
 	@PostMapping("/update")
 	public String updateCourses(@RequestParam Map<String, String> courses,
-	                             @SessionAttribute(name = "userId") Long userId,
-	                             @SessionAttribute(name = "semesterId") String semesterId,
-	                             Model model) {
+			@SessionAttribute(name = "userId") Long userId,
+			@SessionAttribute(name = "semesterId") String semesterId,
+			Model model) {
 
-	    // 로그 추가 - 전달된 courses 데이터 확인
-	    System.out.println("Received courses data: " + courses);
+		// 로그 추가 - 전달된 courses 데이터 확인
+		System.out.println("Received courses data: " + courses);
 
-	    // 전체학기 업데이트 요청이면 별도로 처리
-	    if ("all".equals(semesterId)) {
-	        GPA allSemester = gpaService.allSemesterUpdate(userId);
-	        model.addAttribute("allSemester", allSemester);
-	        return "redirect:/gpa/view?userId=" + userId + "&semesterId=all";
-	    }
+		// 전체학기 업데이트 요청이면 별도로 처리
+		if ("all".equals(semesterId)) {
+			GPA allSemester = gpaService.allSemesterUpdate(userId);
+			model.addAttribute("allSemester", allSemester);
+			return "redirect:/gpa/view?userId=" + userId + "&semesterId=all";
+		}
 
-	    // 각 과목에 대해 수정 처리
-	    for (Map.Entry<String, String> entry : courses.entrySet()) {
-	        // 각 과목에 대한 키를 분리
-	        String[] parts = entry.getKey().split("\\.");
+		// 각 과목에 대해 수정 처리
+		Set<Integer> updatedCourseIds = new HashSet<>();
+		for (Map.Entry<String, String> entry : courses.entrySet()) {
+			String[] parts = entry.getKey().split("\\.");
 
-	        if (parts.length == 2) {
-	            int courseId = Integer.parseInt(parts[0].substring(parts[0].indexOf('[') + 1, parts[0].indexOf(']'))); // courseId 추출
-	            String field = parts[1]; // 필드 이름(courseName, credits, grade 등)
+			if (parts.length == 2) {
+				int courseId = Integer.parseInt(parts[0].substring(parts[0].indexOf('[') + 1, parts[0].indexOf(']')));
+				String field = parts[1];
 
-	            // 과목 조회
-	            EnrolledCourse course = enrolledCourseRepository.findById(courseId)
-	                    .orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+				// 과목 조회
+				EnrolledCourse course = enrolledCourseRepository.findById(courseId)
+						.orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
 
-	            boolean oldIsMajor = course.getIsMajor(); // 이전 전공 여부
-	            String changes = "update"; // 수정된 경우 "update"
+				boolean oldIsMajor = course.getIsMajor();
+				String changes = "update";
 
-	            // 필드에 따라 값 수정
-	            switch (field) {
-	                case "courseName":
-	                    course.setCourseName(entry.getValue()); // 과목명 수정
-	                    break;
-	                case "credits":
-	                    course.setCredits(Integer.parseInt(entry.getValue())); // 학점 수정
-	                    break;
-	                case "grade":
-	                    // 성적은 BigDecimal로 변환 후 설정
-	                    BigDecimal grade = gpaService.convertGrade(entry.getValue());
-	                    course.setGrade(grade);
-	                    break;
-	                case "isMajor":
-	                    // isMajor 체크박스의 값이 넘어오지 않으면 기본값 false 설정
-	                    boolean newIsMajor = entry.getValue() != null && entry.getValue().equals("on");
-	                    course.setIsMajor(newIsMajor); // 전공 여부 수정
-	                    if (oldIsMajor != newIsMajor) {
-	                        gpaService.updateCreditsAfterChanges(changes, course.getCredits(), newIsMajor,
-	                                course.getGrade(), course.getCourseName(), userId, semesterId);
-	                    }
-	                    break;
-	            }
+				switch (field) {
+					case "courseName":
+						course.setCourseName(entry.getValue());
+						break;
+					case "credits":
+						course.setCredits(Integer.parseInt(entry.getValue()));
+						break;
+					case "grade":
+						BigDecimal grade = gpaService.convertGrade(entry.getValue());
+						course.setGrade(grade);
+						break;
+					case "isMajor":
+						// 체크박스: "on"이면 true, "off" 또는 null이면 false
+						boolean newIsMajor = "on".equals(entry.getValue());
+						course.setIsMajor(newIsMajor);
+						if (oldIsMajor != newIsMajor) {
+							gpaService.updateCreditsAfterChanges(changes, course.getCredits(), newIsMajor,
+									course.getGrade(), course.getCourseName(), userId, semesterId);
+						}
+						break;
+				}
+				enrolledCourseRepository.save(course);
+				enrolledCourseRepository.flush();
+				updatedCourseIds.add(courseId);
+			}
+		}
 
-	            // 수정된 course 객체 저장
-	            enrolledCourseRepository.save(course);
-	            enrolledCourseRepository.flush(); // 즉시 DB에 반영
-	        }
-	    }
+		// 누락된 isMajor(체크 해제) 처리
+		for (EnrolledCourse course : enrolledCourseRepository.findByUserIdAndSemesterId(userId, semesterId)) {
+			if (!updatedCourseIds.contains(course.getId())) {
+				boolean oldIsMajor = course.getIsMajor();
+				if (oldIsMajor) {
+					course.setIsMajor(false);
+					gpaService.updateCreditsAfterChanges("update", course.getCredits(), false,
+							course.getGrade(), course.getCourseName(), userId, semesterId);
+					enrolledCourseRepository.save(course);
+					enrolledCourseRepository.flush();
+				}
+			}
+		}
 
-	    // GPA 업데이트
-	    gpaService.updateGPAAfterChanges(userId, semesterId);
+		// GPA 업데이트
+		gpaService.updateGPAAfterChanges(userId, semesterId);
 
-	    // 기존 학기 수정 완료 후 리다이렉트
-	    return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId;
+		// 기존 학기 수정 완료 후 리다이렉트
+		return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId;
 	}
-
 
 	// ✅ 전체학기 업데이트 함수
 	@Transactional
@@ -235,9 +248,9 @@ public class GPAController {
 		// 삭제 후 해당 학기의 GPA 페이지로 리다이렉트
 		return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId;
 	}
-	
+
 	@GetMapping("/deleteAll")
-	public String deleteAllData(@SessionAttribute(name="userId") Long userId) {
+	public String deleteAllData(@SessionAttribute(name = "userId") Long userId) {
 		enrolledCourseRepository.deleteByUserId(userId);
 		return "학점, 성적 데이터 전체 삭제 완료.";
 	}
