@@ -1,6 +1,12 @@
 # UniLife
 
-## 2025.05.28 업데이트
+## 2025.05.31 업데이트
+- 학점계산기 오류 여러 개 수정
+- enrolled_courses 테이블에 grade_type 컬럼 추가됨.
+- 헤더에 스크롤바 침범하지 않도록 수정
+
+
+### 2025.05.28 업데이트
 - Cal+GPA+Portfolio 브랜치와 Register 브랜치 -> Final 브랜치로 병합
 - Final 브랜치에서 회원가입 확인 완료.
 
