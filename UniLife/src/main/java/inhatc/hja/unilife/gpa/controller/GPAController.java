@@ -190,20 +190,6 @@ public class GPAController {
 			}
 		}
 
-		// 누락된 isMajor(체크 해제) 처리
-		for (EnrolledCourse course : enrolledCourseRepository.findByUserIdAndSemesterId(userId, semesterId)) {
-			if (!updatedCourseIds.contains(course.getId())) {
-				boolean oldIsMajor = course.getIsMajor();
-				if (oldIsMajor) {
-					course.setIsMajor(false);
-					gpaService.updateCreditsAfterChanges("update", course.getCredits(), false,
-							course.getGrade(), course.getCourseName(), userId, semesterId);
-					enrolledCourseRepository.save(course);
-					enrolledCourseRepository.flush();
-				}
-			}
-		}
-
 		// GPA 업데이트
 		gpaService.updateGPAAfterChanges(userId, semesterId);
 
