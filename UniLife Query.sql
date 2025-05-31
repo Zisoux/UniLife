@@ -27,12 +27,13 @@ CREATE TABLE `enrolled_courses` (
   `credits` int DEFAULT NULL,
   `course_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_major` tinyint(1) DEFAULT NULL,
+  `grade_type` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `enrolled_courses_semesters_FK` (`semester_id`),
   KEY `enrolled_courses_courses_FK` (`course_id`),
   CONSTRAINT `enrolled_courses_chk_1` CHECK ((`grade` between 0 and 4.5))
-) ENGINE=InnoDB AUTO_INCREMENT=131 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=143 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- unilife.users definition
