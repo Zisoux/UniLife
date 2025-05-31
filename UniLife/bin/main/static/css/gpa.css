@@ -1,0 +1,415 @@
+/* 전체 레이아웃 초기화 */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/*body {
+	background-color: #ffffff;
+	display: flex;
+	flex-direction: column; 
+	justify-content: center;
+	min-height: 100vh;
+	padding: 30px;
+	font-family: 'Righteous', 'Noto Sans KR', sans-serif !important;
+	overflow: hidden; 
+	font-size: 0.875rem; 
+}*/
+
+/* 메인 컨테이너 */
+.container {
+	display: flex;
+	max-width: 100%;
+	width: 100%;
+}
+
+
+/* 왼쪽 사이드바 */
+.sidebar {
+	width: 240px;
+	background-color: #6699ff;
+	color: white;
+	padding: 20px;
+	border-radius: 16px;
+	margin-right: 30px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+	font-size: 1.5rem;
+	margin-bottom: 20px;
+}
+
+.sidebar p {
+	font-size: 1rem;
+	margin-bottom: 12px;
+}
+
+/* 상단 고정 헤더 */
+/*.topbar {
+	width: 100%;
+	height: 55px;
+	background-color: #6699ff;
+	color: white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 30px;
+	font-size: 1rem;
+	font-weight: 600;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-date {
+	font-family: 'Noto Sans KR', sans-serif;
+}
+
+.topbar-left {
+	font-size: 1.4rem;
+	font-weight: bold;
+	font-family: 'Righteous', cursive;
+	letter-spacing: 0.05em;
+}
+
+.topbar-right {
+	display: flex;
+	gap: 20px;
+}*/
+
+
+/* 메인 콘텐츠 */
+.main-content {
+	flex: 1;
+	background-color: #f9fafe;
+	/*padding: 20px 30px 30px 30px;*/
+	border-radius: 16px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.main-content h1 {
+	margin-top: 20px;
+	/* ✅ 상단바와 간격 더 좁힘 */
+	margin-bottom: 20px;
+	font-size: 2rem;
+	text-align: center;
+}
+
+/* 학기별 탭 */
+.semester-tabs {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 10px;
+	justify-content: center;
+	/* ✅ 가운데 정렬 추가 */
+	margin-bottom: 30px;
+	margin-top: 30px;
+	/* ✅ '학점 정보'랑 버튼 사이 약간 띄우기 */
+}
+
+.semester-tab {
+	padding: 8px 18px;
+	font-size: 0.95rem;
+	border: 1px solid #6699ff;
+	background-color: #ffffff;
+	color: #6699ff;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.2s, color 0.2s;
+}
+
+.semester-tab.active {
+	background-color: #6699ff;
+	color: #ffffff;
+}
+
+.semester-tab:hover {
+	background-color: #4d7cd5;
+	color: #ffffff;
+}
+
+.modal {
+	display: none;
+	/* 기본 숨김 */
+	position: fixed;
+	z-index: 999;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+	animation: fadeIn 0.4s ease;
+	/* 화면 전체 부드럽게 페이드인 */
+}
+
+.allTable th {
+	padding: 2px 10px 2px 10px;
+}
+
+.modal-content {
+	background-color: #fff;
+	margin: 15% auto;
+	padding: 20px 30px;
+	border: 1px solid #888;
+	width: 400px;
+	border-radius: 12px;
+	text-align: center;
+	animation: slideDown 0.4s ease;
+	/* 박스 슬라이드 애니메이션 */
+}
+
+.deleteALL-button {
+	border: none;
+	background-color: rgb(255, 128, 128);
+	color: black;
+	border-radius: 5px;
+	padding: 8px;
+}
+.deleteALL-button:hover {
+	background-color: #ff5c5c;
+}
+
+.close {
+	color: #aaa;
+	float: right;
+	font-size: 24px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close:hover {
+	color: black;
+}
+
+/* 모달 전체 페이드 인 */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+/* 모달 박스 슬라이드 다운 */
+@keyframes slideDown {
+	from {
+		transform: translateY(-50px);
+		opacity: 0;
+	}
+
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+/* GPA 정보 */
+.gpa-info {
+	width: 70%;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0px;
+	/* ✅ 카드 간격 좁게 */
+	margin: 20px auto 30px auto;
+	justify-items: center;
+}
+
+.credits-item {
+	width: 180px;
+	/* ✅ 카드 가로폭 줄임 */
+	height: 80px;
+	/* ✅ 카드 높이도 줄임 */
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	border-radius: 12px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	font-size: 0.9rem;
+	/* 글씨 조금 작게 */
+	font-weight: 500;
+	padding: 5px;
+}
+
+.gpa-item {
+	width: 180px;
+	/* ✅ 카드 가로폭 줄임 */
+	height: 80px;
+	/* ✅ 카드 높이도 줄임 */
+	background-color: white;
+	border: 1px solid #e0e0e0;
+	border-radius: 12px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	font-size: 0.7rem;
+	/* 글씨 조금 작게 */
+	font-weight: 450;
+	padding: 5px;
+}
+
+.credits-item span {
+	display: block;
+	margin-top: 8px;
+	font-size: 1.3rem;
+	font-weight: bold;
+}
+
+.gpa-item label {
+	font-size: 0.9rem;
+	color: #888;
+}
+
+.gpa-item span {
+	display: block;
+	margin-top: 8px;
+	font-size: 1.0rem;
+	font-weight: bold;
+}
+
+.score-change span {
+	font-size: 0.8rem;
+	margin-top: 5px;
+}
+
+.gpa-item .score-wrapper {
+	display: inline-flex;
+	/* ✅ 핵심 */
+	align-items: center;
+	/* ✅ 수직 정렬 */
+}
+
+.gpa-item span.score {
+	font-size: 1.0rem;
+	font-weight: bold;
+	color: #6699ff;
+	/* 성적 색상 */
+	display: inline-block;
+}
+
+.gpa-item span.score-change {
+	font-size: 0.75rem;
+	/* ✅ 더 작게 */
+	margin-left: 5px;
+	/* ✅ 성적 숫자랑 약간 간격 */
+	vertical-align: top;
+	/* ✅ 윗줄 맞춤 */
+}
+
+
+/* 등록된 과목 테이블 */
+.gpa-statistics table {
+	width: 90%;
+	border-collapse: collapse;
+	background-color: #ffffff;
+	border-radius: 12px;
+	overflow: hidden;
+	margin: 0 auto 30px auto;
+}
+
+.gpa-statistics th,
+.gpa-statistics td {
+	padding: 10px 15px;
+	text-align: center;
+	border-bottom: 1px solid #e2e6ee;
+	font-size: 0.95rem;
+}
+
+.gpa-statistics th {
+	background-color: #f2f6fc;
+	font-weight: 600;
+	color: #333;
+}
+
+/* 삭제 버튼 */
+.delete-button {
+	background-color: transparent;
+	border: none;
+	color: #ff5c5c;
+	cursor: pointer;
+	font-size: 1.2rem;
+}
+
+/* 등록 및 수정 버튼 */
+/*button[type="submit"],
+.input-form input[type="submit"],
+.gpa-statistics button {
+	background-color: #6699ff;
+	color: white;
+	padding: 10px 20px;
+	border: none;
+	font-size: 1rem;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+button[type="submit"]:hover,
+.input-form input[type="submit"]:hover,
+.gpa-statistics button:hover {
+	background-color: #4d7cd5;
+}*/
+
+/* 입력 폼 */
+.input-form {
+	width: 80%;
+	margin: 30px auto 0 auto;
+	/* 수정: 위 30px, 좌우 auto */
+	background-color: #ffffff;
+	padding: 20px;
+	border-radius: 12px;
+	border: 1px solid #e2e6ee;
+}
+
+.input-form h2 {
+	font-size: 1.3rem;
+	margin-bottom: 10px;
+}
+
+.input-form table {
+	width: 100%;
+}
+
+.input-form td {
+	padding: 10px;
+}
+
+form input[type="text"] {
+	width: 70%;
+	padding: 10px;
+	border: 1px solid #e2e6ee;
+	border-radius: 6px;
+	font-size: 0.95rem;
+}
+
+form input[type="number"] {
+	width: 40%;
+	padding: 10px;
+	border: 1px solid #e2e6ee;
+	border-radius: 6px;
+	font-size: 0.95rem;
+}
+
+form select {
+	width: 70%;
+	padding: 10px;
+	border: 1px solid #e2e6ee;
+	border-radius: 6px;
+	font-size: 0.95rem;
+}
+
+
+/* 체크박스 */
+input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: #6699ff;
+}

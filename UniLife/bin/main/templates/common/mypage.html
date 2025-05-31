@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 정보 - UniLife</title>
+  <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .font-righteous {
+      font-family: 'Righteous', cursive;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px; width: 16px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #6699ff;
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const goToHome = document.getElementById("goToHome");
+      goToHome.addEventListener("click", function () {
+        window.location.href = "/calendar";
+      });
+    });
+  </script>
+</head>
+
+<body class="bg-[#f4f6f8] flex items-center justify-center min-h-screen">
+  <button type="button" id="goToHome" class="p-4 bg-blue-200 rounded-sm">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 12h14M5 12l4-4m-4 4 4 4" />
+        </svg>
+    </button>
+
+<div class="bg-white p-10 rounded-xl shadow-md w-full max-w-xl space-y-6">
+
+  <div class="text-center">
+    <h1 class="text-3xl font-righteous text-[#6699ff] mb-2">UniLife</h1>
+    <h2 class="text-xl font-semibold text-gray-700" th:text="|${user.username}님|"></h2>
+  </div>
+
+  <!-- 수정 폼 -->
+  <form th:action="@{/mypage/update}" method="post" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-600">이름</label>
+      <input type="text" name="username" th:value="${user.username}" required
+             class="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#6699ff]" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-600">학번</label>
+      <input type="text" name="userId" th:value="${user.userId}" readonly
+             class="w-full mt-1 px-4 py-2 border rounded-md bg-gray-100 text-gray-500" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-600">이메일</label>
+      <input type="email" name="email" th:value="${user.email}" required
+             class="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#6699ff]" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-600">학과</label>
+      <input type="text" name="department" th:value="${user.department}"
+             class="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#6699ff]" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-600">새 비밀번호 (선택)</label>
+      <input type="password" name="newPassword"
+             placeholder="비밀번호 변경 시에만 입력하세요"
+             class="w-full mt-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-[#6699ff]" />
+    </div>
+
+    <div class="flex items-center justify-between">
+      <label class="text-sm font-medium text-gray-600">알림 설정</label>
+      <label class="switch">
+        <input type="checkbox" name="notificationEnabled" th:checked="${user.notificationEnabled}" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="flex gap-4 mt-6">
+      <button type="submit"
+              class="w-full bg-[#6699ff] text-white py-2 rounded-md hover:bg-[#4d7fe5] transition">
+        저장하기
+      </button>
+    </div>
+  </form>
+
+  <!-- 로그아웃 / 회원 탈퇴 -->
+  <div class="flex justify-between text-sm mt-4">
+    <a th:href="@{/logout}" class="text-[#6699ff] hover:underline">로그아웃</a>
+    <a th:href="@{/mypage/delete}" class="text-red-500 hover:underline"
+       onclick="return confirm('정말 탈퇴하시겠습니까?')">회원 탈퇴</a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+<!-- templates/common/header-default.html -->
+<div th:fragment="header">
+  <div style="background-color: #f5f5f5; padding: 10px;">
+    <a th:href="@{/calendar}">일정</a> 
+	<a th:href="@{/timetable/view/{id}(id=${id}, semester='20251')}">시간표</a> 
+	<a th:href="@{/portfolios}">포트폴리오</a> 
+	<a th:href="@{'/gpa/view'(userId=${user.userId}, semesterId='1-1')}">학점계산기</a> 
+	<a th:href="@{/friend}">친구</a>
+    <span th:if="${username}" style="float: right;">[[${username}]]님</span>
+  </div>
+</div>
