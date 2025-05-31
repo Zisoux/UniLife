@@ -28,6 +28,18 @@
         :root {
             --main-color: #6699ff;
         }
+		html, body {
+            height: 100%;
+            overflow: hidden; /* 전체 스크롤바 숨김 */
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 13px;
+        }
+        main {
+            height: calc(100vh - 64px); /* header 높이만큼 빼기 */
+            overflow-y: auto;           /* main에만 스크롤 */
+        }
     </style>
 </head>
 <body class="font-['Noto_Sans_KR'] text-sm bg-gray-50 text-neutral-900">
