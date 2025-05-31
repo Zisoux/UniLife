@@ -3,6 +3,7 @@ package inhatc.hja.unilife.user.controller;
 import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
 import inhatc.hja.unilife.user.dto.FriendWithUser;
 import inhatc.hja.unilife.timetable.entity.Timetable;
+import inhatc.hja.unilife.timetable.entity.TimetableCourse;
 import inhatc.hja.unilife.user.service.FriendService;
 import inhatc.hja.unilife.timetable.service.TimetableService;
 import lombok.RequiredArgsConstructor;
@@ -23,63 +24,52 @@ public class FriendController {
 
     // 친구 목록 보기
     @GetMapping("/{userId}")
-    public String viewFriends(@PathVariable("userId") Long userId,
-            @RequestParam(name = "semester", required = false) String semester,
-            Model model) {
+    public String viewFriends(@PathVariable("userId") String userId,
+                               @RequestParam(name = "semester", required = false) String semester,
+                               Model model) {
         if (semester == null || semester.isBlank()) {
-            semester = "2024-1학기"; // 기본 학기 지정
+            semester = "2024-1학기";
         }
 
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
-        model.addAttribute("friends", friendService.getFriends(userId));
+        model.addAttribute("friends", friendService.getFriendsByUserId(userId));
         return "timetable/friends";
     }
 
-    // 친구 검색
+    // 친구 검색 (학번 기준)
     @PostMapping("/search")
-    public String searchFriends(@RequestParam("userId") Long userId,
-            @RequestParam("semester") String semester,
-            @RequestParam("keyword") String keyword,
-            Model model) {
-        List<FriendWithUser> searchResults = friendService.searchFriends(userId, keyword);
+    public String searchFriends(@RequestParam("userId") String userId,
+                                 @RequestParam("semester") String semester,
+                                 @RequestParam("keyword") String keyword,
+                                 Model model) {
+        List<FriendWithUser> searchResults = friendService.searchFriendsByUserId(userId, keyword);
         model.addAttribute("userId", userId);
         model.addAttribute("semester", semester);
         model.addAttribute("friends", searchResults);
         return "timetable/friends";
     }
 
-    // 친구 추가
+    // 친구 추가 (학번 기준)
     @PostMapping("/add")
-    public String addFriend(@RequestParam("userId") Long userId,
-            @RequestParam("friendId") String friendIdStr) {
+    public String addFriend(@RequestParam("userId") String userId,
+                             @RequestParam("friendUserId") String friendUserId) {
 
-        // 1. 비어있거나 숫자가 아닌 경우
-        if (friendIdStr == null || friendIdStr.isBlank()) {
+        if (friendUserId == null || friendUserId.isBlank()) {
             return "redirect:/friends/" + userId + "?error=emptyFriendId";
         }
 
-        Long friendId;
-        try {
-            friendId = Long.parseLong(friendIdStr);
-        } catch (NumberFormatException e) {
-            return "redirect:/friends/" + userId + "?error=invalidFriend";
-        }
-
-        // 2. 자기 자신 추가 방지
-        if (userId.equals(friendId)) {
+        if (userId.equals(friendUserId)) {
             return "redirect:/friends/" + userId + "?error=selfAdd";
         }
 
-        // 3. 이미 친구인지 확인
-        boolean alreadyFriend = friendService.isAlreadyFriend(userId, friendId);
+        boolean alreadyFriend = friendService.isAlreadyFriendByUserId(userId, friendUserId);
         if (alreadyFriend) {
             return "redirect:/friends/" + userId + "?error=alreadyFriend";
         }
 
-        // 4. 친구 추가 시도
         try {
-            friendService.addFriend(userId, friendId);
+            friendService.addFriendByUserId(userId, friendUserId);
         } catch (IllegalArgumentException e) {
             return "redirect:/friends/" + userId + "?error=invalidFriend";
         }
@@ -87,32 +77,32 @@ public class FriendController {
         return "redirect:/friends/" + userId;
     }
 
-    // 친구 삭제
+    // 친구 삭제 (내부 ID 사용 – 유지 가능)
     @PostMapping("/delete")
-    public String deleteFriend(@RequestParam("userId") Long userId,
-            @RequestParam("friendId") Long friendId) {
-        friendService.deleteFriend(userId, friendId);
+    public String deleteFriend(@RequestParam("userId") String userId,
+                               @RequestParam("friendUserId") String friendUserId) {
+        friendService.deleteFriend(userId, friendUserId);
         return "redirect:/friends/" + userId;
     }
 
-    // 친구 시간표 보기
+
+    // 친구 시간표 보기 (내부 ID 사용 – 유지 가능)
     @GetMapping("/{userId}/timetable/{friendId}")
-    public String viewFriendTimetable(@PathVariable("userId") Long userId,
-            @PathVariable("friendId") Long friendId,
-            @RequestParam("semester") String semester,
-            @RequestParam(value = "error", required = false) String error,
-            Model model) {
+    public String viewFriendTimetable(@PathVariable("userId") String userId,
+                                      @PathVariable("friendId") Long friendId,
+                                      @RequestParam("semester") String semester,
+                                      @RequestParam(value = "error", required = false) String error,
+                                      Model model) {
 
-        Optional<Timetable> optionalFriendTimetable = timetableService.getTimetableWithCourses(friendId, semester);
+        Timetable friendTimetable = timetableService.getTimetableWithCourses(friendId, semester);
+        List<TimetableCourse> friendCourses = friendTimetable.getTimetableCourses();
 
-        if (optionalFriendTimetable.isEmpty()) {
+        // 시간표가 비어 있는 경우 체크 (null 이 아닌지 확인)
+        if (friendCourses == null || friendCourses.isEmpty()) {
             return "redirect:/friends/" + userId + "?error=notfound";
         }
 
-        Timetable friendTimetable = optionalFriendTimetable.get();
-        List<CourseBlockDTO> courseBlocks = timetableService
-                .convertToCourseBlocksForFriend(friendTimetable.getTimetableCourses());
-
+        List<CourseBlockDTO> courseBlocks = timetableService.convertToCourseBlocksForFriend(friendCourses);
         List<String> semesters = timetableService.getSemestersByUserId(friendId);
 
         model.addAttribute("userId", userId);

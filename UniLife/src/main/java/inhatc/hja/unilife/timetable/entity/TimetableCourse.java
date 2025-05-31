@@ -1,15 +1,8 @@
 package inhatc.hja.unilife.timetable.entity;
 
 import java.time.LocalTime;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,26 +11,26 @@ import lombok.Setter;
 @Setter
 @Table(name = "timetable_courses")
 public class TimetableCourse {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-                         
-    @ManyToOne
-    @JoinColumn(name = "timetable_id")
+
+    // ✅ 지연 로딩 + 명시적 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "timetable_id", nullable = false)
     private Timetable timetable;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @Column(name = "day_of_week")
+    @Column(name = "day_of_week", nullable = false)
     private String dayOfWeek;
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
-    @Column(name = "end_time")
+    @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
-    
-    
 }

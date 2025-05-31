@@ -1,191 +1,326 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8" />
-    <title>UniLife - 학기별 시간표</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Poetsen+One&family=Righteous&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script>
-	  tailwind.config = {
-	    theme: {
-	      extend: {
-	        fontFamily: {
-	          noto: ["'Noto Sans KR'", 'sans-serif'],
-	          righteous: ["'Righteous'", 'cursive']
-	        },
-	        colors: {
-	          primary: '#6699FF',
-	          secondary: '#FF9933',
-	          tertiary: '#6ad46a'
-	        }
-	      }
-	    }
-	  };
-	</script>
-	<script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --main-color: #6699ff;
+  <meta charset="UTF-8" />
+  <title>UniLife - 학기별 시간표</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Poetsen+One&family=Righteous&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+  <!-- TailwindCSS 불러오기 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            noto: ["'Noto Sans KR'", 'sans-serif'],
+            righteous: ["'Righteous'", 'cursive']
+          },
+          colors: {
+            primary: '#6699FF',
+            secondary: '#FF9933',
+            tertiary: '#6ad46a'
+          }
         }
-		html, body {
-            height: 100%;
-            overflow: hidden; /* 전체 스크롤바 숨김 */
-        }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 13px;
-        }
-        main {
-            height: calc(100vh - 64px); /* header 높이만큼 빼기 */
-            overflow-y: auto;           /* main에만 스크롤 */
-        }
-    </style>
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --main-color: #6699ff;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden; /* 전체 화면 스크롤 방지 */
+    }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px;
+    }
+    main {
+      height: calc(100vh - 64px);
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      box-sizing: border-box;
+    }
+    /* 카드 내부의 .relative(타임테이블 배경)을 흰색으로 고정 */
+    .card > div.relative {
+      background-color: white !important;
+    }
+    /* 왼쪽 학기 탭이 시간표를 가리는 부분을 보정하기 위해 약간 왼쪽으로 밀어냄 */
+    .timetable-section {
+      margin-left: 3.5rem; /* 학기 탭(약 60px ≈ 3.75rem)보다 살짝 더 왼쪽으로 이동 */
+    }
+  </style>
 </head>
+
 <body class="font-['Noto_Sans_KR'] text-sm bg-gray-50 text-neutral-900">
 
-<div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
+  <!-- 상단 공통 헤더(로그인 정보 등) -->
+  <div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
 
-<main class="max-w-screen-xl mx-auto px-6 py-8 grid md:grid-cols-[2fr_1fr] gap-8">
-    <section>
+  <!-- 왼쪽 상단 “학기” 탭 -->
+  <div
+    id="semesterTab"
+    class="fixed left-0 bg-[#FF9933] text-white px-3 py-2 rounded-r cursor-pointer select-none z-[60] font-semibold text-sm flex items-center justify-center"
+    style="width: 60px; height: 48px; top: 80px;"
+    onclick="toggleSemesterPanel()">
+    학기
+  </div>
 
-		<!-- 학기 관리 -->
-		<div class="card">
-		    <h2>학기 관리</h2>
-		    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-		        <!-- 기존 학기 보기 -->
-		        <form method="get" th:action="@{/timetable/view/{userId}(userId=${userId})}" class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-		            <label class="block mb-2 text-sm font-medium text-gray-700">📘 기존 학기 보기</label>
-		            <div class="flex gap-2">
-		                <select name="semester" required class="flex-1 border rounded px-2 py-1 text-sm">
-		                    <option value="" disabled selected>학기 선택</option>
-		                    <option th:each="sem : ${semesters}" th:value="${sem}" th:text="${sem}"></option>
-		                </select>
-		                <button class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm">보기</button>
-		            </div>
-		        </form>
+  <!-- 왼쪽 상단 학기관리 슬라이드 패널 -->
+  <div
+    id="semesterPanel"
+    class="fixed left-0 bg-white shadow-lg p-4 transform -translate-x-full transition-transform duration-300 z-[70] flex flex-col"
+    style="top: 80px; height: calc(100vh - 80px); width: 16rem;">
+    <h2 class="text-lg font-bold mb-4 border-b pb-2">학기 관리</h2>
+    <div class="flex flex-col gap-6 flex-grow overflow-auto">
+      <!-- 기존 학기 보기 -->
+      <form method="get"
+            th:action="@{/timetable/view/{userId}(userId=${userId})}"
+            class="bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+        <label class="block mb-2 text-sm font-medium text-gray-700">📘 기존 학기 보기</label>
+        <div class="flex gap-2">
+          <select name="semester" required class="flex-1 border rounded px-2 py-1 text-sm">
+            <option value="" disabled selected>학기 선택</option>
+            <option th:each="sem : ${semesters}"
+                    th:value="${sem}"
+                    th:text="${sem}"></option>
+          </select>
+          <button class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm">보기</button>
+        </div>
+      </form>
 
-		        <!-- 새 학기 만들기 -->
-		        <form method="post" action="/timetable/create" class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-		            <input type="hidden" name="userId" th:value="${userId}" />
-		            <label class="block mb-2 text-sm font-medium text-gray-700">🆕 새 학기 만들기</label>
-		            <div class="flex gap-2">
-		                <select name="semester" required class="flex-1 border rounded px-2 py-1 text-sm">
-		                    <option value="" disabled selected>학기 선택</option>
-		                    <option th:each="sem : ${predefinedSemesters}" th:value="${sem}" th:text="${sem}"></option>
-		                </select>
-		                <button class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white text-sm">만들기</button>
-		            </div>
-		        </form>
+      <!-- 새 학기 만들기 -->
+      <form method="post"
+            action="/timetable/create"
+            class="bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+        <input type="hidden" name="userId" th:value="${userId}" />
+        <label class="block mb-2 text-sm font-medium text-gray-700">🆕 새 학기 만들기</label>
+        <div class="flex gap-2">
+          <select name="semester" required class="flex-1 border rounded px-2 py-1 text-sm">
+            <option value="" disabled selected>학기 선택</option>
+            <option th:each="sem : ${predefinedSemesters}"
+                    th:value="${sem}"
+                    th:text="${sem}"></option>
+          </select>
+          <button class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white text-sm">만들기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 우측 하단 “강의 추가” 버튼 -->
+  <button
+    id="openSlideBtn"
+    onclick="openForm()"
+    class="fixed bottom-8 right-8 bg-[#6ad46a] text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-600 transition z-50 font-semibold select-none">
+    강의 추가
+  </button>
+
+  <!-- 우측에서 슬라이드로 나오는 “강의 추가” 폼 -->
+  <div
+    id="slideForm"
+    class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg p-6 transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+    <h2 class="text-lg font-bold mb-4">강의 추가</h2>
+    <form th:action="@{/timetable/add}"
+          method="post"
+          class="space-y-4 flex-grow overflow-auto">
+      <input type="hidden" name="userId" th:value="${userId}" />
+      <input type="hidden" name="semester" th:value="${semester}" />
+
+      <label class="block text-sm font-medium">강의 선택</label>
+      <select name="courseId"
+              class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              required>
+        <option th:each="course : ${courses}"
+                th:value="${course.id}"
+                th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
+      </select>
+
+      <label class="block text-sm font-medium">요일</label>
+      <select name="dayOfWeek"
+              class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              required>
+        <option th:each="day : ${dayList}"
+                th:value="${day}"
+                th:text="${day}"></option>
+      </select>
+
+      <label class="block text-sm font-medium">시작 시간</label>
+      <input type="time"
+             name="startTime"
+             class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+             required />
+
+      <label class="block text-sm font-medium">종료 시간</label>
+      <input type="time"
+             name="endTime"
+             class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+             required />
+
+      <button type="submit"
+              class="bg-primary text-white w-full py-2 rounded-md hover:bg-blue-700 transition">
+        추가
+      </button>
+    </form>
+
+    <button onclick="closeForm()"
+            class="mt-4 flex items-center justify-center gap-2 text-gray-600 hover:text-red-600 hover:bg-red-100 rounded-md px-4 py-2 font-semibold transition-colors duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-5 w-5"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor"
+           stroke-width="2">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12" />
+      </svg>
+      닫기
+    </button>
+  </div>
+
+  <main>
+    <!-- 좌측: 시간표 영역 -->
+    <section class="timetable-section flex-1 overflow-hidden">
+      <div class="card h-full flex flex-col">
+        <h2 class="text-xl font-bold mb-2" th:text="${semester} + ' 시간표'"></h2>
+
+		<!-- 시간표 컨테이너: 높이 1536px (8시~22시, 14시간 * 96px) -->
+		<div class="relative flex-1 border border-gray-300 overflow-hidden z-0"
+		     style="background-color: white; height: 1536px;">
+
+		  <!-- ✅ 요일 헤더: 상단 고정 및 정확한 위치 맞춤 -->
+		  <div class="absolute top-0 left-0 w-full z-10"
+		       style="height: 48px;">
+		    <div class="grid grid-cols-[10%_90%] text-center text-sm font-bold bg-gray-100 border-b border-gray-300">
+		      <div class="border-r py-2">시간</div>
+		      <div class="grid grid-cols-5">
+		        <div class="border-r py-2" th:each="day : ${dayList}" th:text="${day}"></div>
+		      </div>
 		    </div>
-		</div>
+		  </div>
 
-		<!-- 수업 추가 -->
-		<div class="card">
-		    <h2>수업 추가</h2>
-		    <form th:action="@{/timetable/add}" method="post" class="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-		        <input type="hidden" name="userId" th:value="${userId}" />
-		        <input type="hidden" name="semester" th:value="${semester}" />
-		        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-		            <div>
-		                <label class="block mb-1 text-sm font-medium text-gray-700">강의 선택</label>
-		                <select name="courseId" required class="w-full border rounded px-2 py-1 text-sm">
-		                    <option value="" disabled selected>강의 선택</option>
-		                    <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
-		                </select>
-		            </div>
-		            <div>
-		                <label class="block mb-1 text-sm font-medium text-gray-700">요일</label>
-		                <select name="dayOfWeek" required class="w-full border rounded px-2 py-1 text-sm">
-		                    <option value="월">월요일</option>
-		                    <option value="화">화요일</option>
-		                    <option value="수">수요일</option>
-		                    <option value="목">목요일</option>
-		                    <option value="금">금요일</option>
-		                </select>
-		            </div>
-		            <div>
-		                <label class="block mb-1 text-sm font-medium text-gray-700">시작 시간</label>
-		                <input type="time" name="startTime" required class="w-full border rounded px-2 py-1 text-sm">
-		            </div>
-		            <div>
-		                <label class="block mb-1 text-sm font-medium text-gray-700">종료 시간</label>
-		                <input type="time" name="endTime" required class="w-full border rounded px-2 py-1 text-sm">
-		            </div>
+		  <!-- ✅ 시간 라인 (48px 아래부터 시작) -->
+		  <div class="absolute top-[32px] left-0 w-full">
+		    <div th:each="hour : ${#numbers.sequence(8, 22)}"
+		         class="grid grid-cols-[10%_90%] w-full border-b border-gray-200 text-xs text-center h-[96px]">
+		      <div class="border-r pt-1" th:text="${hour + ':00'}"></div>
+		      <div class="grid grid-cols-5">
+		        <div th:each="i : ${#numbers.sequence(1, 5)}"
+		             th:attr="data-day=${dayList[i-1]}"
+		             onclick="openFormWithDay(this.dataset.day)"
+		             class="border-r border-gray-100 cursor-pointer hover:bg-blue-100">
 		        </div>
-		        <div class="mt-4 text-right">
-		            <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm">수업 추가</button>
-		        </div>
-		    </form>
-		</div>
-
-		<!-- 시간표 -->
-		<div class="card">
-		    <h2 class="text-xl font-bold mb-2" th:text="${semester} + ' 시간표'"></h2>
-
-		    <div class="relative w-full border border-gray-300 overflow-hidden z-0" style="height: 1440px;">
-		        
-		        <!-- 요일 헤더 -->
-		        <div class="flex text-center text-sm font-bold bg-gray-100 border-b border-gray-300">
-		            <div class="w-[10%] border-r">시간</div>
-		            <div class="w-[90%] flex">
-		                <div class="w-[20%] border-r" th:each="day : ${dayList}" th:text="${day}"></div>
-		            </div>
-		        </div>
-
-				
-				<!-- 시간 라인 -->
-				<div class="absolute top-0 left-0 w-full pt-[48px]"> <!-- 💡 대략 48px ~ 56px -->
-		            <div th:each="hour : ${#numbers.sequence(8, 22)}"
-		                 class="flex w-full border-b border-gray-200 text-xs text-center h-[96px]">
-		                <div class="w-[10%] border-r pt-2" th:text="${hour + ':00'}"></div>
-		                <div class="w-[90%] flex">
-		                    <div class="w-[20%] h-full border-r border-gray-100" th:each="i : ${#numbers.sequence(1, 5)}"></div>
-		                </div>
-		            </div>
-		        </div>
-
-		 
-		        <div class="absolute inset-0">
-					<div th:each="block : ${courseBlocks}"
-					     class="absolute bg-blue-400 text-white rounded shadow text-xs overflow-hidden"
-					     th:style="'top:' + ${block.topPx} + 'px; left:' + ${block.leftPercent} + '%; height:' + ${block.heightPx} + 'px; width:' + ${block.widthPercent} + '%; z-index:50;'">
-		                <div th:if="${block.first}"
-		                     class="h-full px-1 py-1 text-[10px] text-center leading-tight"
-		                     style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: auto; white-space: normal;">
-		                    <div class="font-bold truncate" th:text="${block.courseName}"></div>
-		                    <div th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
-		                    <a th:href="@{/timetable/delete/{id}(id=${block.courseId}, userId=${userId}, semester=${semester})}"
-		                       onclick="return confirm('정말 삭제하시겠습니까?');"
-		                       class="text-[10px] underline mt-1" style="color: #ffdddd;">삭제</a>
-		                </div>
-		            </div>
-		        </div>
-
+		      </div>
 		    </div>
-		</div>
+		  </div>
+
+          <!-- 강의 블록 (절대 위치) -->
+          <div class="absolute inset-0">
+            <div th:each="block : ${courseBlocks}"
+                 class="absolute bg-blue-400 text-white rounded shadow text-xs overflow-hidden"
+                 th:style="
+                   'top:' + ${block.topPx} + 'px; ' +
+                   'left:' + ${block.leftPercent} + '%; ' +
+                   'height:' + ${block.heightPx} + 'px; ' +
+                   'width:' + ${block.widthPercent} + '%; ' +
+                   'z-index:50;'
+                 ">
+              <div th:if="${block.first}"
+                   class="h-full px-1 py-1 text-[11px] text-center leading-tight"
+                   style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: auto; white-space: normal;">
+                <div class="font-bold truncate" th:text="${block.courseName}"></div>
+                <div th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
+                <a th:href="@{/timetable/delete/{id}(id=${block.courseId}, userId=${userId}, semester=${semester})}"
+                   onclick="return confirm('정말 삭제하시겠습니까?');"
+                   class="text-[10px] underline mt-1"
+                   style="color: #ffdddd;">
+                  삭제
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </section>
 
-    <!-- 공강 친구 -->
-    <aside>
-        <div class="card">
-            <h3>같은 공강 친구</h3>
-            <div class="day-selector">
-                <a th:each="day : ${dayList}"
-                   th:href="@{'/timetable/view/' + ${userId} + '?semester=' + ${semester} + '&day=' + ${day}}"
-                   th:text="${day}"
-                   th:classappend="${day == selectedDay} ? 'active' : ''"></a>
-            </div>
-            <div th:if="${#lists.isEmpty(matchingFriends)}" class="text-sm text-gray-500">
-                해당 요일에 공강이 겹치는 친구가 없습니다.
-            </div>
-            <div th:each="friend : ${matchingFriends}" class="friend-card">
-                <strong th:text="${friend.friendUsername}"></strong>
-                <div th:text="${friend.timeRangeSummary}"></div>
-            </div>
+    <!-- 우측: 공강 매칭 영역 -->
+    <aside class="w-[15%] flex flex-col justify-start">
+      <div class="card p-2 bg-gray-50 rounded-lg shadow-md h-full flex flex-col">
+        <h3 class="text-lg font-bold mb-2 text-primary">같은 공강 친구</h3>
+        <div class="flex justify-center gap-4 mb-2">
+          <a th:each="day : ${dayList}"
+             th:href="@{'/timetable/view/' + ${userId} + '?semester=' + ${semester} + '&day=' + ${day}}"
+             th:text="${day}"
+             th:classappend="${day == selectedDay} ?
+               'bg-primary text-white rounded px-2 py-1 text-xs' :
+               'text-primary hover:bg-primary hover:text-white rounded px-2 py-1 text-xs cursor-pointer'">
+          </a>
         </div>
+        <div th:if="${#lists.isEmpty(matchingFriends)}"
+             class="text-center text-gray-500 italic flex-1 flex items-center justify-center text-xs">
+          해당 요일에 공강이 겹치는 친구가 없습니다.
+        </div>
+        <div th:each="friend : ${matchingFriends}"
+             class="friend-card bg-white rounded-lg shadow-md p-2 mb-2 hover:shadow-lg transition-shadow cursor-pointer text-xs">
+          <strong class="block font-semibold text-primary mb-1" th:text="${friend.friendUsername}"></strong>
+          <p class="text-gray-700" th:text="${friend.timeRangeSummary}"></p>
+        </div>
+      </div>
     </aside>
-</main>
+  </main>
+
+  <script>
+    function openSemesterPanel() {
+      document.getElementById("semesterPanel").classList.remove("-translate-x-full");
+      document.getElementById("semesterTab").style.display = "none";
+    }
+    function closeSemesterPanel() {
+      document.getElementById("semesterPanel").classList.add("-translate-x-full");
+      document.getElementById("semesterTab").style.display = "block";
+    }
+    function toggleSemesterPanel() {
+      const panel = document.getElementById("semesterPanel");
+      if (panel.classList.contains("-translate-x-full")) {
+        openSemesterPanel();
+      } else {
+        closeSemesterPanel();
+      }
+    }
+
+    // 학기 패널 외부 클릭 시 닫기
+    document.addEventListener('click', function(event) {
+      const semesterPanel = document.getElementById('semesterPanel');
+      const semesterTab = document.getElementById('semesterTab');
+      const isClickInsidePanel = semesterPanel.contains(event.target);
+      const isClickOnTab     = semesterTab.contains(event.target);
+
+      if (!semesterPanel.classList.contains('-translate-x-full')
+          && !isClickInsidePanel
+          && !isClickOnTab) {
+        closeSemesterPanel();
+      }
+    });
+
+    // “강의 추가” 폼 열기/닫기
+    function openForm() {
+      document.getElementById("slideForm").classList.remove("translate-x-full");
+      document.querySelector('select[name="dayOfWeek"]').value = "";
+    }
+    function closeForm() {
+      document.getElementById("slideForm").classList.add("translate-x-full");
+    }
+    function openFormWithDay(day) {
+      openForm();
+      document.querySelector('select[name="dayOfWeek"]').value = day;
+    }
+  </script>
 
 </body>
 </html>
