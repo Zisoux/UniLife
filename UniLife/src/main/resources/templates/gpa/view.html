@@ -169,8 +169,12 @@
 						fetch(`/gpa/deleteAll?`, { method: 'GET' })
 							.then(res => {
 								if (res.ok) {
-									// 전체 삭제 후 테이블 갱신
 									alert('전체 데이터가 삭제되었습니다.');
+									// 모달 닫기
+									document.getElementById("myModal").style.display = "none";
+									// GPA 페이지로 이동 (userId, semesterId는 템플릿에서 받아와야 함)
+									const userId = document.getElementById("loginUserId").innerText.trim();
+									window.location.href = `/gpa/view?userId=${userId}&semesterId=1-1`;
 								} else {
 									alert('전체 삭제 실패');
 								}

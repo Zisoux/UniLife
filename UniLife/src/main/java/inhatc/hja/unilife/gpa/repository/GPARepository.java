@@ -63,4 +63,6 @@ public interface GPARepository extends JpaRepository<GPA, Integer> {
     
     // 전체학기 행을 찾기 위해
     Optional<GPA> findByUserIdAndSemesterId(Long userId, String semesterId);
+
+    void deleteAllByUserId(Long userId);
 }

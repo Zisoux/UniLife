@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import inhatc.hja.unilife.gpa.entity.EnrolledCourse;
 import inhatc.hja.unilife.gpa.entity.GPA;
 import inhatc.hja.unilife.gpa.repository.EnrolledCourseRepository;
-//import inhatc.hja.unilife.gpa.repository.GPARepository;
+import inhatc.hja.unilife.gpa.repository.GPARepository;
 import inhatc.hja.unilife.gpa.service.GPAService;
 import inhatc.hja.unilife.user.entity.User;
 import inhatc.hja.unilife.user.service.UserService;
@@ -29,6 +29,8 @@ import java.util.Set;
 @RequestMapping("/gpa")
 public class GPAController {
 
+    private final GPARepository GPARepository;
+
 	@Autowired
 	private GPAService gpaService;
 
@@ -40,6 +42,10 @@ public class GPAController {
 
 	@Autowired
 	private EnrolledCourseRepository enrolledCourseRepository;
+
+    GPAController(GPARepository GPARepository) {
+        this.GPARepository = GPARepository;
+    }
 
 	// GPA 계산 후 결과 표시
 	@PostMapping("/calculate")
@@ -252,9 +258,11 @@ public class GPAController {
 		return "redirect:/gpa/view?userId=" + userId + "&semesterId=" + semesterId;
 	}
 
+	@Transactional
 	@GetMapping("/deleteAll")
 	public String deleteAllData(@SessionAttribute(name = "userId") Long userId) {
 		enrolledCourseRepository.deleteByUserId(userId);
-		return "학점, 성적 데이터 전체 삭제 완료.";
+		GPARepository.deleteAllByUserId(userId);
+		return "redirect:/gpa/view?userId=" + userId + "&semesterId=1-1";
 	}
 }
