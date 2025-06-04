@@ -84,7 +84,7 @@
 </head>
 <body class="h-screen overflow-hidden flex flex-col font-noto text-sm">
   <span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
-  <div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
+  <th:block th:replace="common/header :: header(${user.userId}, ${user.id})"/>
 
   <div class="flex flex-1 gap-6 px-6 py-4 overflow-hidden h-[calc(100vh-60px)]">
     <aside id="friend-list" class="flex flex-col w-[250px] bg-gray-50 border-r border-gray-200 rounded-md shadow-sm p-3 h-full">
