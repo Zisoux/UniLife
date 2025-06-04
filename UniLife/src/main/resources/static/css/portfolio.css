@@ -24,9 +24,9 @@ body {
 }
 
 .container {
-	max-width: 1000px;
-	margin: 0 auto;
-	padding: 20px;
+	max-width: 600px;
+	margin: 20px auto;
+	padding: 50px;
 	background-color: white;
 	border-radius: 8px;
 	/* 부드러운 테두리 */
