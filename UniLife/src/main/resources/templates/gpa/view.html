@@ -154,7 +154,7 @@
 					if (confirm("정말 삭제하시겠습니까?")) {
 						fetch(`/gpa/delete?courseId=${courseId}`, { method: 'GET' })
 							.then(res => {
-								if (res.ok) this.closest('tr').remove();
+								if (res.ok) window.location.reload(); //this.closest('tr').remove();
 								else alert('삭제 실패');
 							})
 							.catch(() => alert('삭제 요청에 실패했습니다.'));

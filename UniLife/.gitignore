@@ -7,3 +7,6 @@ out/
 # IntelliJ IDEA
 .idea/
 *.iml
+
+# bin 디렉토리 무시
+/bin
