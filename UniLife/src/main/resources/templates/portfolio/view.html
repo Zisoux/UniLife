@@ -149,38 +149,38 @@
 	<div class="container">
 		<!-- 상단 고정 바 -->
 
-		<h2 th:text="${portfolio.title}">포트폴리오 제목</h2>
+		<h2 class="font-medium text-3xl" th:text="${portfolio.title}">포트폴리오 제목</h2>
 
 		<div class="portfolio-details">
 			<p>
-				<strong>기간:</strong>
-				<span th:text="${#temporals.format(portfolio.startDate, 'yyyy-MM-dd')}"></span>
+				<strong class="text-lg">기간:</strong>
+				<span class="text-base" th:text="${#temporals.format(portfolio.startDate, 'yyyy-MM-dd')}"></span>
 				~
-				<span th:text="${#temporals.format(portfolio.endDate, 'yyyy-MM-dd')}"></span>
+				<span class="text-base" th:text="${#temporals.format(portfolio.endDate, 'yyyy-MM-dd')}"></span>
 			</p>
 
 			<p>
-				<strong>등록일:</strong>
-				<span th:text="${#temporals.format(portfolio.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+				<strong class="text-lg">등록일:</strong>
+				<span class="text-base" th:text="${#temporals.format(portfolio.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
 			</p>
 
 			<p>
-				<strong>파일:</strong>
-				<a th:href="@{'/api/files/download/' + ${portfolio.fileName}}" th:download="${portfolio.fileName}">
+				<strong class="text-lg">파일:</strong>
+				<a class="text-base" th:href="@{'/api/files/download/' + ${portfolio.fileName}}" th:download="${portfolio.fileName}">
 					[[${portfolio.fileName}]]
 				</a>
 				<span class="badge" th:text="${portfolio.fileExtension}"></span>
-				<span th:if="${portfolio.fileName == null}">파일 없음</span>
+				<span class="text-base" th:if="${portfolio.fileName == null}">파일 없음</span>
 			</p>
 
 			<p>
-				<strong>파일 크기:</strong>
-				<span th:text="${#numbers.formatDecimal(portfolio.fileSize / 1024, 0, 2)} + ' KB'"></span>
+				<strong class="text-lg">파일 크기:</strong>
+				<span class="text-base" th:text="${#numbers.formatDecimal(portfolio.fileSize / 1024, 0, 2)} + ' KB'"></span>
 			</p>
 
 			<div th:if="${portfolio.description}">
-				<h3>설명</h3>
-				<p th:text="${portfolio.description}"></p>
+				<h3 class="font-bold text-lg">설명</h3>
+				<p class="text-base" th:text="${portfolio.description}"></p>
 			</div>
 
 			<!--<div
