@@ -106,7 +106,7 @@
 <body class="font-noto text-sm bg-white w-full min-h-screen">
 	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
 	<div th:fragment="header(userId, id)">
-		<header class="bg-[#6699ff] text-white shadow-sm w-full">
+		<header class="bg-[#ffffff] text-black shadow-sm w-full">
 			<div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
 
 				<!-- 왼쪽 로고 -->
@@ -115,7 +115,7 @@
 				</div>
 
 				<!-- 오른쪽: 메뉴 + 유저이름 + 로그아웃 -->
-				<div class="flex items-center gap-6 text-sm">
+				<div class="flex items-center gap-6 text-sm text-black">
 
 					<!-- 메뉴 -->
 					<nav>
@@ -131,9 +131,11 @@
 					</nav>
 
 					<!-- 사용자 이름 -->
-					<span class="font-bold text-white">
-						<i class="ri-user-line mr-1"></i>
-						<span th:text="${username}">로그인한 사용자</span>
+					<span class="font-bold text-black">
+						<a th:href="@{/mypage}" class="font-bold text-black hover:underline flex items-center">
+							<i class="ri-user-line mr-1"></i>
+							<span th:text="${username}">로그인한 사용자</span>
+						</a>
 					</span>
 
 					<!-- 로그아웃 버튼 -->

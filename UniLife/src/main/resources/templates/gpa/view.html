@@ -275,7 +275,7 @@
 	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
 
 	<div th:fragment="header(userId, id)">
-		<header class="bg-[#6699ff] text-white shadow-sm w-full">
+		<header class="bg-[#ffffff] text-black shadow-sm w-full">
 			<div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
 
 				<!-- 왼쪽 로고 -->
@@ -300,8 +300,8 @@
 					</nav>
 
 					<!-- 사용자 이름 -->
-					<span class="font-bold text-white">
-						<a th:href="@{/mypage}" class="font-bold text-white hover:underline flex items-center">
+					<span class="font-bold text-black">
+						<a th:href="@{/mypage}" class="font-bold text-black hover:underline flex items-center">
 							<i class="ri-user-line mr-1"></i>
 							<span th:text="${username}">로그인한 사용자</span>
 						</a>
