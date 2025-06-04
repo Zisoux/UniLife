@@ -140,8 +140,19 @@
 						alert('요청 중 오류 발생');
 					});
 			} else {
-				// 나머지 학기는 그냥 바로 이동
-				window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
+				// 나머지 학기도 update 후 이동
+				fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
+					.then(response => {
+						if (response.ok) {
+							window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
+						} else {
+							alert('GPA 업데이트 실패!');
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert('요청 중 오류 발생');
+					});
 			}
 		}
 
@@ -496,7 +507,7 @@
 						</table>
 						<div style="text-align: right; margin-top: 10px; margin-right: 100px;">
 							<button type="submit"
-								class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]">🔄
+								class="bg-[#6AD46A] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]">🔄
 								새로고침 (수정반영)</button>
 						</div>
 					</form>
@@ -549,7 +560,7 @@
 						</table>
 						<div style="text-align: right; margin-top: 10px; margin-right: 10px;">
 							<input type="submit"
-								class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]"
+								class="bg-[#6AD46A] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]"
 								value="➕ 등록">
 						</div>
 					</form>
