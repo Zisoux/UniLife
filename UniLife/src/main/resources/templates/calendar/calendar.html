@@ -473,6 +473,7 @@ document.addEventListener('click', function (e) {
 	              return endDate.toISOString().split('T')[0];
 	            })(),
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
@@ -497,6 +498,7 @@ document.addEventListener('click', function (e) {
 	              return endDate.toISOString().split('T')[0];
 	            })(),
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
@@ -515,6 +517,7 @@ document.addEventListener('click', function (e) {
 	            borderColor: color,
 	            textColor: '#fff',
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
