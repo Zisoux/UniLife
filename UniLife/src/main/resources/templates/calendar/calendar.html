@@ -231,6 +231,10 @@
       editable: true,
       selectable: true,
       dateClick: function (info) {
+        if (currentViewUserId !== currentUserId) {
+          showToast("❌ 친구 일정 보기 상태에서는 일정을 추가할 수 없어요!");
+          return;
+        }
         selectedDate = info.dateStr;
         openSlidePanel(info.dateStr);
       },
