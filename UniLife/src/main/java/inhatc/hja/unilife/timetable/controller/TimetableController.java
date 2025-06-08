@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
 import inhatc.hja.unilife.timetable.entity.Course;
@@ -51,6 +53,7 @@ public String viewTimetable(@PathVariable("userId") Long userId,
     List<String> predefinedSemesters = timetableService.getAvailableSemesters();
     String today = (dayOverride != null) ? dayOverride : getKoreanDayName(LocalDate.now().getDayOfWeek());
     List<CourseBlockDTO> blocks = timetableService.convertToCourseBlocks(timetableCourses);
+  
 
     model.addAttribute("user", user);
     model.addAttribute("userId", userId);
@@ -83,17 +86,27 @@ public String createTimetable(@RequestParam("userId") Long userId,
 }
 
 
-    @PostMapping("/add")
-    public String addClass(@RequestParam("userId") Long userId,
-            @RequestParam("courseId") Long courseId,
-            @RequestParam("dayOfWeek") String dayOfWeek,
-            @RequestParam("startTime") String startTime,
-            @RequestParam("endTime") String endTime,
-            @RequestParam("semester") String semester) {
-        timetableService.addClassToTimetable(userId, courseId, dayOfWeek, startTime, endTime, semester);
-        String encodedSemester = URLEncoder.encode(semester, StandardCharsets.UTF_8);
-        return "redirect:/timetable/view/" + userId + "?semester=" + encodedSemester;
+@PostMapping("/add")
+public String addClass(
+    @RequestParam("userId") Long userId,
+    @RequestParam(value = "courseId", required = false) Long courseId,
+    @RequestParam(value = "customCourseName", required = false) String customCourseName,
+    @RequestParam("dayOfWeek") String dayOfWeek,
+    @RequestParam("startTime") String startTime,
+    @RequestParam("endTime") String endTime,
+    @RequestParam("semester") String semester,
+    RedirectAttributes redirectAttributes
+) {
+    try {
+        timetableService.addClassToTimetable(userId, courseId, customCourseName, dayOfWeek, startTime, endTime, semester);
+    } catch (IllegalArgumentException e) {
+        redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
     }
+
+    return "redirect:/timetable/view/" + userId + "?semester=" + URLEncoder.encode(semester, StandardCharsets.UTF_8);
+}
+
+
 
     @GetMapping("/delete/{id}")
     public String deleteClass(@PathVariable("id") Long id,

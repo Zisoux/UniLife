@@ -368,6 +368,12 @@
                   th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
         </select>
       </div>
+	  <!-- 사용자 직접 입력 필드 (선택적) -->
+	  <div>
+	    <label class="block text-sm font-semibold mb-2 text-gray-700">직접 입력 강의명</label>
+	    <input type="text" name="customCourseName" class="form-input w-full" placeholder="직접 입력할 강의명 (선택)" />
+	  </div>
+
       
       <div>
         <label class="block text-sm font-semibold mb-2 text-gray-700">요일</label>
@@ -412,7 +418,13 @@
           <i class="ri-calendar-2-line mr-3 text-primary"></i>
           <span th:text="${semester} + ' 시간표'"></span>
         </h2>
+		
+		<div th:if="${errorMessage}" class="bg-red-100 text-red-800 px-4 py-2 mb-4 rounded text-sm font-semibold border border-red-300">
+		  <i class="ri-error-warning-line mr-2"></i>
+		  <span th:text="${errorMessage}"></span>
+		</div>
 
+		
         <!-- 시간표 컨테이너: 높이 조정 (8시~22시, 14시간 * 64px + 헤더 40px = 936px) -->
         <div class="relative flex-1 border border-gray-300 overflow-auto z-0 rounded-lg"
              style="background: white; max-height: 936px;">
@@ -448,15 +460,15 @@
 
           <!-- 강의 블록 (절대 위치) -->
           <div class="absolute inset-0" style="top: 40px;">
-            <div th:each="block : ${courseBlocks}"
-                 class="course-block absolute text-white rounded-lg shadow text-sm overflow-hidden"
-                 th:style="
-                   'top:' + (${block.topPx} * 64 / 96) + 'px; ' +
-                   'left:' + (${block.leftPercent} + 1) + '%; ' +
-                   'height:' + (${block.heightPx} * 64 / 96) + 'px; ' +
-                   'width:' + (${block.widthPercent} - 1) + '%; ' +
-                   'z-index:50;'
-                 ">
+			<div th:each="block : ${courseBlocks}"
+			     class="course-block absolute"
+			     th:style="
+			       'top:' + ${block.topPx} + 'px; ' +
+			       'height:' + ${block.heightPx} + 'px; ' +
+			       'left:' + (${block.leftPercent}) + '%; ' +
+			       'width:' + (${block.widthPercent}+0.5) + '%;'
+			     ">
+
               <div th:if="${block.first}"
                    class="h-full px-3 py-2 text-xs text-center leading-tight"
                    style="display: flex; flex-direction: column; justify-content: center; align-items: center;">

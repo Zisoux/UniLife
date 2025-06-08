@@ -72,22 +72,35 @@ public class TimetableService {
     }
 
     @Transactional
-    public void addClassToTimetable(Long userId, Long courseId, String dayOfWeek, String startTime, String endTime, String semester) {
+    public void addClassToTimetable(Long userId, Long courseId, String customCourseName, String dayOfWeek, String startTime, String endTime, String semester) {
+        LocalTime start = LocalTime.parse(startTime);
+        if (start.isBefore(LocalTime.of(8, 0))) {
+            throw new IllegalArgumentException("⚠ 08:00 이전 강의는 등록할 수 없습니다.");
+        }
+
         Timetable timetable = getTimetableWithCourses(userId, semester);
-
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid course ID"));
-
         TimetableCourse timetableCourse = new TimetableCourse();
-        timetableCourse.setCourse(course);
+
+        timetableCourse.setTimetable(timetable);
         timetableCourse.setDayOfWeek(dayOfWeek);
-        timetableCourse.setStartTime(LocalTime.parse(startTime));
+        timetableCourse.setStartTime(start);
         timetableCourse.setEndTime(LocalTime.parse(endTime));
 
-        timetable.addTimetableCourse(timetableCourse);
+        if (courseId != null) {
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 강의입니다."));
+            timetableCourse.setCourse(course);
+        } else if (customCourseName != null && !customCourseName.trim().isEmpty()) {
+            Course virtualCourse = new Course(); // DB에 저장 X
+            virtualCourse.setCourseName(customCourseName);
+            timetableCourse.setCourse(virtualCourse); // 화면 표시용
+        } else {
+            throw new IllegalArgumentException("강의를 선택하거나 직접 입력해주세요.");
+        }
 
         timetableCourseRepository.save(timetableCourse);
     }
+
 
     @Transactional
     public void deleteClass(Long timetableCourseId) {
@@ -107,15 +120,12 @@ public class TimetableService {
     public List<CourseBlockDTO> convertToCourseBlocks(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
 
-        int timetableStart = 8 * 60; // 8:00 AM
-        int timetableEnd = 22 * 60;   // 10:00 PM
-        int totalMinutes = timetableEnd - timetableStart; // 14시간 = 840분
-        
-        // 화면에 맞춰 동적으로 계산 (헤더 48px 제외한 나머지 공간을 14시간으로 분할)
-        // 예: 화면 높이가 800px이면 시간표 영역은 752px, 1시간당 약 53.7px
-        double availableHeight = 700.0; // 실제 시간표 영역 높이 (CSS에서 설정)
-        double pxPerMinute = availableHeight / totalMinutes; // 분당 픽셀
-        int headerOffset = 48; // 헤더 높이
+        int timetableStart = 8 * 60; // 08:00
+        int timetableEnd = 22 * 60;  // 22:00
+        int totalMinutes = timetableEnd - timetableStart; // 840분
+
+        double pxPerMinute = 64.0 / 60.0;  // 정확히 1분 = 1.066666...
+        int headerOffset = 0;  // 상단 오프셋 제거
 
         for (TimetableCourse course : courses) {
             LocalTime start = course.getStartTime();
@@ -124,53 +134,40 @@ public class TimetableService {
             int startTotal = start.getHour() * 60 + start.getMinute();
             int endTotal = end.getHour() * 60 + end.getMinute();
 
-            // 시간표 범위 내에서만 표시
             if (startTotal < timetableStart || endTotal > timetableEnd) {
                 System.out.println("강의 시간이 시간표 범위를 벗어남: " + course.getCourse().getCourseName());
                 continue;
             }
 
-            // 8시부터의 오프셋 계산
             int offsetMinutes = startTotal - timetableStart;
-            int topPx = (int) Math.round(offsetMinutes * pxPerMinute) + headerOffset;
-
-            // 강의 시간 계산
+            int topPx = (int) Math.round(offsetMinutes * pxPerMinute);  // 헤더 오프셋 없음
             int durationMinutes = endTotal - startTotal;
             int heightPx = (int) Math.round(durationMinutes * pxPerMinute);
-
-            // 최소 높이 보장 (텍스트가 보이도록)
-            heightPx = Math.max(heightPx, 30);
-
-            // 디버그 출력
-            System.out.println("강의: " + course.getCourse().getCourseName());
-            System.out.println("시간: " + start + " - " + end);
-            System.out.println("위치: " + topPx + "px, 높이: " + heightPx + "px");
-            System.out.println("분당픽셀: " + pxPerMinute);
+            heightPx = Math.max(heightPx, 30);  // 최소 높이
 
             CourseBlockDTO block = new CourseBlockDTO(
                     course.getId(),
                     course.getCourse().getCourseName(),
                     course.getDayOfWeek(),
                     start.getHour(),
-                    0.0, 
-                    0.0, 
+                    0.0,
+                    0.0,
                     start.toString(),
                     end.toString(),
                     true
             );
-            
-            // 위치 설정
-            double leftPercent = calculateLeftPercent(course.getDayOfWeek());
-            block.setLeftPercent(leftPercent);
-            block.setWidthPercent(17.5); // 약간 작게 해서 경계선이 보이도록
+
             block.setTopPx(topPx);
             block.setHeightPx(heightPx);
+            block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
+            block.setWidthPercent(17.5);
 
             blocks.add(block);
         }
 
         return blocks;
     }
+
 
     public List<CourseBlockDTO> convertToCourseBlocksForFriend(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
@@ -186,6 +183,10 @@ public class TimetableService {
             int startTotal = start.getHour() * 60 + start.getMinute();
             int endTotal = end.getHour() * 60 + end.getMinute();
 
+            if (startTotal < timetableStart || endTotal > timetableEnd) {
+                continue; // 범위 외 강의 무시
+            }
+
             double topPercent = ((startTotal - timetableStart) / totalMinutes) * 100.0;
             double heightPercent = ((endTotal - startTotal) / totalMinutes) * 100.0;
 
@@ -200,8 +201,10 @@ public class TimetableService {
                     end.toString(),
                     false
             );
+
             block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
             block.setWidthPercent(DAY_WIDTH_PERCENT);
+
             blocks.add(block);
         }
 
@@ -211,12 +214,12 @@ public class TimetableService {
     private double calculateLeftPercent(String dayOfWeek) {
         // 10% 시간 컬럼 + 각 요일별 18% 컬럼
         return switch (dayOfWeek) {
-            case "월" -> 10.5;  // 약간의 여백 추가
-            case "화" -> 28.5;  
-            case "수" -> 46.5;  
-            case "목" -> 64.5;  
-            case "금" -> 82.5;  
-            default -> 10.5;
+            case "월" -> 10;  // 약간의 여백 추가
+            case "화" -> 28;  
+            case "수" -> 46;  
+            case "목" -> 64;  
+            case "금" -> 82;  
+            default -> 10;
         };
     }
     }
