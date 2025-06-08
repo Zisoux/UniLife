@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>UniLife - 학기별 시간표</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Poetsen+One&family=Righteous&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Poetsen+One&family=Righteous&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
-
+  
   <!-- TailwindCSS 불러오기 -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -21,225 +21,452 @@
             primary: '#6699FF',
             secondary: '#FF9933',
             tertiary: '#6ad46a'
+          },
+          animation: {
+            'slide-in': 'slideIn 0.3s ease-out',
+            'fade-in': 'fadeIn 0.2s ease-out',
+            'bounce-in': 'bounceIn 0.4s ease-out'
+          },
+          keyframes: {
+            slideIn: {
+              '0%': { transform: 'translateX(100%)' },
+              '100%': { transform: 'translateX(0)' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            bounceIn: {
+              '0%': { transform: 'scale(0.3)', opacity: '0' },
+              '50%': { transform: 'scale(1.05)' },
+              '70%': { transform: 'scale(0.9)' },
+              '100%': { transform: 'scale(1)', opacity: '1' }
+            }
           }
         }
       }
     };
   </script>
-
+  
   <style>
     :root {
       --main-color: #6699ff;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --shadow-soft: 0 4px 15px 0 rgba(31, 38, 135, 0.37);
+      --shadow-hover: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     }
+
     html, body {
       height: 100%;
-      overflow: hidden; /* 전체 화면 스크롤 방지 */
+      overflow: hidden;
     }
+
     body {
       font-family: 'Noto Sans KR', sans-serif;
       font-size: 13px;
+      background-color: #f9fafb;
     }
+
     main {
       height: calc(100vh - 64px);
       display: flex;
-      gap: 0.5rem;
+      gap: 1rem;
       padding: 1rem 1.5rem;
       box-sizing: border-box;
     }
-    /* 카드 내부의 .relative(타임테이블 배경)을 흰색으로 고정 */
-    .card > div.relative {
-      background-color: white !important;
+
+    .glass-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
     }
-    /* 왼쪽 학기 탭이 시간표를 가리는 부분을 보정하기 위해 약간 왼쪽으로 밀어냄 */
+
+    .glass-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
     .timetable-section {
-      margin-left: 3.5rem; /* 학기 탭(약 60px ≈ 3.75rem)보다 살짝 더 왼쪽으로 이동 */
+      margin-left: 3.5rem;
+    }
+
+    .time-cell {
+      background: white;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+
+    .time-cell:hover {
+      background: #eff6ff;
+      transform: scale(1.02);
+      cursor: pointer;
+    }
+
+    .course-block {
+      background: #6699FF;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .course-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .friend-card {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .friend-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background: #6699FF;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #5577dd;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #FF9933;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #e6851a;
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: #6ad46a;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      color: white;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+      background: #5bb85b;
+      transform: translateY(-1px);
+    }
+
+    .slide-panel {
+      background: white;
+      border-left: 1px solid #e5e7eb;
+    }
+
+    .form-input {
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 8px 12px;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+      border-color: #6699FF;
+      box-shadow: 0 0 0 3px rgba(102, 153, 255, 0.1);
+      outline: none;
+    }
+
+    .day-tab {
+      background: #f3f4f6;
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: #374151;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: 1px solid #d1d5db;
+    }
+
+    .day-tab:hover {
+      background: #e5e7eb;
+    }
+
+    .day-tab.active {
+      background: #6699FF;
+      color: white;
+      border-color: #6699FF;
+    }
+
+    .floating-btn {
+      background: #6ad46a;
+      border-radius: 50px;
+      padding: 12px 24px;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(106, 212, 106, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .floating-btn:hover {
+      background: #5bb85b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(106, 212, 106, 0.4);
+    }
+
+    .semester-tab {
+      background: #FF9933;
+      border-radius: 0 8px 8px 0;
+      transition: all 0.3s ease;
+    }
+
+    .semester-tab:hover {
+      background: #e6851a;
+      transform: translateX(3px);
+    }
+
+    /* 시간표 헤더 스타일 */
+    .timetable-header {
+      background: #f9fafb;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* 스크롤바 스타일 */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(102, 153, 255, 0.5);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 153, 255, 0.7);
     }
   </style>
 </head>
 
-<body class="font-['Noto_Sans_KR'] text-sm bg-gray-50 text-neutral-900">
-
+<body class="font-['Noto_Sans_KR'] text-sm text-neutral-900">
+  
   <!-- 상단 공통 헤더(로그인 정보 등) -->
   <div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
-
-  <!-- 왼쪽 상단 “학기” 탭 -->
+  
+  <!-- 왼쪽 상단 "학기" 탭 -->
   <div
     id="semesterTab"
-    class="fixed left-0 bg-[#FF9933] text-white px-3 py-2 rounded-r cursor-pointer select-none z-[60] font-semibold text-sm flex items-center justify-center"
+    class="semester-tab fixed left-0 text-white px-3 py-2 cursor-pointer select-none z-[60] font-semibold text-sm flex items-center justify-center"
     style="width: 60px; height: 48px; top: 80px;"
     onclick="toggleSemesterPanel()">
+    <i class="ri-calendar-line mr-1"></i>
     학기
   </div>
-
+  
   <!-- 왼쪽 상단 학기관리 슬라이드 패널 -->
   <div
     id="semesterPanel"
-    class="fixed left-0 bg-white shadow-lg p-4 transform -translate-x-full transition-transform duration-300 z-[70] flex flex-col"
-    style="top: 80px; height: calc(100vh - 80px); width: 16rem;">
-    <h2 class="text-lg font-bold mb-4 border-b pb-2">학기 관리</h2>
+    class="slide-panel fixed left-0 shadow-lg p-6 transform -translate-x-full transition-transform duration-300 z-[70] flex flex-col"
+    style="top: 80px; height: calc(100vh - 80px); width: 18rem;">
+    <h2 class="text-xl font-bold mb-6 text-gray-800 flex items-center">
+      <i class="ri-settings-3-line mr-2 text-primary"></i>
+      학기 관리
+    </h2>
     <div class="flex flex-col gap-6 flex-grow overflow-auto">
       <!-- 기존 학기 보기 -->
       <form method="get"
             th:action="@{/timetable/view/{userId}(userId=${userId})}"
-            class="bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
-        <label class="block mb-2 text-sm font-medium text-gray-700">📘 기존 학기 보기</label>
+            class="glass-card p-4 rounded-lg shadow-sm">
+        <label class="block mb-3 text-sm font-semibold text-gray-700 flex items-center">
+          <i class="ri-book-open-line mr-2 text-primary"></i>
+          📘 기존 학기 보기
+        </label>
         <div class="flex gap-2">
-          <select name="semester" required class="flex-1 border rounded px-2 py-1 text-sm">
+          <select name="semester" required class="form-input flex-1 text-sm">
             <option value="" disabled selected>학기 선택</option>
             <option th:each="sem : ${semesters}"
                     th:value="${sem}"
                     th:text="${sem}"></option>
           </select>
-          <button class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm">보기</button>
+          <button class="btn-primary text-sm">보기</button>
         </div>
       </form>
-
+      
       <!-- 새 학기 만들기 -->
       <form method="post"
             action="/timetable/create"
-            class="bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-sm">
+            class="glass-card p-4 rounded-lg shadow-sm">
         <input type="hidden" name="userId" th:value="${userId}" />
-        <label class="block mb-2 text-sm font-medium text-gray-700">🆕 새 학기 만들기</label>
+        <label class="block mb-3 text-sm font-semibold text-gray-700 flex items-center">
+          <i class="ri-add-circle-line mr-2 text-green-500"></i>
+          🆕 새 학기 만들기
+        </label>
         <div class="flex gap-2">
-          <select name="semester" required class="flex-1 border rounded px-2 py-1 text-sm">
+          <select name="semester" required class="form-input flex-1 text-sm">
             <option value="" disabled selected>학기 선택</option>
             <option th:each="sem : ${predefinedSemesters}"
                     th:value="${sem}"
                     th:text="${sem}"></option>
           </select>
-          <button class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white text-sm">만들기</button>
+          <button class="btn-success text-sm">만들기</button>
         </div>
       </form>
     </div>
   </div>
-
-  <!-- 우측 하단 “강의 추가” 버튼 -->
+  
+  <!-- 우측 하단 "강의 추가" 버튼 -->
   <button
     id="openSlideBtn"
     onclick="openForm()"
-    class="fixed bottom-8 right-8 bg-[#6ad46a] text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-600 transition z-50 font-semibold select-none">
+    class="floating-btn fixed bottom-8 right-8 shadow-lg transition z-50 select-none flex items-center">
+    <i class="ri-add-line mr-2 text-lg"></i>
     강의 추가
   </button>
-
-  <!-- 우측에서 슬라이드로 나오는 “강의 추가” 폼 -->
+  
+  <!-- 우측에서 슬라이드로 나오는 "강의 추가" 폼 -->
   <div
     id="slideForm"
-    class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg p-6 transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
-    <h2 class="text-lg font-bold mb-4">강의 추가</h2>
+    class="slide-panel fixed top-0 right-0 h-full w-80 shadow-lg p-6 transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+    <h2 class="text-xl font-bold mb-6 text-gray-800 flex items-center">
+      <i class="ri-add-box-line mr-2 text-primary"></i>
+      강의 추가
+    </h2>
     <form th:action="@{/timetable/add}"
           method="post"
           class="space-y-4 flex-grow overflow-auto">
       <input type="hidden" name="userId" th:value="${userId}" />
       <input type="hidden" name="semester" th:value="${semester}" />
-
-      <label class="block text-sm font-medium">강의 선택</label>
-      <select name="courseId"
-              class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              required>
-        <option th:each="course : ${courses}"
-                th:value="${course.id}"
-                th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
-      </select>
-
-      <label class="block text-sm font-medium">요일</label>
-      <select name="dayOfWeek"
-              class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              required>
-        <option th:each="day : ${dayList}"
-                th:value="${day}"
-                th:text="${day}"></option>
-      </select>
-
-      <label class="block text-sm font-medium">시작 시간</label>
-      <input type="time"
-             name="startTime"
-             class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-             required />
-
-      <label class="block text-sm font-medium">종료 시간</label>
-      <input type="time"
-             name="endTime"
-             class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-             required />
-
-      <button type="submit"
-              class="bg-primary text-white w-full py-2 rounded-md hover:bg-blue-700 transition">
+      
+      <div>
+        <label class="block text-sm font-semibold mb-2 text-gray-700">강의 선택</label>
+        <select name="courseId" class="form-input w-full" required>
+          <option th:each="course : ${courses}"
+                  th:value="${course.id}"
+                  th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-semibold mb-2 text-gray-700">요일</label>
+        <select name="dayOfWeek" class="form-input w-full" required>
+          <option th:each="day : ${dayList}"
+                  th:value="${day}"
+                  th:text="${day}"></option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-sm font-semibold mb-2 text-gray-700">시작 시간</label>
+        <input type="time" name="startTime" class="form-input w-full" required />
+      </div>
+      
+      <div>
+        <label class="block text-sm font-semibold mb-2 text-gray-700">종료 시간</label>
+        <input type="time" name="endTime" class="form-input w-full" required />
+      </div>
+      
+      <button type="submit" class="btn-primary w-full">
+        <i class="ri-check-line mr-2"></i>
         추가
       </button>
     </form>
-
+    
     <button onclick="closeForm()"
-            class="mt-4 flex items-center justify-center gap-2 text-gray-600 hover:text-red-600 hover:bg-red-100 rounded-md px-4 py-2 font-semibold transition-colors duration-300">
-      <svg xmlns="http://www.w3.org/2000/svg"
-           class="h-5 w-5"
-           fill="none"
-           viewBox="0 0 24 24"
-           stroke="currentColor"
-           stroke-width="2">
-        <path stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12" />
-      </svg>
+            class="mt-4 flex items-center justify-center gap-2 text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg px-4 py-3 font-semibold transition-all duration-300 border border-gray-200">
+      <i class="ri-close-line text-lg"></i>
       닫기
     </button>
   </div>
-
+  
+  <!-- 배경 오버레이 -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300" onclick="closeAllPanels()"></div>
+  
   <main>
     <!-- 좌측: 시간표 영역 -->
     <section class="timetable-section flex-1 overflow-hidden">
-      <div class="card h-full flex flex-col">
-        <h2 class="text-xl font-bold mb-2" th:text="${semester} + ' 시간표'"></h2>
+      <div class="glass-card h-full flex flex-col p-6">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800 flex items-center">
+          <i class="ri-calendar-2-line mr-3 text-primary"></i>
+          <span th:text="${semester} + ' 시간표'"></span>
+        </h2>
 
-		<!-- 시간표 컨테이너: 높이 1536px (8시~22시, 14시간 * 96px) -->
-		<div class="relative flex-1 border border-gray-300 overflow-hidden z-0"
-		     style="background-color: white; height: 1536px;">
+        <!-- 시간표 컨테이너: 높이 조정 (8시~22시, 14시간 * 64px + 헤더 40px = 936px) -->
+        <div class="relative flex-1 border border-gray-300 overflow-auto z-0 rounded-lg"
+             style="background: white; max-height: 936px;">
 
-		  <!-- ✅ 요일 헤더: 상단 고정 및 정확한 위치 맞춤 -->
-		  <div class="absolute top-0 left-0 w-full z-10"
-		       style="height: 48px;">
-		    <div class="grid grid-cols-[10%_90%] text-center text-sm font-bold bg-gray-100 border-b border-gray-300">
-		      <div class="border-r py-2">시간</div>
-		      <div class="grid grid-cols-5">
-		        <div class="border-r py-2" th:each="day : ${dayList}" th:text="${day}"></div>
-		      </div>
-		    </div>
-		  </div>
+          <!-- ✅ 요일 헤더: 상단 고정 및 정확한 위치 맞춤 -->
+          <div class="sticky top-0 left-0 w-full z-20 timetable-header"
+               style="height: 40px;">
+            <div class="grid grid-cols-[10%_90%] text-center text-sm font-bold text-gray-700">
+              <div class="border-r border-gray-300 py-2 flex items-center justify-center">
+                <i class="ri-time-line mr-1"></i>
+                시간
+              </div>
+              <div class="grid grid-cols-5">
+                <div class="border-r border-gray-300 py-2 font-semibold" th:each="day : ${dayList}" th:text="${day}"></div>
+              </div>
+            </div>
+          </div>
 
-		  <!-- ✅ 시간 라인 (48px 아래부터 시작) -->
-		  <div class="absolute top-[32px] left-0 w-full">
-		    <div th:each="hour : ${#numbers.sequence(8, 22)}"
-		         class="grid grid-cols-[10%_90%] w-full border-b border-gray-200 text-xs text-center h-[96px]">
-		      <div class="border-r pt-1" th:text="${hour + ':00'}"></div>
-		      <div class="grid grid-cols-5">
-		        <div th:each="i : ${#numbers.sequence(1, 5)}"
-		             th:attr="data-day=${dayList[i-1]}"
-		             onclick="openFormWithDay(this.dataset.day)"
-		             class="border-r border-gray-100 cursor-pointer hover:bg-blue-100">
-		        </div>
-		      </div>
-		    </div>
-		  </div>
+          <!-- ✅ 시간 라인 -->
+          <div class="w-full">
+            <div th:each="hour : ${#numbers.sequence(8, 21)}"
+                 class="grid grid-cols-[10%_90%] w-full border-b border-gray-200 text-xs text-center h-[64px]">
+              <div class="border-r border-gray-300 pt-2 text-gray-600 font-medium" th:text="${hour + ':00'}"></div>
+              <div class="grid grid-cols-5">
+                <div th:each="i : ${#numbers.sequence(1, 5)}"
+                     th:attr="data-day=${dayList[i-1]}, data-hour=${hour}"
+                     onclick="openFormWithDay(this.dataset.day, this.dataset.hour)"
+                     class="time-cell border-r border-gray-200 cursor-pointer transition-all duration-200">
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- 강의 블록 (절대 위치) -->
-          <div class="absolute inset-0">
+          <div class="absolute inset-0" style="top: 40px;">
             <div th:each="block : ${courseBlocks}"
-                 class="absolute bg-blue-400 text-white rounded shadow text-xs overflow-hidden"
+                 class="course-block absolute text-white rounded-lg shadow text-sm overflow-hidden"
                  th:style="
-                   'top:' + ${block.topPx} + 'px; ' +
-                   'left:' + ${block.leftPercent} + '%; ' +
-                   'height:' + ${block.heightPx} + 'px; ' +
-                   'width:' + ${block.widthPercent} + '%; ' +
+                   'top:' + (${block.topPx} * 64 / 96) + 'px; ' +
+                   'left:' + (${block.leftPercent} + 1) + '%; ' +
+                   'height:' + (${block.heightPx} * 64 / 96) + 'px; ' +
+                   'width:' + (${block.widthPercent} - 1) + '%; ' +
                    'z-index:50;'
                  ">
               <div th:if="${block.first}"
-                   class="h-full px-1 py-1 text-[11px] text-center leading-tight"
-                   style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; overflow: auto; white-space: normal;">
-                <div class="font-bold truncate" th:text="${block.courseName}"></div>
-                <div th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
+                   class="h-full px-3 py-2 text-xs text-center leading-tight"
+                   style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="font-bold mb-1" th:text="${block.courseName}"></div>
+                <div class="opacity-90 mb-2" th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
                 <a th:href="@{/timetable/delete/{id}(id=${block.courseId}, userId=${userId}, semester=${semester})}"
                    onclick="return confirm('정말 삭제하시겠습니까?');"
-                   class="text-[10px] underline mt-1"
-                   style="color: #ffdddd;">
+                   class="text-xs underline hover:text-red-200 transition-colors duration-200"
+                   style="color: rgba(255, 255, 255, 0.9);">
+                  <i class="ri-delete-bin-line mr-1"></i>
                   삭제
                 </a>
               </div>
@@ -249,42 +476,60 @@
         </div>
       </div>
     </section>
-
+    
     <!-- 우측: 공강 매칭 영역 -->
-    <aside class="w-[15%] flex flex-col justify-start">
-      <div class="card p-2 bg-gray-50 rounded-lg shadow-md h-full flex flex-col">
-        <h3 class="text-lg font-bold mb-2 text-primary">같은 공강 친구</h3>
-        <div class="flex justify-center gap-4 mb-2">
+    <aside class="w-[18%] flex flex-col justify-start">
+      <div class="glass-card p-4 rounded-2xl shadow-md h-full flex flex-col">
+        <h3 class="text-lg font-bold mb-4 text-gray-800 flex items-center">
+          <i class="ri-group-line mr-2 text-primary"></i>
+          같은 공강 친구
+        </h3>
+        <div class="flex justify-center gap-2 mb-4 flex-wrap">
           <a th:each="day : ${dayList}"
              th:href="@{'/timetable/view/' + ${userId} + '?semester=' + ${semester} + '&day=' + ${day}}"
              th:text="${day}"
              th:classappend="${day == selectedDay} ?
-               'bg-primary text-white rounded px-2 py-1 text-xs' :
-               'text-primary hover:bg-primary hover:text-white rounded px-2 py-1 text-xs cursor-pointer'">
+               'day-tab active' :
+               'day-tab'">
           </a>
         </div>
-        <div th:if="${#lists.isEmpty(matchingFriends)}"
-             class="text-center text-gray-500 italic flex-1 flex items-center justify-center text-xs">
-          해당 요일에 공강이 겹치는 친구가 없습니다.
-        </div>
-        <div th:each="friend : ${matchingFriends}"
-             class="friend-card bg-white rounded-lg shadow-md p-2 mb-2 hover:shadow-lg transition-shadow cursor-pointer text-xs">
-          <strong class="block font-semibold text-primary mb-1" th:text="${friend.friendUsername}"></strong>
-          <p class="text-gray-700" th:text="${friend.timeRangeSummary}"></p>
+        <div class="flex-1 overflow-auto">
+          <div th:if="${#lists.isEmpty(matchingFriends)}"
+               class="text-center text-gray-500 italic flex-1 flex items-center justify-center text-sm">
+            <div class="text-center">
+              <i class="ri-user-search-line text-2xl mb-2 block"></i>
+              해당 요일에 공강이 겹치는<br>친구가 없습니다.
+            </div>
+          </div>
+          <div th:each="friend : ${matchingFriends}"
+               class="friend-card rounded-xl shadow-md p-3 mb-3 hover:shadow-lg transition-all duration-300 cursor-pointer text-sm">
+            <strong class="block font-semibold text-primary mb-2 flex items-center">
+              <i class="ri-user-line mr-2"></i>
+              <span th:text="${friend.friendUsername}"></span>
+            </strong>
+            <p class="text-gray-700 text-xs flex items-center">
+              <i class="ri-time-line mr-1 text-primary"></i>
+              <span th:text="${friend.timeRangeSummary}"></span>
+            </p>
+          </div>
         </div>
       </div>
     </aside>
   </main>
-
+  
   <script>
     function openSemesterPanel() {
       document.getElementById("semesterPanel").classList.remove("-translate-x-full");
       document.getElementById("semesterTab").style.display = "none";
+      document.getElementById("overlay").classList.remove("hidden");
     }
+    
     function closeSemesterPanel() {
       document.getElementById("semesterPanel").classList.add("-translate-x-full");
       document.getElementById("semesterTab").style.display = "block";
+      document.getElementById("overlay").classList.add("hidden");
     }
+    
     function toggleSemesterPanel() {
       const panel = document.getElementById("semesterPanel");
       if (panel.classList.contains("-translate-x-full")) {
@@ -293,34 +538,73 @@
         closeSemesterPanel();
       }
     }
-
-    // 학기 패널 외부 클릭 시 닫기
+    
+    // "강의 추가" 폼 열기/닫기
+    function openForm() {
+      document.getElementById("slideForm").classList.remove("translate-x-full");
+      document.getElementById("overlay").classList.remove("hidden");
+      document.querySelector('select[name="dayOfWeek"]').value = "";
+    }
+    
+    function closeForm() {
+      document.getElementById("slideForm").classList.add("translate-x-full");
+      document.getElementById("overlay").classList.add("hidden");
+    }
+    
+    function openFormWithDay(day, hour) {
+      openForm();
+      document.querySelector('select[name="dayOfWeek"]').value = day;
+      
+      // 시간 자동 설정 (선택적)
+      if (hour) {
+        const startTime = hour + ':00';
+        const endTime = (parseInt(hour) + 1) + ':00';
+        document.querySelector('input[name="startTime"]').value = startTime;
+        document.querySelector('input[name="endTime"]').value = endTime;
+      }
+    }
+    
+    function closeAllPanels() {
+      closeSemesterPanel();
+      closeForm();
+    }
+    
+    // 패널 외부 클릭 시 닫기
     document.addEventListener('click', function(event) {
       const semesterPanel = document.getElementById('semesterPanel');
       const semesterTab = document.getElementById('semesterTab');
+      const slideForm = document.getElementById('slideForm');
+      const openBtn = document.getElementById('openSlideBtn');
+      
       const isClickInsidePanel = semesterPanel.contains(event.target);
-      const isClickOnTab     = semesterTab.contains(event.target);
-
+      const isClickOnTab = semesterTab.contains(event.target);
+      const isClickInsideForm = slideForm.contains(event.target);
+      const isClickOnBtn = openBtn.contains(event.target);
+      
+      // 학기 패널 닫기
       if (!semesterPanel.classList.contains('-translate-x-full')
           && !isClickInsidePanel
           && !isClickOnTab) {
         closeSemesterPanel();
       }
+      
+      // 강의 추가 폼 닫기
+      if (!slideForm.classList.contains('translate-x-full')
+          && !isClickInsideForm
+          && !isClickOnBtn
+          && !event.target.classList.contains('time-cell')
+          && !event.target.closest('.time-cell')) {
+        closeForm();
+      }
     });
-
-    // “강의 추가” 폼 열기/닫기
-    function openForm() {
-      document.getElementById("slideForm").classList.remove("translate-x-full");
-      document.querySelector('select[name="dayOfWeek"]').value = "";
-    }
-    function closeForm() {
-      document.getElementById("slideForm").classList.add("translate-x-full");
-    }
-    function openFormWithDay(day) {
-      openForm();
-      document.querySelector('select[name="dayOfWeek"]').value = day;
-    }
+    
+    // 키보드 ESC로 패널 닫기
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeAllPanels();
+      }
+    });
   </script>
-
+  
 </body>
 </html>

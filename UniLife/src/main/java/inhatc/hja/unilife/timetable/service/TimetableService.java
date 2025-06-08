@@ -107,13 +107,15 @@ public class TimetableService {
     public List<CourseBlockDTO> convertToCourseBlocks(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
 
-        int timetableStart = 8 * 60;
-        int timetableEnd = 22 * 60;
-        int totalMinutes = timetableEnd - timetableStart;
-
-        int pixelHeight = 1536;
-        double pxPerMinute = 96.0 / 60.0; // 정확히 1시간 = 96px
-
+        int timetableStart = 8 * 60; // 8:00 AM
+        int timetableEnd = 22 * 60;   // 10:00 PM
+        int totalMinutes = timetableEnd - timetableStart; // 14시간 = 840분
+        
+        // 화면에 맞춰 동적으로 계산 (헤더 48px 제외한 나머지 공간을 14시간으로 분할)
+        // 예: 화면 높이가 800px이면 시간표 영역은 752px, 1시간당 약 53.7px
+        double availableHeight = 700.0; // 실제 시간표 영역 높이 (CSS에서 설정)
+        double pxPerMinute = availableHeight / totalMinutes; // 분당 픽셀
+        int headerOffset = 48; // 헤더 높이
 
         for (TimetableCourse course : courses) {
             LocalTime start = course.getStartTime();
@@ -122,32 +124,45 @@ public class TimetableService {
             int startTotal = start.getHour() * 60 + start.getMinute();
             int endTotal = end.getHour() * 60 + end.getMinute();
 
-            int offset = Math.max(startTotal - timetableStart, 0);
-            int topPx = (int) Math.round(offset * pxPerMinute) +32;
+            // 시간표 범위 내에서만 표시
+            if (startTotal < timetableStart || endTotal > timetableEnd) {
+                System.out.println("강의 시간이 시간표 범위를 벗어남: " + course.getCourse().getCourseName());
+                continue;
+            }
 
+            // 8시부터의 오프셋 계산
+            int offsetMinutes = startTotal - timetableStart;
+            int topPx = (int) Math.round(offsetMinutes * pxPerMinute) + headerOffset;
 
-            int duration = endTotal - startTotal;
-            int heightPx = (int) Math.round(duration * pxPerMinute);
+            // 강의 시간 계산
+            int durationMinutes = endTotal - startTotal;
+            int heightPx = (int) Math.round(durationMinutes * pxPerMinute);
 
-            System.out.println("pxPerMinute: " + pxPerMinute + ", offset: " + offset + ", topPx: " + topPx);
+            // 최소 높이 보장 (텍스트가 보이도록)
+            heightPx = Math.max(heightPx, 30);
+
+            // 디버그 출력
+            System.out.println("강의: " + course.getCourse().getCourseName());
+            System.out.println("시간: " + start + " - " + end);
+            System.out.println("위치: " + topPx + "px, 높이: " + heightPx + "px");
+            System.out.println("분당픽셀: " + pxPerMinute);
 
             CourseBlockDTO block = new CourseBlockDTO(
                     course.getId(),
                     course.getCourse().getCourseName(),
                     course.getDayOfWeek(),
                     start.getHour(),
-                    0.0,
-                    0.0,
+                    0.0, 
+                    0.0, 
                     start.toString(),
                     end.toString(),
                     true
             );
-            double left = calculateLeftPercent(course.getDayOfWeek());
-            System.out.println("요일: " + course.getDayOfWeek() + ", leftPercent: " + left);
-            block.setLeftPercent(left);
             
-            block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
-            block.setWidthPercent(18.0); //nono
+            // 위치 설정
+            double leftPercent = calculateLeftPercent(course.getDayOfWeek());
+            block.setLeftPercent(leftPercent);
+            block.setWidthPercent(17.5); // 약간 작게 해서 경계선이 보이도록
             block.setTopPx(topPx);
             block.setHeightPx(heightPx);
 
@@ -194,14 +209,14 @@ public class TimetableService {
     }
 
     private double calculateLeftPercent(String dayOfWeek) {
+        // 10% 시간 컬럼 + 각 요일별 18% 컬럼
         return switch (dayOfWeek) {
-            case "월" -> 9.9;
-            case "화" -> 27.9;
-            case "수" -> 45.9;
-            case "목" -> 63.9;
-            case "금" -> 81.9;
-            default -> 0.0;
+            case "월" -> 10.5;  // 약간의 여백 추가
+            case "화" -> 28.5;  
+            case "수" -> 46.5;  
+            case "목" -> 64.5;  
+            case "금" -> 82.5;  
+            default -> 10.5;
         };
-
     }
     }
