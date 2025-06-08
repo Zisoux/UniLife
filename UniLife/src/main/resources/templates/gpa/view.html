@@ -140,8 +140,19 @@
 						alert('요청 중 오류 발생');
 					});
 			} else {
-				// 나머지 학기는 그냥 바로 이동
-				window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
+				// 나머지 학기도 update 후 이동
+				fetch(`/gpa/update?userId=${userId}&semesterId=${semesterId}`, { method: 'POST' })
+					.then(response => {
+						if (response.ok) {
+							window.location.href = `/gpa/view?userId=${userId}&semesterId=${semesterId}`;
+						} else {
+							alert('GPA 업데이트 실패!');
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert('요청 중 오류 발생');
+					});
 			}
 		}
 
@@ -154,7 +165,7 @@
 					if (confirm("정말 삭제하시겠습니까?")) {
 						fetch(`/gpa/delete?courseId=${courseId}`, { method: 'GET' })
 							.then(res => {
-								if (res.ok) this.closest('tr').remove();
+								if (res.ok) window.location.reload(); //this.closest('tr').remove();
 								else alert('삭제 실패');
 							})
 							.catch(() => alert('삭제 요청에 실패했습니다.'));
@@ -264,7 +275,7 @@
 	<span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
 
 	<div th:fragment="header(userId, id)">
-		<header class="bg-[#6699ff] text-white shadow-sm w-full">
+		<header class="bg-[#ffffff] text-black shadow-sm w-full">
 			<div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
 
 				<!-- 왼쪽 로고 -->
@@ -289,8 +300,8 @@
 					</nav>
 
 					<!-- 사용자 이름 -->
-					<span class="font-bold text-white">
-						<a th:href="@{/mypage}" class="font-bold text-white hover:underline flex items-center">
+					<span class="font-bold text-black">
+						<a th:href="@{/mypage}" class="font-bold text-black hover:underline flex items-center">
 							<i class="ri-user-line mr-1"></i>
 							<span th:text="${username}">로그인한 사용자</span>
 						</a>
@@ -496,7 +507,7 @@
 						</table>
 						<div style="text-align: right; margin-top: 10px; margin-right: 100px;">
 							<button type="submit"
-								class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]">🔄
+								class="bg-[#6AD46A] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]">🔄
 								새로고침 (수정반영)</button>
 						</div>
 					</form>
@@ -549,7 +560,7 @@
 						</table>
 						<div style="text-align: right; margin-top: 10px; margin-right: 10px;">
 							<input type="submit"
-								class="bg-[#6699ff] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]"
+								class="bg-[#6AD46A] text-white px-5 py-2.5 text-base rounded-lg cursor-pointer transition duration-200 hover:bg-[#4d7cd5]"
 								value="➕ 등록">
 						</div>
 					</form>

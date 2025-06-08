@@ -84,7 +84,7 @@
 </head>
 <body class="h-screen overflow-hidden flex flex-col font-noto text-sm">
   <span id="loginUserId" th:text="${userId}" hidden>loginUserId</span>
-  <div th:replace="common/header :: header(${user.userId}, ${user.id})"></div>
+  <th:block th:replace="common/header :: header(${user.userId}, ${user.id})"/>
 
   <div class="flex flex-1 gap-6 px-6 py-4 overflow-hidden h-[calc(100vh-60px)]">
     <aside id="friend-list" class="flex flex-col w-[250px] bg-gray-50 border-r border-gray-200 rounded-md shadow-sm p-3 h-full">
@@ -231,6 +231,10 @@
       editable: true,
       selectable: true,
       dateClick: function (info) {
+        if (currentViewUserId !== currentUserId) {
+          showToast("❌ 친구 일정 보기 상태에서는 일정을 추가할 수 없어요!");
+          return;
+        }
         selectedDate = info.dateStr;
         openSlidePanel(info.dateStr);
       },
@@ -473,6 +477,7 @@ document.addEventListener('click', function (e) {
 	              return endDate.toISOString().split('T')[0];
 	            })(),
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
@@ -497,6 +502,7 @@ document.addEventListener('click', function (e) {
 	              return endDate.toISOString().split('T')[0];
 	            })(),
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
@@ -515,6 +521,7 @@ document.addEventListener('click', function (e) {
 	            borderColor: color,
 	            textColor: '#fff',
 	            extendedProps: {
+	              userId: e.userId,
 	              location: e.location,
 	              type: e.type,
 	              alarm: e.alarm,
