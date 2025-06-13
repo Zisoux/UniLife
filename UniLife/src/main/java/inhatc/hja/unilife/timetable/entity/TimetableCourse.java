@@ -33,4 +33,8 @@ public class TimetableCourse {
 
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
+    
+    @Column(name = "custom_title")
+    private String customTitle;
+
 }

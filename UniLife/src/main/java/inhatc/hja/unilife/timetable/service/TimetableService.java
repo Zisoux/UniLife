@@ -72,7 +72,9 @@ public class TimetableService {
     }
 
     @Transactional
-    public void addClassToTimetable(Long userId, Long courseId, String customCourseName, String dayOfWeek, String startTime, String endTime, String semester) {
+    public void addClassToTimetable(Long userId, Long courseId, String customCourseName,
+                                    String dayOfWeek, String startTime, String endTime, String semester) {
+
         LocalTime start = LocalTime.parse(startTime);
         if (start.isBefore(LocalTime.of(8, 0))) {
             throw new IllegalArgumentException("⚠ 08:00 이전 강의는 등록할 수 없습니다.");
@@ -88,12 +90,14 @@ public class TimetableService {
 
         if (courseId != null) {
             Course course = courseRepository.findById(courseId)
-                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 강의입니다."));
-            timetableCourse.setCourse(course);
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 강의입니다."));
+            timetableCourse.setCourse(course); // ✅ null 넣지 말고 실제 course 설정
+            timetableCourse.setCustomTitle(customCourseName); // customName은 있을 수도 있고 없을 수도 있음
         } else if (customCourseName != null && !customCourseName.trim().isEmpty()) {
-            Course virtualCourse = new Course(); // DB에 저장 X
-            virtualCourse.setCourseName(customCourseName);
-            timetableCourse.setCourse(virtualCourse); // 화면 표시용
+            Course dummy = courseRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("직접 입력 강의 사용 시 더미 Course가 필요합니다."));
+            timetableCourse.setCourse(dummy); // ✅ 더미 course로 설정
+            timetableCourse.setCustomTitle(customCourseName);
         } else {
             throw new IllegalArgumentException("강의를 선택하거나 직접 입력해주세요.");
         }
@@ -122,10 +126,10 @@ public class TimetableService {
 
         int timetableStart = 8 * 60; // 08:00
         int timetableEnd = 22 * 60;  // 22:00
-        int totalMinutes = timetableEnd - timetableStart; // 840분
+        int totalMinutes = timetableEnd - timetableStart;
 
-        double pxPerMinute = 64.0 / 60.0;  // 정확히 1분 = 1.066666...
-        int headerOffset = 0;  // 상단 오프셋 제거
+        double pxPerMinute = 64.0 / 60.0;  // 1분당 px
+        int headerOffset = 0;
 
         for (TimetableCourse course : courses) {
             LocalTime start = course.getStartTime();
@@ -140,10 +144,10 @@ public class TimetableService {
             }
 
             int offsetMinutes = startTotal - timetableStart;
-            int topPx = (int) Math.round(offsetMinutes * pxPerMinute);  // 헤더 오프셋 없음
+            int topPx = (int) Math.round(offsetMinutes * pxPerMinute);
             int durationMinutes = endTotal - startTotal;
             int heightPx = (int) Math.round(durationMinutes * pxPerMinute);
-            heightPx = Math.max(heightPx, 30);  // 최소 높이
+            heightPx = Math.max(heightPx, 30);
 
             CourseBlockDTO block = new CourseBlockDTO(
                     course.getId(),
@@ -161,6 +165,7 @@ public class TimetableService {
             block.setHeightPx(heightPx);
             block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
             block.setWidthPercent(17.5);
+            block.setCustomTitle(course.getCustomTitle()); // ✅ 핵심 수정
 
             blocks.add(block);
         }

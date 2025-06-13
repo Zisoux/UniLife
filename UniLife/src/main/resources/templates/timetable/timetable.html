@@ -362,7 +362,7 @@
       
       <div>
         <label class="block text-sm font-semibold mb-2 text-gray-700">강의 선택</label>
-        <select name="courseId" class="form-input w-full" required>
+		<select name="courseId" class="form-input w-full">
           <option th:each="course : ${courses}"
                   th:value="${course.id}"
                   th:text="${course.courseName + ' (' + course.professor + ')'}"></option>
@@ -469,22 +469,23 @@
 			       'width:' + (${block.widthPercent}+0.5) + '%;'
 			     ">
 
-              <div th:if="${block.first}"
-                   class="h-full px-3 py-2 text-xs text-center leading-tight"
-                   style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <div class="font-bold mb-1" th:text="${block.courseName}"></div>
-                <div class="opacity-90 mb-2" th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
-                <a th:href="@{/timetable/delete/{id}(id=${block.courseId}, userId=${userId}, semester=${semester})}"
-                   onclick="return confirm('정말 삭제하시겠습니까?');"
-                   class="text-xs underline hover:text-red-200 transition-colors duration-200"
-                   style="color: rgba(255, 255, 255, 0.9);">
-                  <i class="ri-delete-bin-line mr-1"></i>
-                  삭제
-                </a>
-              </div>
+				 <div th:if="${block.first}"
+				      class="h-full px-3 py-2 text-xs text-center leading-tight"
+				      style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+				   <!-- ✅ 여기에 넣으세요 -->
+				   <div class="font-bold mb-1" th:text="${block.customTitle} ?: ${block.courseName}"></div>
+				   <div class="opacity-90 mb-2" th:text="${block.startTime} + ' ~ ' + ${block.endTime}"></div>
+				   <a th:href="@{/timetable/delete/{id}(id=${block.courseId}, userId=${userId}, semester=${semester})}"
+				      onclick="return confirm('정말 삭제하시겠습니까?');"
+				      class="text-xs underline hover:text-red-200 transition-colors duration-200"
+				      style="color: rgba(255, 255, 255, 0.9);">
+				     <i class="ri-delete-bin-line mr-1"></i>
+				     삭제
+				   </a>
+				 </div>
             </div>
           </div>
-
+		  
         </div>
       </div>
     </section>

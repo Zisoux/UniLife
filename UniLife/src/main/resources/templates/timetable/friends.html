@@ -18,21 +18,21 @@
 
     <main class="max-w-4xl mx-auto py-8 px-4 space-y-6">
 
-		<!-- 친구 검색 -->
-		<form action="/friends/search" method="post" class="flex gap-2">
-		    <input type="hidden" name="userId" th:value="${userId}" />
-		    <input type="hidden" name="semester" th:value="${semester}" />
-		    <input type="text" name="keyword" placeholder="친구 이름 또는 학번 검색" class="border rounded px-3 py-2 flex-1" required />
-		    <button class="bg-blue-500 text-white px-4 py-2 rounded">검색</button>
-		</form>
+        <!-- 친구 검색 -->
+        <form action="/friends/search" method="post" class="flex gap-2">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <input type="hidden" name="semester" th:value="${semester}" />
+            <input type="text" name="keyword" placeholder="친구 이름 또는 학번 검색" class="border rounded px-3 py-2 flex-1" required />
+            <button class="bg-blue-500 text-white px-4 py-2 rounded">검색</button>
+        </form>
 
-		<!-- 친구 추가 -->
-		<form action="/friends/add" method="post" class="flex gap-2">
-		    <input type="hidden" name="userId" th:value="${userId}" />
-		    <input type="hidden" name="semester" th:value="${semester}" />
-		    <input type="text" name="friendUserId" placeholder="추가할 친구 학번" class="border rounded px-3 py-2 flex-1" required />
-		    <button class="bg-green-500 text-white px-4 py-2 rounded">추가</button>
-		</form>
+        <!-- 친구 추가 -->
+        <form action="/friends/add" method="post" class="flex gap-2">
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <input type="hidden" name="semester" th:value="${semester}" />
+            <input type="text" name="friendUserId" placeholder="추가할 친구 학번" class="border rounded px-3 py-2 flex-1" required />
+            <button class="bg-green-500 text-white px-4 py-2 rounded">추가</button>
+        </form>
 
         <!-- 에러 메시지 -->
         <div th:if="${param.error != null and param.error[0] == 'invalidFriend'}" class="text-red-500 text-sm mb-3">
@@ -46,6 +46,9 @@
         </div>
         <div th:if="${param.error != null and param.error[0] == 'emptyFriendId'}" class="text-red-500 text-sm mb-3">
             친구 학번을 입력해주세요.
+        </div>
+        <div th:if="${param.error != null and param.error[0] == 'notfound'}" class="text-red-500 text-sm mb-3">
+            해당 친구의 시간표가 존재하지 않습니다.
         </div>
 
         <!-- 친구 목록 -->
@@ -62,7 +65,7 @@
                     <div class="flex gap-2">
                         <form action="/friends/delete" method="post">
                             <input type="hidden" name="userId" th:value="${userId}" />
-                            <input type="hidden" name="friendId" th:value="${friend.user.id}" />
+                            <input type="hidden" name="friendUserId" th:value="${friend.user.userId}" />
                             <input type="hidden" name="semester" th:value="${semester}" />
                             <button class="text-red-500 hover:underline text-sm">삭제</button>
                         </form>
