@@ -1,19 +1,23 @@
 package inhatc.hja.unilife.timetable.service;
 
-import inhatc.hja.unilife.timetable.dto.*;
-import inhatc.hja.unilife.timetable.entity.*;
-import inhatc.hja.unilife.timetable.repository.*;
+import inhatc.hja.unilife.timetable.dto.CourseBlockDTO;
+import inhatc.hja.unilife.timetable.entity.Course;
+import inhatc.hja.unilife.timetable.entity.Timetable;
+import inhatc.hja.unilife.timetable.entity.TimetableCourse;
+import inhatc.hja.unilife.timetable.repository.CourseRepository;
+import inhatc.hja.unilife.timetable.repository.TimetableCourseRepository;
+import inhatc.hja.unilife.timetable.repository.TimetableRepository;
 import inhatc.hja.unilife.user.entity.User;
-//import inhatc.hja.unilife.user.entity.Friend;
-import inhatc.hja.unilife.user.repository.*;
+import inhatc.hja.unilife.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-//import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,18 +26,17 @@ public class TimetableService {
     private final TimetableRepository timetableRepository;
     private final TimetableCourseRepository timetableCourseRepository;
     private final CourseRepository courseRepository;
-    // private final FriendRepository friendRepository;
     private final UserRepository userRepository;
+
+    private static final double DAY_WIDTH_PERCENT = 19.8;
 
     public List<String> getAvailableSemesters() {
         List<String> result = new ArrayList<>();
         int currentYear = LocalDate.now().getYear();
-
         for (int year = currentYear - 5; year <= currentYear + 2; year++) {
             result.add(year + "-1학기");
             result.add(year + "-2학기");
         }
-
         return result;
     }
 
@@ -45,162 +48,88 @@ public class TimetableService {
                 .toList();
     }
 
-    public Optional<Timetable> getTimetableWithCourses(Long userId, String semester) {
-        return timetableRepository.findByUserIdAndSemester(userId, semester);
-    }
-
-    private Timetable createNewTimetable(Long userId, String semester) {
-        Timetable timetable = new Timetable();
-        timetable.setSemester(semester);
-        timetable.setCreatedAt(LocalDateTime.now());
-
-        // 🔥 user 연결 추가
-        userRepository.findById(userId).ifPresent(timetable::setUser);
-
-        return timetable;
+    public Timetable getTimetableWithCourses(Long userId, String semester) {
+        return timetableRepository.findByUserIdAndSemester(userId, semester)
+                .orElseGet(() -> timetableRepository.save(createNewTimetable(userId, semester)));
     }
 
     public void createTimetable(Long userId, String semester) {
-        if (timetableRepository.findAllByUserIdAndSemester(userId, semester).isEmpty()) {
+        boolean exists = !timetableRepository.findAllByUserIdAndSemester(userId, semester).isEmpty();
+        if (!exists) {
             timetableRepository.save(createNewTimetable(userId, semester));
         }
     }
 
-    public void addClassToTimetable(Long userId, Long courseId, String dayOfWeek, String startTime, String endTime,
-                                String semester) {
-    // 1. 시간표 조회 또는 새로 생성
-    Timetable timetable = getTimetableWithCourses(userId, semester)
-        .orElseGet(() -> {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    public Timetable createNewTimetable(Long userId, String semester) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-            Timetable newTimetable = new Timetable();
-            newTimetable.setUser(user);
-            newTimetable.setSemester(semester);
-            return timetableRepository.save(newTimetable);
-        });
+        Timetable timetable = new Timetable();
+        timetable.setUser(user);
+        timetable.setSemester(semester);
+        timetable.setCreatedAt(LocalDateTime.now());
+        return timetable;
+    }
+
+    @Transactional
+    public void addClassToTimetable(Long userId, Long courseId, String customCourseName,
+                                    String dayOfWeek, String startTime, String endTime, String semester) {
+
+        LocalTime start = LocalTime.parse(startTime);
+        if (start.isBefore(LocalTime.of(8, 0))) {
+            throw new IllegalArgumentException("⚠ 08:00 이전 강의는 등록할 수 없습니다.");
+        }
+
+        Timetable timetable = getTimetableWithCourses(userId, semester);
+        TimetableCourse timetableCourse = new TimetableCourse();
+
+        timetableCourse.setTimetable(timetable);
+        timetableCourse.setDayOfWeek(dayOfWeek);
+        timetableCourse.setStartTime(start);
+        timetableCourse.setEndTime(LocalTime.parse(endTime));
+
+        if (courseId != null) {
+            Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 강의입니다."));
+            timetableCourse.setCourse(course); // ✅ null 넣지 말고 실제 course 설정
+            timetableCourse.setCustomTitle(customCourseName); // customName은 있을 수도 있고 없을 수도 있음
+        } else if (customCourseName != null && !customCourseName.trim().isEmpty()) {
+            Course dummy = courseRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("직접 입력 강의 사용 시 더미 Course가 필요합니다."));
+            timetableCourse.setCourse(dummy); // ✅ 더미 course로 설정
+            timetableCourse.setCustomTitle(customCourseName);
+        } else {
+            throw new IllegalArgumentException("강의를 선택하거나 직접 입력해주세요.");
+        }
+
+        timetableCourseRepository.save(timetableCourse);
+    }
 
 
-    // 2. 과목 조회
-    Course course = courseRepository.findById(courseId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid course ID"));
+    @Transactional
+    public void deleteClass(Long timetableCourseId) {
+        TimetableCourse timetableCourse = timetableCourseRepository.findById(timetableCourseId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid timetable course ID"));
 
-    // 3. 시간표 과목 객체 생성
-    TimetableCourse timetableCourse = new TimetableCourse();
-    timetableCourse.setTimetable(timetable);
-    timetableCourse.setCourse(course);
-    timetableCourse.setDayOfWeek(dayOfWeek);
-    timetableCourse.setStartTime(LocalTime.parse(startTime));
-    timetableCourse.setEndTime(LocalTime.parse(endTime));
+        Timetable timetable = timetableCourse.getTimetable();
+        timetable.removeTimetableCourse(timetableCourse);
 
-    // 4. 저장
-    timetableCourseRepository.save(timetableCourse);
-}
-
-
-    public void deleteClass(Long id) {
-        timetableCourseRepository.deleteById(id);
+        timetableCourseRepository.delete(timetableCourse);
     }
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
-    /*
-     * public List<FreeTimeMatchDTO> findMatchingFriendsByDay(Long userId, String
-     * semester, String dayOfWeek, LocalTime now) {
-     * List<TimetableCourse> myCourses =
-     * timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(userId,
-     * semester)
-     * .stream().filter(c -> c.getDayOfWeek().equals(dayOfWeek)).toList();
-     * List<TimeRange> myFreeTimes = calculateFreeTimes(myCourses);
-     * 
-     * List<Friend> friends = friendRepository.findByUserIdAndStatus(userId,
-     * Friend.Status.accepted);
-     * Map<Long, FreeTimeMatchDTO> matchMap = new HashMap<>();
-     * 
-     * for (Friend friend : friends) {
-     * List<TimetableCourse> friendCourses =
-     * timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(friend.
-     * getFriendId(), semester)
-     * .stream().filter(c -> c.getDayOfWeek().equals(dayOfWeek)).toList();
-     * List<TimeRange> friendFreeTimes = calculateFreeTimes(friendCourses);
-     * 
-     * for (TimeRange my : myFreeTimes) {
-     * for (TimeRange fr : friendFreeTimes) {
-     * Optional<TimeRange> overlap = getOverlap(my, fr);
-     * if (overlap.isPresent() && (now == null ||
-     * isCurrentTimeInRange(overlap.get(), now))) {
-     * TimeRange range = overlap.get();
-     * String slot = range.start() + " ~ " + range.end();
-     * 
-     * userRepository.findById(friend.getFriendId()).ifPresent(user -> {
-     * matchMap.computeIfAbsent(user.getId(), k -> {
-     * FreeTimeMatchDTO dto = new FreeTimeMatchDTO();
-     * dto.setFriendId(user.getId());
-     * dto.setFriendUsername(user.getUsername());
-     * dto.setDayOfWeek(dayOfWeek);
-     * dto.setTimeRanges(new ArrayList<>());
-     * return dto;
-     * }).getTimeRanges().add(slot);
-     * });
-     * }
-     * }
-     * }
-     * }
-     * 
-     * return new ArrayList<>(matchMap.values());
-     * }
-     */
-
-    /*
-     * private List<TimeRange> calculateFreeTimes(List<TimetableCourse> courses) {
-     * List<TimetableCourse> sortedCourses = new ArrayList<>(courses);
-     * sortedCourses.sort(Comparator.comparing(TimetableCourse::getStartTime));
-     * 
-     * List<TimeRange> freeTimes = new ArrayList<>();
-     * LocalTime dayStart = LocalTime.of(8, 0); // 🔥 9시 → 8시
-     * LocalTime dayEnd = LocalTime.of(22, 0); // 🔥 18시 → 22시
-     * 
-     * for (TimetableCourse course : sortedCourses) {
-     * if (course.getStartTime().isAfter(dayStart)) {
-     * freeTimes.add(new TimeRange(dayStart, course.getStartTime()));
-     * }
-     * dayStart = course.getEndTime().isAfter(dayStart) ? course.getEndTime() :
-     * dayStart;
-     * }
-     * 
-     * if (dayStart.isBefore(dayEnd)) {
-     * freeTimes.add(new TimeRange(dayStart, dayEnd));
-     * }
-     * 
-     * return freeTimes;
-     * }
-     */
-
-    /*
-     * private Optional<TimeRange> getOverlap(TimeRange t1, TimeRange t2) {
-     * LocalTime start = t1.start().isAfter(t2.start()) ? t1.start() : t2.start();
-     * LocalTime end = t1.end().isBefore(t2.end()) ? t1.end() : t2.end();
-     * return start.isBefore(end) ? Optional.of(new TimeRange(start, end)) :
-     * Optional.empty();
-     * }
-     */
-
-    /*
-     * private boolean isCurrentTimeInRange(TimeRange range, LocalTime now) {
-     * return now.isAfter(range.start()) && now.isBefore(range.end());
-     * }
-     */
-
     public List<CourseBlockDTO> convertToCourseBlocks(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
 
-        int timetableStart = 8 * 60; // 08:00 시작 (분)
-        // int timetableEnd = 22 * 60; // 22:00 종료
-        // int timetableDuration = timetableEnd - timetableStart; // 840분
-        int pixelHeight = 1440; // 전체 높이(px)
-        double pxPerMinute = pixelHeight / 840.0;
+        int timetableStart = 8 * 60; // 08:00
+        int timetableEnd = 22 * 60;  // 22:00
+        int totalMinutes = timetableEnd - timetableStart;
+
+        double pxPerMinute = 64.0 / 60.0;  // 1분당 px
+        int headerOffset = 0;
 
         for (TimetableCourse course : courses) {
             LocalTime start = course.getStartTime();
@@ -208,32 +137,35 @@ public class TimetableService {
 
             int startTotal = start.getHour() * 60 + start.getMinute();
             int endTotal = end.getHour() * 60 + end.getMinute();
-            int duration = endTotal - startTotal;
 
-            int topPx = (int) ((startTotal - timetableStart) * pxPerMinute) + 17; // ✅ 정확히 1시간 보정
+            if (startTotal < timetableStart || endTotal > timetableEnd) {
+                System.out.println("강의 시간이 시간표 범위를 벗어남: " + course.getCourse().getCourseName());
+                continue;
+            }
 
-            int heightPx = (int) (duration * pxPerMinute);
+            int offsetMinutes = startTotal - timetableStart;
+            int topPx = (int) Math.round(offsetMinutes * pxPerMinute);
+            int durationMinutes = endTotal - startTotal;
+            int heightPx = (int) Math.round(durationMinutes * pxPerMinute);
+            heightPx = Math.max(heightPx, 30);
 
             CourseBlockDTO block = new CourseBlockDTO(
                     course.getId(),
                     course.getCourse().getCourseName(),
                     course.getDayOfWeek(),
                     start.getHour(),
-                    0.0, // topPercent (사용 안함)
-                    0.0, // heightPercent (사용 안함)
+                    0.0,
+                    0.0,
                     start.toString(),
                     end.toString(),
-                    true);
+                    true
+            );
 
-            block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
-            block.setWidthPercent(18.0);
             block.setTopPx(topPx);
             block.setHeightPx(heightPx);
-
-            // 디버그 로그
-            System.out.printf("📦 [px] %s %s (%s ~ %s) → top=%dpx, height=%dpx\n",
-                    block.getDayOfWeek(), block.getCourseName(), block.getStartTime(), block.getEndTime(), topPx,
-                    heightPx);
+            block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
+            block.setWidthPercent(17.5);
+            block.setCustomTitle(course.getCustomTitle()); // ✅ 핵심 수정
 
             blocks.add(block);
         }
@@ -241,26 +173,13 @@ public class TimetableService {
         return blocks;
     }
 
-    // ✅ 기존 함수 전체 교체
-    private double calculateLeftPercent(String dayOfWeek) {
-        switch (dayOfWeek) {
-            case "월":
-                return 10.0;
-            case "화":
-                return 28.0;
-            case "수":
-                return 46.0;
-            case "목":
-                return 64.0;
-            case "금":
-                return 82.0;
-            default:
-                return 10.0;
-        }
-    }
 
     public List<CourseBlockDTO> convertToCourseBlocksForFriend(List<TimetableCourse> courses) {
         List<CourseBlockDTO> blocks = new ArrayList<>();
+
+        int timetableStart = 8 * 60;
+        int timetableEnd = 22 * 60;
+        double totalMinutes = (double) (timetableEnd - timetableStart);
 
         for (TimetableCourse course : courses) {
             LocalTime start = course.getStartTime();
@@ -269,23 +188,27 @@ public class TimetableService {
             int startTotal = start.getHour() * 60 + start.getMinute();
             int endTotal = end.getHour() * 60 + end.getMinute();
 
-            double totalMinutes = (22 - 7) * 60.0; // 900분
-            double topPercent = ((startTotal - 7 * 60) / totalMinutes) * 100.0;
+            if (startTotal < timetableStart || endTotal > timetableEnd) {
+                continue; // 범위 외 강의 무시
+            }
+
+            double topPercent = ((startTotal - timetableStart) / totalMinutes) * 100.0;
             double heightPercent = ((endTotal - startTotal) / totalMinutes) * 100.0;
 
             CourseBlockDTO block = new CourseBlockDTO(
                     course.getId(),
                     course.getCourse().getCourseName(),
                     course.getDayOfWeek(),
-                    0, // hour는 friend 화면에서 필요 없음
+                    0,
                     topPercent,
                     heightPercent,
                     start.toString(),
                     end.toString(),
-                    false);
+                    false
+            );
 
             block.setLeftPercent(calculateLeftPercent(course.getDayOfWeek()));
-            block.setWidthPercent(20.0);
+            block.setWidthPercent(DAY_WIDTH_PERCENT);
 
             blocks.add(block);
         }
@@ -293,73 +216,15 @@ public class TimetableService {
         return blocks;
     }
 
-    /*
-     * public List<FreeTimeMatchDTO> findMatchingFriends(Long userId, String
-     * semester, String dayOfWeek, LocalTime startTime, LocalTime endTime, int
-     * minMinutes) {
-     * List<TimetableCourse> myCourses =
-     * timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(userId,
-     * semester)
-     * .stream()
-     * .filter(c -> c.getDayOfWeek().equals(dayOfWeek))
-     * .toList();
-     * List<TimeRange> myFreeTimes = calculateFreeTimes(myCourses);
-     * 
-     * List<Friend> friends = friendRepository.findByUserIdAndStatus(userId,
-     * Friend.Status.accepted);
-     * Map<Long, FreeTimeMatchDTO> friendMatchMap = new HashMap<>();
-     * 
-     * for (Friend friend : friends) {
-     * List<TimetableCourse> friendCourses =
-     * timetableCourseRepository.findByTimetableUserIdAndTimetableSemester(friend.
-     * getFriendId(), semester)
-     * .stream()
-     * .filter(c -> c.getDayOfWeek().equals(dayOfWeek))
-     * .toList();
-     * List<TimeRange> friendFreeTimes = calculateFreeTimes(friendCourses);
-     * 
-     * for (TimeRange my : myFreeTimes) {
-     * for (TimeRange fr : friendFreeTimes) {
-     * Optional<TimeRange> overlap = getOverlap(my, fr);
-     * if (overlap.isPresent()) {
-     * TimeRange overlapRange = overlap.get();
-     * 
-     * if (overlapRange.start().isBefore(endTime) &&
-     * overlapRange.end().isAfter(startTime)) {
-     * LocalTime matchedStart = overlapRange.start().isAfter(startTime) ?
-     * overlapRange.start() : startTime;
-     * LocalTime matchedEnd = overlapRange.end().isBefore(endTime) ?
-     * overlapRange.end() : endTime;
-     * 
-     * int matchedMinutes = (int) Duration.between(matchedStart,
-     * matchedEnd).toMinutes();
-     * 
-     * if (matchedMinutes >= minMinutes) {
-     * userRepository.findById(friend.getFriendId()).ifPresent(user -> {
-     * FreeTimeMatchDTO dto = friendMatchMap.getOrDefault(user.getId(), new
-     * FreeTimeMatchDTO());
-     * dto.setFriendId(user.getId());
-     * dto.setFriendUsername(user.getUsername());
-     * dto.setDayOfWeek(dayOfWeek);
-     * 
-     * if (dto.getTimeRanges() == null) {
-     * dto.setTimeRanges(new ArrayList<>());
-     * }
-     * 
-     * // 공강 시간 블럭 추가
-     * dto.getTimeRanges().add(matchedStart + " ~ " + matchedEnd);
-     * 
-     * friendMatchMap.put(user.getId(), dto);
-     * });
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
-     * 
-     * return new ArrayList<>(friendMatchMap.values());
-     * }
-     */
-
-}
+    private double calculateLeftPercent(String dayOfWeek) {
+        // 10% 시간 컬럼 + 각 요일별 18% 컬럼
+        return switch (dayOfWeek) {
+            case "월" -> 10;  // 약간의 여백 추가
+            case "화" -> 28;  
+            case "수" -> 46;  
+            case "목" -> 64;  
+            case "금" -> 82;  
+            default -> 10;
+        };
+    }
+    }

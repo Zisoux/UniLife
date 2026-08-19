@@ -1,47 +1,48 @@
 package inhatc.hja.unilife.timetable.entity;
 
+import inhatc.hja.unilife.user.entity.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import inhatc.hja.unilife.user.entity.User;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "timetables")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Timetable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ✅ userId 필드 삭제!
-
-    @Column(nullable = false)
     private String semester;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "timetable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "timetable", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TimetableCourse> timetableCourses = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // ✅ user_id로 외래키 매핑
-    private User user;
-    
-} 
+    // 연관관계 편의 메서드
+    public void addTimetableCourse(TimetableCourse timetableCourse) {
+        timetableCourses.add(timetableCourse);
+        timetableCourse.setTimetable(this);
+    }
+
+    public void removeTimetableCourse(TimetableCourse timetableCourse) {
+        timetableCourses.remove(timetableCourse);
+        timetableCourse.setTimetable(null);
+    }
+}

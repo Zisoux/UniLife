@@ -2,13 +2,17 @@ package inhatc.hja.unilife.timetable.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class CourseBlockDTO {
     private Long courseId;
     private String courseName;
     private String dayOfWeek;
+    private String customTitle; // getter/setter도 함께 추가
+
     private int hour;
     private double topPercent; // 칸 안에서 시작 위치
     private double heightPercent; // 칸 안에서 차지하는 높이 비율

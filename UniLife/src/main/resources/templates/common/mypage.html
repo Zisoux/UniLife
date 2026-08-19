@@ -45,9 +45,24 @@
       transform: translateX(18px);
     }
   </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const goToHome = document.getElementById("goToHome");
+      goToHome.addEventListener("click", function () {
+        window.location.href = "/calendar";
+      });
+    });
+  </script>
 </head>
 
 <body class="bg-[#f4f6f8] flex items-center justify-center min-h-screen">
+  <button type="button" id="goToHome" class="p-4 bg-blue-200 rounded-sm">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5 12h14M5 12l4-4m-4 4 4 4" />
+        </svg>
+    </button>
 
 <div class="bg-white p-10 rounded-xl shadow-md w-full max-w-xl space-y-6">
 
